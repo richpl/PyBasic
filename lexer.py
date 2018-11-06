@@ -4,9 +4,14 @@
 This class implements a lexical analyser capable
 of consuming BASIC statements and commands and returning
 a corresponding list of tokens.
+
+>>> lexer = Lexer()
+>>> tokenlist = lexer.tokenize("100 LET I = 10")
+>>> tokenlist[0].pretty_print()
+Column: 0 Category: 18 Lexeme: 100
 """
 
-from token import Token
+from btoken import BToken
 
 
 class Lexer:
@@ -41,11 +46,11 @@ class Lexer:
 
             # Construct a token, column count already
             # incremented
-            token = Token(self.__column - 1, None, '')
+            token = BToken(self.__column - 1, None, '')
 
             # Process numbers
             if c.isdigit() or c == '.':  # Cater for integers and reals
-                token.category = Token.NUMBER
+                token.category = BToken.NUMBER
 
                 # Consume all of the digits
                 while True:
@@ -70,15 +75,15 @@ class Lexer:
 
                 # Determine if the lexeme is a variable name or a
                 # reserved word
-                if token.lexeme in Token.keywords:
-                    token.category = Token.keywords[token.lexeme]
+                if token.lexeme in BToken.keywords:
+                    token.category = BToken.keywords[token.lexeme]
 
                 else:
-                    token.category = Token.NAME
+                    token.category = BToken.NAME
 
             # Process operator symbols
-            elif c in Token.smalltokens:
-                token.category = Token.smalltokens[c]
+            elif c in BToken.smalltokens:
+                token.category = BToken.smalltokens[c]
                 token.lexeme = c
                 c = self.__get_next_char()
 
@@ -103,3 +108,7 @@ class Lexer:
 
         else:
             return ''
+
+    if __name__ == "__main__":
+        import doctest
+        doctest.testmod()
