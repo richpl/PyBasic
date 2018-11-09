@@ -87,6 +87,10 @@ class Lexer:
                 token.lexeme = c
                 c = self.__get_next_char()
 
+            # We do not recognise this token
+            else:
+                raise SyntaxError('Syntax error')
+
             # Append the new token to the list
             tokenlist.append(token)
 
@@ -109,6 +113,7 @@ class Lexer:
         else:
             return ''
 
-    if __name__ == "__main__":
-        import doctest
-        doctest.testmod()
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
