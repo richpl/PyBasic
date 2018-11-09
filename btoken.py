@@ -19,7 +19,7 @@ class BToken:
         EOF         = 0   # End of file
         LET         = 1   # LET keyword
         LIST        = 2   # LIST command
-        PRINT       = 3   # PRINT keyword
+        PRINT       = 3   # PRINT command
         RUN         = 4   # RUN command
         FOR         = 5   # FOR keyword
         NEXT        = 6   # NEXT keyword
@@ -46,7 +46,11 @@ class BToken:
         INPUT       = 27  # INPUT keyword
         REM         = 28  # REM keyword
         RETURN      = 29  # RETURN keyword
+        SAVE        = 30  # SAVE command
+        LOAD        = 31  # LOAD command
         ERROR       = 99  # None of the above
+
+        #category_names = {0: 'EOF', 1: 'LET'}
 
         smalltokens = {'=': ASSIGNOP, '(': LEFTPAREN, ')': RIGHTPAREN,
                        '+': PLUS, '-': MINUS, '*': TIMES, '/': DIVIDE,
@@ -59,7 +63,8 @@ class BToken:
                     'IF': IF, 'THEN': THEN, 'ELSE': ELSE,
                     'EXIT': EXIT, 'DIM': DIM, 'STEP': STEP,
                     'GOTO': GOTO, 'GOSUB': GOSUB,
-                    'INPUT': INPUT, 'REM': REM, 'RETURN': RETURN}
+                    'INPUT': INPUT, 'REM': REM, 'RETURN': RETURN,
+                    'SAVE': SAVE, 'LOAD': LOAD}
 
         def __init__(self, column, category, lexeme):
 
@@ -71,7 +76,10 @@ class BToken:
         Pretty prints the token
         """
         def pretty_print(self):
-
             print('Column:', self.column,
                   'Category:', self.category,
                   'Lexeme:', self.lexeme)
+
+        def print_lexeme(self):
+            print(self.lexeme, end=' ')
+
