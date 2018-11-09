@@ -1,28 +1,42 @@
 #! /usr/bin/python
+"""
+Implements a BASIC parser that parses a single
+statement when supplied.
+"""
 
 from btoken import BToken
 
 
 class BASICParser:
 
-    # Symbol table to hold variable names mapped
-    # to values
-    __symbol_table = {}
+    def __init__(self):
+        # Symbol table to hold variable names mapped
+        # to values
+        self.__symbol_table = {}
 
-    # Stack on which to store operands
-    # when evaluating expressions
-    __operand_stack = []
+        # Stack on which to store operands
+        # when evaluating expressions
+        self.__operand_stack = []
 
-    __tokenlist = []
-    __tokenindex = 0
+        # These values will be
+        # initialised on a per
+        # statement basis
+        self.__tokenlist = []
+        self.__tokenindex = None
 
     """
     Must be initialised with the list of 
-    BTokens to be processed
+    BTokens to be processed. These tokens
+    represent a BASIC statement without
+    its corresponding line number.
     """
     def parse(self, tokenlist):
         self.__tokenlist = tokenlist
         self.__tokenindex = 0
+
+        # Assign the first token
+        self.__token = self.__tokenlist[self.__tokenindex]
+
         self.__stmt()
 
     """
@@ -32,10 +46,9 @@ class BASICParser:
         # Move to the next token
         self.__tokenindex += 1
 
-        if self.__tokenindex >= len(self.__tokenlist):
-            raise RuntimeError('Unexpected end of statement')
-
-        self.__token = self.__tokenlist[self.__tokenindex]
+        # Acquire the next token if there any left
+        if not self.__tokenindex >= len(self.__tokenlist):
+            self.__token = self.__tokenlist[self.__tokenindex]
 
     """
     Consumes a token from the list
@@ -45,19 +58,16 @@ class BASICParser:
             self.__advance()
 
         else:
-            raise RuntimeError('Expecting ' + expected_category)
+            raise RuntimeError('Expecting ' + BToken.category_name(expected_category))
 
     """
-    Parse a program statement
+    Parses a program statement
     """
     def __stmt(self):
-        # Assign the first token
-        self.__token == self.__tokenlist[0]
-
         self.__simplestmt()
 
     """
-    Parse a non-compund program statement
+    Parses a non-compound program statement
     """
     def __simplestmt(self):
         if self.__token.category == BToken.NAME:
@@ -73,36 +83,42 @@ class BASICParser:
             raise RuntimeError('Expecting program statement')
 
     """
-    Parse a PRINT statement
+    Parses a PRINT statement, causing
+    the value that is on top of the
+    operand stack to be printed on
+    the screen.
     """
     def __printstmt(self):
         self.__advance()   # Advance past PRINT token
-        self.__consume(BToken.LEFTPAREN)
         self.__expr()
         print(self.__operand_stack.pop())
-        self.consume(BToken.RIGHTPAREN)
 
     """
-    Parse a LET statement
+    Parses a LET statement,
+    consuming the LET keyword.
     """
     def __letstmt(self):
         self.__advance()  # Advance past the LET token
         self.__assignmentstmt()
 
     """
-    Parse an assignment statement
+    Parses an assignment statement, 
+    placing the corresponding
+    variable and its value in the symbol
+    table
     """
     def __assignmentstmt(self):
         left = self.__token.lexeme  # Save lexeme of
                                     # the current token
-        self.advance()
+        self.__advance()
         self.__consume(BToken.ASSIGNOP)
         self.__expr()
         self.__symbol_table[left] = self.__operand_stack.pop()
 
     """
-    Parse a numerical expression consisting
-    of two terms being added together
+    Parses a numerical expression consisting
+    of two terms being added together,
+    leaving the result on the operand stack.
     """
     def __expr(self):
         self.__term()  # Pushes value of left term
@@ -117,8 +133,9 @@ class BASICParser:
             self.__operand_stack.append(leftoperand + rightoperand)
 
     """
-    Parse a numerical expression consisting
-    of two factors being multiplied together
+    Parses a numerical expression consisting
+    of two factors being multiplied together,
+    leaving the result on the operand stack.
     """
     def __term(self):
         self.__sign = 1  # Initialise sign to keep track of unary
@@ -133,6 +150,11 @@ class BASICParser:
             leftoperand = self.__operand_stack.pop()
             self.__operand_stack.append(leftoperand * rightoperand)
 
+    """
+    Evaluates a numerical expression 
+    and leaves its value on top of the 
+    operand stack.
+    """
     def __factor(self):
         if self.__token.category == BToken.PLUS:
             self.__advance()
