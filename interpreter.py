@@ -1,11 +1,11 @@
 #! /usr/bin/python
 
-"""
-This class implements a BASIC interpreter that
+"""This class implements a BASIC interpreter that
 presents a prompt to the user. The user may input
 program statements, list them and run the program.
 The program may also be saved to disk and loaded
 again.
+
 """
 
 from btoken import BToken
@@ -41,7 +41,7 @@ def main():
 
             # Add a new program statement, beginning
             # a line number
-            elif tokenlist[0].category == BToken.NUMBER:
+            elif tokenlist[0].category == BToken.UNSIGNEDINT:
                 line_number = int(tokenlist[0].lexeme)
                 program[line_number] = tokenlist[1:]
 
@@ -71,7 +71,13 @@ def main():
 
                     statement = program[line_number]
                     for token in statement:
-                        print(token.lexeme, end=' ')
+                        # Add in quotes for strings
+                        if token.category == BToken.STRING:
+                            print('"' + token.lexeme + '"', end=' ')
+
+                        else:
+                            print(token.lexeme, end=' ')
+
                     print(flush=True)
 
             # Save the program to disk
