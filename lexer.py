@@ -1,14 +1,22 @@
 #! /usr/bin/python
 
-"""
-This class implements a lexical analyser capable
+"""This class implements a lexical analyser capable
 of consuming BASIC statements and commands and returning
 a corresponding list of tokens.
 
 >>> lexer = Lexer()
->>> tokenlist = lexer.tokenize("100 LET I = 10")
+>>> tokenlist = lexer.tokenize('100 LET I = 10')
 >>> tokenlist[0].pretty_print()
 Column: 0 Category: 18 Lexeme: 100
+>>> tokenlist = lexer.tokenize('100 IF I <> 10')
+>>> tokenlist[3].pretty_print()
+Column: 9 Category: 32 Lexeme: <>
+>>> tokenlist = lexer.tokenize('100 LET I = 3.45')
+>>> tokenlist[4].pretty_print()
+Column: 12 Category: 35 Lexeme: 3.45
+>>> tokenlist = lexer.tokenize('100 LET I = "HELLO"')
+>>> tokenlist[4].pretty_print()
+Column: 12 Category: 36 Lexeme: HELLO
 """
 
 from btoken import BToken
@@ -21,13 +29,12 @@ class Lexer:
         self.__column = 0  # Current column number
         self.__stmt = ''   # Statement string being processed
 
-    """
-    Returns a list of tokens obtained by
-    lexical analysis of the specified
-    statement.
-    """
     def tokenize(self, stmt):
+        """Returns a list of tokens obtained by
+        lexical analysis of the specified
+        statement.
 
+        """
         self.__stmt = stmt
         self.__column = 0
 
@@ -48,18 +55,55 @@ class Lexer:
             # incremented
             token = BToken(self.__column - 1, None, '')
 
-            # Process numbers
-            if c.isdigit() or c == '.':  # Cater for integers and reals
-                token.category = BToken.NUMBER
+            # Process strings
+            if c == '"':
+                token.category = BToken.STRING
 
-                # Consume all of the digits
+                # Consume all of the characters
+                # until we reach the terminating
+                # quote. Do not store the quotes
+                # in the lexeme
+                c = self.__get_next_char()  # Advance past opening quote
+
+                # We explicitly support empty strings
+                if c == '"':
+                    # String is empty, leave lexeme as ''
+                    # and advance past terminating quote
+                    c = self.__get_next_char()
+
+                else:
+                    while True:
+                        token.lexeme += c  # Append the current char to the lexeme
+                        c = self.__get_next_char()
+
+                        if c == '"':
+                            c = self.__get_next_char()  # Advance past terminating quote
+                            break
+
+            # Process numbers
+            elif c.isdigit():
+                token.category = BToken.UNSIGNEDINT
+                found_point = False
+
+                # Consume all of the digits, including any decimal point
                 while True:
-                    token.lexeme += c  # append the current char to the lexeme
+                    token.lexeme += c  # Append the current char to the lexeme
                     c = self.__get_next_char()
 
                     # Break if next character is not a digit
+                    # and this is not the first decimal point
                     if not c.isdigit():
-                        break
+                        if c == '.':
+                            if not found_point:
+                                found_point = True
+                                token.category = BToken.UNSIGNEDFLOAT
+
+                            else:
+                                # Another decimal point found
+                                break
+
+                        else:
+                            break
 
             # Process keywords and names
             elif c.isalpha():
@@ -83,9 +127,19 @@ class Lexer:
 
             # Process operator symbols
             elif c in BToken.smalltokens:
-                token.category = BToken.smalltokens[c]
-                token.lexeme = c
-                c = self.__get_next_char()
+                save = c
+                c = self.__get_next_char() # c might be '' (end of stmt)
+                twochar = save + c
+
+                if twochar in BToken.smalltokens:
+                    token.category = BToken.smalltokens[twochar]
+                    token.lexeme = twochar
+                    c = self.__get_next_char() # Move past end of token
+
+                else:
+                    # One char token
+                    token.category = BToken.smalltokens[save]
+                    token.lexeme = save
 
             # We do not recognise this token
             else:
@@ -96,14 +150,13 @@ class Lexer:
 
         return tokenlist
 
-    """
-    Returns the next character in the 
-    statement, unless the last character has already
-    been processed, in which case, the empty string is
-    returned.
-    """
     def __get_next_char(self):
+        """Returns the next character in the
+        statement, unless the last character has already
+        been processed, in which case, the empty string is
+        returned.
 
+        """
         if self.__column < len(self.__stmt):
             next_char = self.__stmt[self.__column]
             self.__column = self.__column + 1
