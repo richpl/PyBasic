@@ -5,14 +5,14 @@ statement when supplied.
 
 """
 
-from btoken import BToken
+from basictoken import BASICToken as Token
 
 
 # TODO
-# Arithmetic expressions with subtraction and division
-# Arithmetic expressions with subtraction and division
 # Distinguish string variables from number variables (dollar suffix)
 # Compound statements
+# GOTO
+# GOSUB
 class BASICParser:
 
     def __init__(self):
@@ -70,25 +70,29 @@ class BASICParser:
         """Parses a program statement
 
         """
-        self.__simplestmt()
+        if self.__token.category in [Token.FOR, Token.IF]:
+            self.__compoundstmt()
+
+        else:
+            self.__simplestmt()
 
     def __simplestmt(self):
         """Parses a non-compound program statement
 
         """
-        if self.__token.category == BToken.NAME:
+        if self.__token.category == Token.NAME:
             self.__assignmentstmt()
 
-        elif self.__token.category == BToken.PRINT:
+        elif self.__token.category == Token.PRINT:
             self.__printstmt()
 
-        elif self.__token.category == BToken.LET:
+        elif self.__token.category == Token.LET:
             self.__letstmt()
 
         else:
             # Ignore comments, but raise an error
             # for anything else
-            if self.__token.category != BToken.REM:
+            if self.__token.category != Token.REM:
                 raise RuntimeError('Expecting program statement')
 
     def __printstmt(self):
@@ -119,27 +123,32 @@ class BASICParser:
         left = self.__token.lexeme  # Save lexeme of
                                     # the current token
         self.__advance()
-        self.__consume(BToken.ASSIGNOP)
+        self.__consume(Token.ASSIGNOP)
         self.__expr()
         self.__symbol_table[left] = self.__operand_stack.pop()
 
     def __expr(self):
         """Parses a numerical expression consisting
-        of two terms being added together,
+        of two terms being added or subtracted,
         leaving the result on the operand stack.
 
         """
-        # TODO MINUS expression parsing
         self.__term()  # Pushes value of left term
                        # onto top of stack
 
-        while self.__token.category == BToken.PLUS:
+        while self.__token.category in [Token.PLUS, Token.MINUS]:
+            savedcategory = self.__token.category
             self.__advance()
             self.__term()  # Pushes value of right term
                            # onto top of stack
             rightoperand = self.__operand_stack.pop()
             leftoperand = self.__operand_stack.pop()
-            self.__operand_stack.append(leftoperand + rightoperand)
+
+            if savedcategory == Token.PLUS:
+                self.__operand_stack.append(leftoperand + rightoperand)
+
+            else:
+                self.__operand_stack.append(leftoperand - rightoperand)
 
     def __term(self):
         """Parses a numerical expression consisting
@@ -147,18 +156,23 @@ class BASICParser:
         leaving the result on the operand stack.
 
         """
-        # TODO Division
         self.__sign = 1  # Initialise sign to keep track of unary
                          # minuses
         self.__factor()  # Leaves value of term on top of stack
 
-        while self.__token.category == BToken.TIMES:
+        while self.__token.category in [Token.TIMES, Token.DIVIDE]:
+            savedcategory = self.__token.category
             self.__advance()
             self.__sign = 1  # Initialise sign
             self.__factor()  # Leaves value of term on top of stack
             rightoperand = self.__operand_stack.pop()
             leftoperand = self.__operand_stack.pop()
-            self.__operand_stack.append(leftoperand * rightoperand)
+
+            if savedcategory == Token.TIMES:
+                self.__operand_stack.append(leftoperand * rightoperand)
+
+            else:
+                self.__operand_stack.append(leftoperand / rightoperand)
 
     def __factor(self):
         """Evaluates a numerical expression
@@ -166,20 +180,27 @@ class BASICParser:
         operand stack.
 
         """
-        if self.__token.category == BToken.PLUS:
+        if self.__token.category == Token.PLUS:
             self.__advance()
             self.__factor()
 
-        elif self.__token.category == BToken.MINUS:
+        elif self.__token.category == Token.MINUS:
             self.__sign = -self.__sign
             self.__advance()
             self.__factor()
 
-        elif self.__token.category == BToken.UNSIGNEDINT:
+        elif self.__token.category == Token.UNSIGNEDINT:
             self.__operand_stack.append(self.__sign*int(self.__token.lexeme))
             self.__advance()
 
-        elif self.__token.category == BToken.NAME:
+        elif self.__token.category == Token.UNSIGNEDFLOAT:
+            self.__operand_stack.append(self.__sign*float(self.__token.lexeme))
+            self.__advance()
+
+        elif self.__token.category == Token.STRING:
+            self.__advance()
+
+        elif self.__token.category == Token.NAME:
             if self.__token.lexeme in self.__symbol_table:
                 self.__operand_stack.append(self.__sign*self.__symbol_table[self.__token.lexeme])
 
@@ -188,7 +209,7 @@ class BASICParser:
 
             self.__advance()
 
-        elif self.__token.category == BToken.LEFTPAREN:
+        elif self.__token.category == Token.LEFTPAREN:
             self.__advance()
 
             # Save sign because expr() calls term() which resets
@@ -200,8 +221,35 @@ class BASICParser:
                 # Change sign of expression
                 self.__operand_stack[-1] = -self.__operand_stack[-1]
 
-            self.__consume(BToken.RIGHTPAREN)
+            self.__consume(Token.RIGHTPAREN)
 
         else:
             raise RuntimeError('Expecting factor in numeric expression')
+
+    def __compoundstmt(self):
+        """Parses compound statements,
+        specifically if-then-else and
+        for loops
+
+        """
+        if self.__token.category == Token.FOR:
+            self.__forstmt()
+
+        elif self.__token.category == Token.IF:
+            self.__ifstmt()
+
+    def __ifstmt(self):
+        """Parses if-then-else
+        statements
+
+        """
+        self.__advance()  # Advance past the IF
+        #self.__relexpr()
+        self.__consume(Token.THEN)
+        # TODO
+
+    def __forstmt(self):
+        """Parses for loops"""
+        # TODO
+
 
