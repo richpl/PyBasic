@@ -8,9 +8,10 @@ again.
 
 """
 
-from btoken import BToken
+from basictoken import BASICToken as Token
 from lexer import Lexer
 from basicparser import BASICParser
+from program import Program
 from sys import stderr
 
 # Dictionary that maps line numbers to tokenlists
@@ -21,6 +22,7 @@ def main():
 
     lexer = Lexer()
     parser = BASICParser()
+    program = Program()
 
     # Continuously accept user input and act on it until
     # the user enters 'EXIT'
@@ -36,57 +38,29 @@ def main():
             # BASIC program
 
             # Exit the interpreter
-            if tokenlist[0].category == BToken.EXIT:
+            if tokenlist[0].category == Token.EXIT:
                 break
 
             # Add a new program statement, beginning
             # a line number
-            elif tokenlist[0].category == BToken.UNSIGNEDINT:
-                line_number = int(tokenlist[0].lexeme)
-                program[line_number] = tokenlist[1:]
+            elif tokenlist[0].category == Token.UNSIGNEDINT:
+                program.add_stmt(tokenlist)
 
             # Execute the program
-            elif tokenlist[0].category == BToken.RUN:
-                line_numbers = list(program.keys())
-                line_numbers.sort()
-
-                for line_number in line_numbers:
-                    statement = program[line_number]
-
-                    try:
-                        parser.parse(statement)
-
-                    except RuntimeError as e:
-                        print(e, 'in line', str(line_number),
-                              file=stderr)
-                        print(flush=True)
+            elif tokenlist[0].category == Token.RUN:
+                program.execute()
 
             # List the program
-            elif tokenlist[0].category == BToken.LIST:
-                line_numbers = list(program.keys())
-                line_numbers.sort()
-
-                for line_number in line_numbers:
-                    print(line_number, end=' ')
-
-                    statement = program[line_number]
-                    for token in statement:
-                        # Add in quotes for strings
-                        if token.category == BToken.STRING:
-                            print('"' + token.lexeme + '"', end=' ')
-
-                        else:
-                            print(token.lexeme, end=' ')
-
-                    print(flush=True)
+            elif tokenlist[0].category == Token.LIST:
+                program.list()
 
             # Save the program to disk
-            elif tokenlist[0].category == BToken.SAVE:
+            elif tokenlist[0].category == Token.SAVE:
                 # TODO
                 j = 0
 
             # Load the program from disk
-            elif tokenlist[0].category == BToken.LOAD:
+            elif tokenlist[0].category == Token.LOAD:
                 # TODO
                 j = 0
 
@@ -97,7 +71,9 @@ def main():
                     token.print_lexeme()
                 print(flush=True)
 
-        except SyntaxError as e:
+        # Trap all exceptions so that interpreter
+        # keeps running
+        except Exception as e:
             print(e, file=stderr, flush=True)
 
 
