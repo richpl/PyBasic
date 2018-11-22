@@ -19,7 +19,7 @@ Column: 12 Category: 35 Lexeme: 3.45
 Column: 12 Category: 36 Lexeme: HELLO
 """
 
-from btoken import BToken
+from basictoken import BASICToken as Token
 
 
 class Lexer:
@@ -53,11 +53,11 @@ class Lexer:
 
             # Construct a token, column count already
             # incremented
-            token = BToken(self.__column - 1, None, '')
+            token = Token(self.__column - 1, None, '')
 
             # Process strings
             if c == '"':
-                token.category = BToken.STRING
+                token.category = Token.STRING
 
                 # Consume all of the characters
                 # until we reach the terminating
@@ -82,7 +82,7 @@ class Lexer:
 
             # Process numbers
             elif c.isdigit():
-                token.category = BToken.UNSIGNEDINT
+                token.category = Token.UNSIGNEDINT
                 found_point = False
 
                 # Consume all of the digits, including any decimal point
@@ -96,7 +96,7 @@ class Lexer:
                         if c == '.':
                             if not found_point:
                                 found_point = True
-                                token.category = BToken.UNSIGNEDFLOAT
+                                token.category = Token.UNSIGNEDFLOAT
 
                             else:
                                 # Another decimal point found
@@ -119,26 +119,26 @@ class Lexer:
 
                 # Determine if the lexeme is a variable name or a
                 # reserved word
-                if token.lexeme in BToken.keywords:
-                    token.category = BToken.keywords[token.lexeme]
+                if token.lexeme in Token.keywords:
+                    token.category = Token.keywords[token.lexeme]
 
                 else:
-                    token.category = BToken.NAME
+                    token.category = Token.NAME
 
             # Process operator symbols
-            elif c in BToken.smalltokens:
+            elif c in Token.smalltokens:
                 save = c
                 c = self.__get_next_char() # c might be '' (end of stmt)
                 twochar = save + c
 
-                if twochar in BToken.smalltokens:
-                    token.category = BToken.smalltokens[twochar]
+                if twochar in Token.smalltokens:
+                    token.category = Token.smalltokens[twochar]
                     token.lexeme = twochar
                     c = self.__get_next_char() # Move past end of token
 
                 else:
                     # One char token
-                    token.category = BToken.smalltokens[save]
+                    token.category = Token.smalltokens[save]
                     token.lexeme = save
 
             # We do not recognise this token
