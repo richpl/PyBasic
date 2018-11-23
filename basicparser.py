@@ -13,6 +13,7 @@ from basictoken import BASICToken as Token
 # Compound statements
 # GOTO
 # GOSUB
+
 class BASICParser:
 
     def __init__(self):
@@ -36,6 +37,10 @@ class BASICParser:
            represent a BASIC statement without
            its corresponding line number.
 
+           :return: The next line number to
+           be executed if the statement has caused
+           a branch, None otherwise
+
         """
         self.__tokenlist = tokenlist
         self.__tokenindex = 0
@@ -43,7 +48,7 @@ class BASICParser:
         # Assign the first token
         self.__token = self.__tokenlist[self.__tokenindex]
 
-        self.__stmt()
+        return self.__stmt()
 
     def __advance(self):
         """Advances to the next token
@@ -69,25 +74,39 @@ class BASICParser:
     def __stmt(self):
         """Parses a program statement
 
+        :return: The next line number to
+        be executed if the statement has caused
+        a branch, None otherwise
+
         """
         if self.__token.category in [Token.FOR, Token.IF]:
-            self.__compoundstmt()
+            return self.__compoundstmt()
 
         else:
-            self.__simplestmt()
+            return self.__simplestmt()
 
     def __simplestmt(self):
         """Parses a non-compound program statement
 
+        :return: The next line number to
+        be executed if the statement has caused
+        a branch, None otherwise
+
         """
         if self.__token.category == Token.NAME:
             self.__assignmentstmt()
+            return None
 
         elif self.__token.category == Token.PRINT:
             self.__printstmt()
+            return None
 
         elif self.__token.category == Token.LET:
             self.__letstmt()
+            return None
+
+        elif self.__token.category == Token.GOTO:
+            return self.__gotostmt()
 
         else:
             # Ignore comments, but raise an error
@@ -112,6 +131,17 @@ class BASICParser:
         """
         self.__advance()  # Advance past the LET token
         self.__assignmentstmt()
+
+    def __gotostmt(self):
+        """Parses a GOTO statement
+
+        :return: The target line number
+        of the GOTO
+
+        """
+        self.__advance()  # Advance past GOTO token
+        self.__expr()
+        return self.__operand_stack.pop()
 
     def __assignmentstmt(self):
         """Parses an assignment statement,
@@ -231,16 +261,25 @@ class BASICParser:
         specifically if-then-else and
         for loops
 
+        :return: The next line number to
+        be executed if the statement has caused
+        a branch, None otherwise
+
         """
         if self.__token.category == Token.FOR:
             self.__forstmt()
+            return None
 
         elif self.__token.category == Token.IF:
-            self.__ifstmt()
+            return self.__ifstmt()
 
     def __ifstmt(self):
         """Parses if-then-else
         statements
+
+        :return: The next line number to
+        be executed if the statement has caused
+        a branch, None otherwise
 
         """
         self.__advance()  # Advance past the IF
