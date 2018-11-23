@@ -58,9 +58,8 @@ class Program:
             self.__program[line_number] = tokenlist[1:]
 
         except TypeError as err:
-            print("Invalid line number - " + str(err),
-                  file=stderr)
-            print(flush=True)
+            raise TypeError("Invalid line number: " +
+                            err)
 
     def line_numbers(self):
         """Returns a list of all the
@@ -81,26 +80,62 @@ class Program:
 
         :param line_number: The line number
 
+        :return: The next line number to
+        be executed if the statement has caused
+        a branch, None otherwise
+
         """
+        if line_number not in self.__program.keys():
+            raise RuntimeError("Line number " + line_number +
+                               " does not exist")
+
         statement = self.__program[line_number]
 
         try:
-            self.__parser.parse(statement)
+            return self.__parser.parse(statement)
 
         except RuntimeError as err:
-            print(err, 'in line', str(line_number),
-                  file=stderr)
-            print(flush=True)
+            raise RuntimeError(str(err) + ' in line ' +
+                               str(line_number))
 
     def execute(self):
         """Execute the program"""
         line_numbers = self.line_numbers()
-        self.set_next_stmt(line_numbers[0])
 
-        for line_number in line_numbers:
-            self.__execute(line_number)
+        if len(line_numbers) > 0:
+            # Obtain the line number of the first
+            # statement
+            index = 0
+            self.set_next_line_number(line_numbers[index])
 
-    def get_next_stmt(self):
+            # Run through the program until the
+            # has line number has been reached
+            while True:
+                new_line_number = self.__execute(self.get_next_line_number())
+
+                if new_line_number:
+                    try:
+                        index = line_numbers.index(new_line_number)
+
+                    except ValueError:
+                        raise RuntimeError("Invalid line number supplied")
+
+                    self.set_next_line_number(new_line_number)
+
+                else:
+                    index = index + 1
+
+                    if index < len(line_numbers):
+                        self.set_next_line_number(line_numbers[index])
+
+                    else:
+                        # Reached end of program
+                        break
+
+        else:
+            raise RuntimeError("No statements to execute")
+
+    def get_next_line_number(self):
         """
         Returns the line number of the next statement
         to be executed
@@ -111,7 +146,7 @@ class Program:
 
         return self.__next_stmt
 
-    def set_next_stmt(self, line_number):
+    def set_next_line_number(self, line_number):
         """
         Sets the line number of the next
         statement to be executed
