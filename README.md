@@ -2,9 +2,9 @@
 
 ## Introduction
 
-A simple BASIC interpreter written in Python. It is based heavily on material in the excellent book "Writing Interpreters and Compilers for the Raspberry Pi Using Python" by Anthony J. Dos Reis, although I have had to adapt the Python interpreter presented in the book to work with the BASIC programmin language. the interpreter therefore adopts the key techniques for interpreter and compiler writing, the use of a lexical analysis stage followed by a parser which implements the context free grammar representing the target programming language.
+A simple BASIC interpreter written in Python. It is based heavily on material in the excellent book "Writing Interpreters and Compilers for the Raspberry Pi Using Python" by Anthony J. Dos Reis, although I have had to adapt the Python interpreter presented in the book to work with the BASIC programmin language. The interpreter therefore adopts the key techniques for interpreter and compiler writing, the use of a lexical analysis stage followed by a parser which implements the context free grammar representing the target programming language.
 
-The interpreter is a homage to the home computers of the early 1980s, and when executed, presents an interactive prompt ('>') typically of such a home computer. Commands to run, list, save and load BASIC programs can be entered at the prompt as well as program statements themselves. 
+The interpreter is a homage to the home computers of the early 1980s, and when executed, presents an interactive prompt ('>') typical of such a home computer. Commands to run, list, save and load BASIC programs can be entered at the prompt as well as program statements themselves. 
 
 The BASIC dialogue that has been implemented is slightly simplified, and naturally avoids machine specific instructions, such as those concerned with sound and graphics for example. It allows a limited range of arithmetic expressions composed of multiplication, division, addition and subtraction (including parenthesised subterms). Variable types follow the typical BASIC convention: they can either be strings or numbers (the latter may be integers or floating point).
 
