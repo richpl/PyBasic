@@ -1,6 +1,6 @@
-#PyBasic
+# PyBasic
 
-##Introduction
+## Introduction
 
 A simple BASIC interpreter written in Python. It is based heavily on material in the excellent book "Writing Interpreters and Compilers for the Raspberry Pi Using Python" by Anthony J. Dos Reis, although I have had to adapt the Python interpreter presented in the book to work with the BASIC programmin language. the interpreter therefore adopts the key techniques for interpreter and compiler writing, the use of a lexical analysis stage followed by a parser which implements the context free grammar representing the target programming language.
 
@@ -16,7 +16,7 @@ $ python interpreter.py
 
 *This project is still a work in progress and under active development*
 
-##Commands
+## Commands
 
 Programs may be listed using the LIST command:
 
@@ -43,9 +43,9 @@ The program may be re-loaded (i.e. unpickled) from disk using the LOAD command:
 
 TODO
 
-##Programming language constructs
+## Programming language constructs
 
-###Statement structure
+### Statement structure
 
 As per usual in old school BASIC, all program statements must be prefixed with a line number which indicates the order in which the statements may be executed. There is no renumber command to allow all line numbers to be modified. A statement may be modified or replaced by re-entering a statement with the same line number:
 
@@ -60,7 +60,7 @@ As per usual in old school BASIC, all program statements must be prefixed with a
 
 Note that all statements, including variable names are case insensitive (in fact, all lower case characters are converted to upper case internally by the lexical analyser).
 
-###Comments
+### Comments
 
 The REM statement is used to indicate a comment, and occupies an entire statement. It is no effect on execution:
 
@@ -68,7 +68,7 @@ The REM statement is used to indicate a comment, and occupies an entire statemen
 > 10 REM THIS IS A COMMENT
 ```
 
-###Assignment
+### Assignment
 
 Assignment may be made to number variables and string variables (string variables are distinguished by their dollar suffix). The interpreter will enforce this division between the two types:
 
@@ -85,7 +85,7 @@ The LET keyword is also optional:
 > 10 I = 10
 ```
 
-###Printing to standard output
+### Printing to standard output
 
 The PRINT statement is used to print to the screen:
 
@@ -98,7 +98,7 @@ The PRINT statement is used to print to the screen:
 HELLO
 ```
 
-###GOTO
+### Unconditional branching
 
 Like it or loath it, the GOTO statement is an integral part of BASIC, and is used to transfer control to the statement with the specified line number:
 
@@ -112,18 +112,18 @@ HELLO
 ...
 ```
 
-###GOSUB
+### Subroutine calls
 
 TBD
 
-###Loops
+### Loops
 
 TBD
 
-###Conditional branching
+### Conditional branching
 
 TBD
 
-###Open issues
+## Open issues
 
 Currently there is no way to terminate an infinite loop in a BASIC program without terminating the intepreter itself (e.g. using Ctrl-C).
