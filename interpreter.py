@@ -13,15 +13,12 @@ from lexer import Lexer
 from basicparser import BASICParser
 from program import Program
 from sys import stderr
-
-# Dictionary that maps line numbers to tokenlists
-program = {}
+import pickle
 
 
 def main():
 
     lexer = Lexer()
-    parser = BASICParser()
     program = Program()
 
     # Continuously accept user input and act on it until
@@ -37,39 +34,49 @@ def main():
             # add program statements to the stored
             # BASIC program
 
-            # Exit the interpreter
-            if tokenlist[0].category == Token.EXIT:
-                break
+            if len(tokenlist) > 0:
 
-            # Add a new program statement, beginning
-            # a line number
-            elif tokenlist[0].category == Token.UNSIGNEDINT:
-                program.add_stmt(tokenlist)
+                # Exit the interpreter
+                if tokenlist[0].category == Token.EXIT:
+                    break
 
-            # Execute the program
-            elif tokenlist[0].category == Token.RUN:
-                program.execute()
+                # Add a new program statement, beginning
+                # a line number
+                elif tokenlist[0].category == Token.UNSIGNEDINT:
+                    program.add_stmt(tokenlist)
 
-            # List the program
-            elif tokenlist[0].category == Token.LIST:
-                program.list()
+                # Execute the program
+                elif tokenlist[0].category == Token.RUN:
+                    program.execute()
 
-            # Save the program to disk
-            elif tokenlist[0].category == Token.SAVE:
-                # TODO
-                j = 0
+                # List the program
+                elif tokenlist[0].category == Token.LIST:
+                    program.list()
 
-            # Load the program from disk
-            elif tokenlist[0].category == Token.LOAD:
-                # TODO
-                j = 0
+                # Save the program to disk
+                elif tokenlist[0].category == Token.SAVE:
+                    try:
+                        file = open(tokenlist[1].lexeme, 'w')
+                        pickle.dump(program, file)
 
-            # Unrecognised input
-            else:
-                print("Unrecognised input", file=stderr)
-                for token in tokenlist:
-                    token.print_lexeme()
-                print(flush=True)
+                    except OSError:
+                        raise OSError("Could not write to file")
+
+                # Load the program from disk
+                elif tokenlist[0].category == Token.LOAD:
+                    try:
+                        file = open(tokenlist[1].lexeme, 'r')
+                        program = pickle.load(file)
+
+                    except OSError:
+                        raise OSError("Could not read file")
+
+                # Unrecognised input
+                else:
+                    print("Unrecognised input", file=stderr)
+                    for token in tokenlist:
+                        token.print_lexeme()
+                    print(flush=True)
 
         # Trap all exceptions so that interpreter
         # keeps running
