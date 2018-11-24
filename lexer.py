@@ -7,16 +7,16 @@ a corresponding list of tokens.
 >>> lexer = Lexer()
 >>> tokenlist = lexer.tokenize('100 LET I = 10')
 >>> tokenlist[0].pretty_print()
-Column: 0 Category: 18 Lexeme: 100
+Column: 0 Category: UNSIGNEDINT Lexeme: 100
 >>> tokenlist = lexer.tokenize('100 IF I <> 10')
 >>> tokenlist[3].pretty_print()
-Column: 9 Category: 32 Lexeme: <>
+Column: 9 Category: NOTEQUAL Lexeme: <>
 >>> tokenlist = lexer.tokenize('100 LET I = 3.45')
 >>> tokenlist[4].pretty_print()
-Column: 12 Category: 35 Lexeme: 3.45
+Column: 12 Category: UNSIGNEDFLOAT Lexeme: 3.45
 >>> tokenlist = lexer.tokenize('100 LET I = "HELLO"')
 >>> tokenlist[4].pretty_print()
-Column: 12 Category: 36 Lexeme: HELLO
+Column: 12 Category: STRING Lexeme: HELLO
 """
 
 from basictoken import BASICToken as Token
