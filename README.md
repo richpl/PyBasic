@@ -62,7 +62,7 @@ Note that all statements, including variable names are case insensitive (in fact
 
 ### Comments
 
-The REM statement is used to indicate a comment, and occupies an entire statement. It is no effect on execution:
+The REM statement is used to indicate a comment, and occupies an entire statement. It has no effect on execution:
 
 ```
 > 10 REM THIS IS A COMMENT
@@ -70,7 +70,7 @@ The REM statement is used to indicate a comment, and occupies an entire statemen
 
 ### Assignment
 
-Assignment may be made to number variables and string variables (string variables are distinguished by their dollar suffix). The interpreter will enforce this division between the two types:
+Assignment may be made to number variables (which can contain either integers or floating point numbers) and string variables (string variables are distinguished by their dollar suffix). The interpreter will enforce this division between the two types:
 
 ```
 > 10 LET I = 10
