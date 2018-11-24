@@ -10,6 +10,7 @@ from basictoken import BASICToken as Token
 
 # TODO
 # Distinguish string variables from number variables (dollar suffix)
+# printing strings and multiple items
 # Compound statements
 # GOTO
 # GOSUB
@@ -69,7 +70,7 @@ class BASICParser:
             self.__advance()
 
         else:
-            raise RuntimeError('Expecting ' + expected_category)
+            raise RuntimeError('Expecting ' + Token.catnames[expected_category])
 
     def __stmt(self):
         """Parses a program statement
