@@ -118,7 +118,8 @@ class Program:
                         index = line_numbers.index(new_line_number)
 
                     except ValueError:
-                        raise RuntimeError("Invalid line number supplied")
+                        raise RuntimeError("Invalid line number supplied: "
+                                           + str(new_line_number))
 
                     self.set_next_line_number(new_line_number)
 
