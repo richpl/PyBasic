@@ -53,7 +53,17 @@ class BASICToken:
         UNSIGNEDFLOAT   = 35  # Floating point number
         STRING          = 36  # String values
         TO              = 37  # TO keyword
-        ERROR           = 99  # None of the above
+        ERROR           = 38  # None of the above
+
+        # Displayable names for each token category
+        catnames = ['EOF', 'LET', 'LIST', 'PRINT', 'RUN',
+        'FOR', 'NEXT', 'IF', 'THEN', 'ELSE', 'ASSIGNOP',
+        'LEFTPAREN', 'RIGHTPAREN', 'PLUS', 'MINUS', 'TIMES',
+        'DIVIDE', 'NEWLINE', 'UNSIGNEDINT', 'NAME', 'EXIT',
+        'DIM', 'GREATER', 'LESSER', 'STEP', 'GOTO', 'GOSUB',
+        'INPUT', 'REM', 'RETURN', 'SAVE', 'LOAD',
+        'NOTEQUAL', 'LESSEQUAL', 'GREATEREQUAL',
+        'UNSIGNEDFLOAT', 'STRING', 'TO', 'ERROR']
 
         smalltokens = {'=': ASSIGNOP, '(': LEFTPAREN, ')': RIGHTPAREN,
                        '+': PLUS, '-': MINUS, '*': TIMES, '/': DIVIDE,
@@ -81,7 +91,7 @@ class BASICToken:
 
             """
             print('Column:', self.column,
-                  'Category:', self.category,
+                  'Category:', self.catnames[self.category],
                   'Lexeme:', self.lexeme)
 
         def print_lexeme(self):
