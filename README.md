@@ -2,11 +2,11 @@
 
 ## Introduction
 
-A simple BASIC interpreter written in Python. It is based heavily on material in the excellent book "Writing Interpreters and Compilers for the Raspberry Pi Using Python" by Anthony J. Dos Reis, although I have had to adapt the Python interpreter presented in the book to work with the BASIC programmin language. The interpreter therefore adopts the key techniques for interpreter and compiler writing, the use of a lexical analysis stage followed by a parser which implements the context free grammar representing the target programming language.
+A simple BASIC interpreter written in Python. It is based heavily on material in the excellent book *Writing Interpreters and Compilers for the Raspberry Pi Using Python* by Anthony J. Dos Reis, although I have had to adapt the Python interpreter presented in the book to work with the BASIC programmin language. The interpreter therefore adopts the key techniques for interpreter and compiler writing, the use of a lexical analysis stage followed by a parser which implements the context free grammar representing the target programming language.
 
 The interpreter is a homage to the home computers of the early 1980s, and when executed, presents an interactive prompt ('>') typical of such a home computer. Commands to run, list, save and load BASIC programs can be entered at the prompt as well as program statements themselves. 
 
-The BASIC dialogue that has been implemented is slightly simplified, and naturally avoids machine specific instructions, such as those concerned with sound and graphics for example. It allows a limited range of arithmetic expressions composed of multiplication, division, addition and subtraction (including parenthesised subterms). Variable types follow the typical BASIC convention: they can either be strings or numbers (the latter may be integers or floating point).
+The BASIC dialect that has been implemented is slightly simplified, and naturally avoids machine specific instructions, such as those concerned with sound and graphics for example. It allows a limited range of arithmetic expressions composed of multiplication, division, addition and subtraction (including parenthesised subterms). Variable types follow the typical BASIC convention: they can either be strings or numbers (the latter may be integers or floating point).
 
 The interpreter can be invoked as follows:
 
@@ -33,15 +33,21 @@ A program is executed using the RUN command:
 10
 ```
 
-A program may be save to disk using the SAVE command:
+A program may be saved to disk using the SAVE command:
 
 TODO
 
-Saving is achieved by pickling the Pythin object that represents the BASIC program, i.e. the saved file is *not* a textual copy of the program statements.
+Saving is achieved by pickling the Python object that represents the BASIC program, i.e. the saved file is *not* a textual copy of the program statements.
 
 The program may be re-loaded (i.e. unpickled) from disk using the LOAD command: 
 
 TODO
+
+It is possible to terminate the interpreter by issuing the EXIT command:
+
+```
+> EXIT
+c:\
 
 ## Programming language constructs
 
