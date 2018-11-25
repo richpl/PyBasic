@@ -1,12 +1,12 @@
-# PyBasic
+# PyBasic - Program like it's 1979!
 
 ## Introduction
 
-A simple BASIC interpreter written in Python. It is based heavily on material in the excellent book *Writing Interpreters and Compilers for the Raspberry Pi Using Python* by Anthony J. Dos Reis, although I have had to adapt the Python interpreter presented in the book to work with the BASIC programmin language. The interpreter therefore adopts the key techniques for interpreter and compiler writing, the use of a lexical analysis stage followed by a parser which implements the context free grammar representing the target programming language.
+A simple BASIC interpreter written in Python. It is based heavily on material in the excellent book *Writing Interpreters and Compilers for the Raspberry Pi Using Python* by Anthony J. Dos Reis. However, I have had to adapt the Python interpreter presented in the book, both to work with the BASIC programming language and to produce an interactive command line interface. The interpreter therefore adopts the key techniques for interpreter and compiler writing, the use of a lexical analysis stage followed by a parser which implements the context free grammar representing the target programming language.
 
 The interpreter is a homage to the home computers of the early 1980s, and when executed, presents an interactive prompt ('>') typical of such a home computer. Commands to run, list, save and load BASIC programs can be entered at the prompt as well as program statements themselves. 
 
-The BASIC dialect that has been implemented is slightly simplified, and naturally avoids machine specific instructions, such as those concerned with sound and graphics for example. It allows a limited range of arithmetic expressions composed of multiplication, division, addition and subtraction (including parenthesised subterms). Variable types follow the typical BASIC convention: they can either be strings or numbers (the latter may be integers or floating point).
+The BASIC dialect that has been implemented is slightly simplified, and naturally avoids machine specific instructions, such as those concerned with sound and graphics for example. It allows a limited range of arithmetic expressions composed of multiplication, division, addition and subtraction (including parenthesised subterms). Variable types follow the typical BASIC convention: they can either be strings or numbers (the latter may be integers or floating point numbers).
 
 The interpreter can be invoked as follows:
 
@@ -43,7 +43,11 @@ The program may be re-loaded (i.e. unpickled) from disk using the LOAD command:
 
 TODO
 
-It is possible to terminate the interpreter by issuing the EXIT command:
+The program may be erased from memory using the NEW command:
+
+TODO
+
+Finally, it is possible to terminate the interpreter by issuing the EXIT command:
 
 ```
 > EXIT
@@ -66,6 +70,8 @@ As per usual in old school BASIC, all program statements must be prefixed with a
 ```
 
 Note that all statements, including variable names are case insensitive (in fact, all lower case characters are converted to upper case internally by the lexical analyser).
+
+Arrays - TODO
 
 ### Comments
 
