@@ -48,6 +48,7 @@ It is possible to terminate the interpreter by issuing the EXIT command:
 ```
 > EXIT
 c:\
+```
 
 ## Programming language constructs
 
