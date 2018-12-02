@@ -49,12 +49,14 @@ class BASICToken:
         LOAD            = 31  # LOAD command
         NOTEQUAL        = 32  # '<>'
         LESSEQUAL       = 33  # '<='
-        GREATEREQUAL    = 34  # '>='
+        GREATEQUAL      = 34  # '>='
         UNSIGNEDFLOAT   = 35  # Floating point number
         STRING          = 36  # String values
         TO              = 37  # TO keyword
         NEW             = 38  # NEW command
-        ERROR           = 39  # None of the above
+        EQUAL           = 39  # '='
+        COMMA           = 40  # ','
+        ERROR           = 41  # None of the above
 
         # Displayable names for each token category
         catnames = ['EOF', 'LET', 'LIST', 'PRINT', 'RUN',
@@ -63,14 +65,15 @@ class BASICToken:
         'DIVIDE', 'NEWLINE', 'UNSIGNEDINT', 'NAME', 'EXIT',
         'DIM', 'GREATER', 'LESSER', 'STEP', 'GOTO', 'GOSUB',
         'INPUT', 'REM', 'RETURN', 'SAVE', 'LOAD',
-        'NOTEQUAL', 'LESSEQUAL', 'GREATEREQUAL',
-        'UNSIGNEDFLOAT', 'STRING', 'TO', 'NEW', 'ERROR']
+        'NOTEQUAL', 'LESSEQUAL', 'GREATEQUAL',
+        'UNSIGNEDFLOAT', 'STRING', 'TO', 'NEW', 'EQUAL', 'ERROR',
+        'COMMA']
 
         smalltokens = {'=': ASSIGNOP, '(': LEFTPAREN, ')': RIGHTPAREN,
                        '+': PLUS, '-': MINUS, '*': TIMES, '/': DIVIDE,
                        '\n': NEWLINE, '<': LESSER,
                        '>': GREATER, '<>': NOTEQUAL,
-                       '<=': LESSEQUAL, '>=': GREATEREQUAL}
+                       '<=': LESSEQUAL, '>=': GREATEQUAL, ',': COMMA}
 
         # Dictionary of BASIC reserved words
         keywords = {'LET': LET, 'LIST': LIST, 'PRINT': PRINT,
