@@ -2,7 +2,7 @@
 
 ## Introduction
 
-A simple BASIC interpreter written in Python. It is based heavily on material in the excellent book *Writing Interpreters and Compilers for the Raspberry Pi Using Python* by Anthony J. Dos Reis. However, I have had to adapt the Python interpreter presented in the book, both to work with the BASIC programming language and to produce an interactive command line interface. The interpreter therefore adopts the key techniques for interpreter and compiler writing, the use of a lexical analysis stage followed by a parser which implements the context free grammar representing the target programming language.
+A simple interactive BASIC interpreter written in Python. It is based heavily on material in the excellent book *Writing Interpreters and Compilers for the Raspberry Pi Using Python* by Anthony J. Dos Reis. However, I have had to adapt the Python interpreter presented in the book, both to work with the BASIC programming language and to produce an interactive command line interface. The interpreter therefore adopts the key techniques for interpreter and compiler writing, the use of a lexical analysis stage followed by a parser which implements the context free grammar representing the target programming language.
 
 The interpreter is a homage to the home computers of the early 1980s, and when executed, presents an interactive prompt ('>') typical of such a home computer. Commands to run, list, save and load BASIC programs can be entered at the prompt as well as program statements themselves. 
 
@@ -15,6 +15,16 @@ $ python interpreter.py
 ```
 
 *This project is still a work in progress and under active development*
+
+## To do list
+
+* Distinguish string variables from number variables (dollar suffix)
+* Printing strings and multiple items
+* GOSUB
+* Array types
+* Deletion of individual program statements
+* IF-THEN-ELSE
+* FOR loops
 
 ## Commands
 
@@ -33,19 +43,34 @@ A program is executed using the RUN command:
 10
 ```
 
-A program may be saved to disk using the SAVE command:
+A program may be saved to disk using the SAVE command. Not that the full path must be specified within double quotes:
 
-TODO
+```
+> SAVE "C:\path\to\my\file"
+Program written to file
+>
+```
 
 Saving is achieved by pickling the Python object that represents the BASIC program, i.e. the saved file is *not* a textual copy of the program statements.
 
-The program may be re-loaded (i.e. unpickled) from disk using the LOAD command: 
+The program may be re-loaded (i.e. unpickled) from disk using the LOAD command, again specifying the full path using double quotes:
 
-TODO
+```
+> LOAD "C:\path\to\my\file"
+Program read from file
+>
+```
 
 The program may be erased from memory using the NEW command:
 
-TODO
+```
+> 10 LET I = 10
+> LIST
+10 LET I = 10
+> NEW
+> LIST
+>
+```
 
 Finally, it is possible to terminate the interpreter by issuing the EXIT command:
 
@@ -136,6 +161,27 @@ TBD
 ### Conditional branching
 
 TBD
+
+## Architecture
+
+The interpreter is implemented using the following Python classes:
+
+* basictoken.py - This implements the tokens that are produced by the lexical analyser. The class mostly defines token categories
+and provides a simple token pretty printing method.
+* lexer.py - This class implements the lexical analyser. Lexical analysis is performed on one statement at a time, as each statement is
+entered into the interpreter.
+* basicparser.py - This class implements a parser for individual BASIC statements. Since the parser is oriented to the processing of individual statements, it uses a
+signalling mechanism to its caller indicate when program level actions are required, such as recording the return address
+following a subroutine jump. However, thr parser does maintain a symbol table (implemented as a dictionary) in order to record
+the value of variables as they are assigned.
+* program.py - This class implements an actual basic program, which is represented as a dictionary. Dictionary keys are
+statement line numbers and the corresponding value is the list of tokens that make up the statement with that line number.
+Statements are executed by calling the parser to parse one statement at a time. This class
+maintains a program counter, an indication of which line number should be executed next. The program counter is incremented to the next line
+number in sequence, unless executed a statement has resulted in a branch. The parser indicates this by signalling to the program object that
+calls it.
+* interpreter.py - This class provides the interface to the user. It allows the user to both input program statements and to execute
+the resulting program. It also allows the user to run commands, for example to save and load programs, or to list them.
 
 ## Open issues
 
