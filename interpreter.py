@@ -10,26 +10,12 @@ again.
 
 from basictoken import BASICToken as Token
 from lexer import Lexer
-from basicparser import BASICParser
 from program import Program
 from sys import stderr
 import pickle
 
 
 def main():
-
-    banner = (
-    """
-    PPPP   Y   Y  BBBB    AAA    SSSS    I     CCC
-    P   P   Y Y   B   B  A   A  S        I    C   
-    P   P   Y Y   B   B  A   A  S        I    C
-    PPPP     Y    BBBB   AAAAA  SSSS     I    C
-    P        Y    B   B  A   A      S    I    C
-    P        Y    B   B  A   A      S    I    C
-    P        Y    BBBB   A   A  SSSS     I     CCC
-    """)
-
-    print(banner)
 
     lexer = Lexer()
     program = Program()
@@ -69,8 +55,10 @@ def main():
                 # Save the program to disk
                 elif tokenlist[0].category == Token.SAVE:
                     try:
-                        file = open(tokenlist[1].lexeme, 'w')
-                        pickle.dump(program, file)
+                        with open(tokenlist[1].lexeme, 'wb') as outfile:
+                            pickle.dump(program, outfile)
+                            outfile.close()
+                            print("Program written to file")
 
                     except OSError:
                         raise OSError("Could not write to file")
@@ -78,11 +66,17 @@ def main():
                 # Load the program from disk
                 elif tokenlist[0].category == Token.LOAD:
                     try:
-                        file = open(tokenlist[1].lexeme, 'r')
-                        program = pickle.load(file)
+                        with open(tokenlist[1].lexeme, 'rb') as infile:
+                            program = pickle.load(infile)
+                            infile.close()
+                            print("Program read from file")
 
                     except OSError:
                         raise OSError("Could not read file")
+
+                # Delete the program from memory
+                elif tokenlist[0].category == Token.NEW:
+                    program.delete()
 
                 # Unrecognised input
                 else:
