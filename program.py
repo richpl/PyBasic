@@ -136,9 +136,12 @@ class Program:
         else:
             raise RuntimeError("No statements to execute")
 
+    def delete(self):
+        """Deletes the program by emptying the dictionary"""
+        self.__program = {}
+
     def get_next_line_number(self):
-        """
-        Returns the line number of the next statement
+        """Returns the line number of the next statement
         to be executed
 
         :return: The line number
@@ -148,10 +151,10 @@ class Program:
         return self.__next_stmt
 
     def set_next_line_number(self, line_number):
-        """
-        Sets the line number of the next
+        """Sets the line number of the next
         statement to be executed
 
         :param line_number: The new line number
+
         """
         self.__next_stmt = line_number
