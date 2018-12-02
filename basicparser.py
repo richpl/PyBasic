@@ -8,13 +8,6 @@ statement when supplied.
 from basictoken import BASICToken as Token
 
 
-# TODO
-# Distinguish string variables from number variables (dollar suffix)
-# printing strings and multiple items
-# Compound statements
-# GOTO
-# GOSUB
-
 class BASICParser:
 
     def __init__(self):
