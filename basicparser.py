@@ -116,7 +116,11 @@ class BASICParser:
 
         """
         self.__advance()   # Advance past PRINT token
-        self.__expr()
+        self.__relexpr()
+        while self.__token.category == Token.COMMA:
+            self.__advance()
+            self.__relexpr()
+
         print(self.__operand_stack.pop())
 
     def __letstmt(self):
@@ -148,7 +152,7 @@ class BASICParser:
                                     # the current token
         self.__advance()
         self.__consume(Token.ASSIGNOP)
-        self.__expr()
+        self.__relexpr()
         self.__symbol_table[left] = self.__operand_stack.pop()
 
     def __expr(self):
@@ -277,9 +281,61 @@ class BASICParser:
 
         """
         self.__advance()  # Advance past the IF
-        #self.__relexpr()
+        self.__relexpr()
+
+        # Save result of expression
+        saveval = self.__operand_stack.pop()
+
+        # Process the THEN part and save the jump value
         self.__consume(Token.THEN)
-        # TODO
+        self.__expr()
+        then_jump = self.__operand_stack.pop()
+
+        # Jump if the expression evaluated to True
+        if saveval:
+            return then_jump
+
+        # See if there is an ELSE part
+        if self.__token.category == Token.ELSE:
+            self.__advance()
+            self.__expr()
+            return self.__operand_stack.pop()
+
+        else:
+            # No ELSE action
+            return None
+
+    def __relexpr(self):
+        """Parses a relational expression
+        """
+        self.__expr()
+        if self.__token.category in [Token.LESSER, Token.LESSEQUAL,
+                              Token.GREATER, Token.GREATEQUAL,
+                              Token.EQUAL, Token.NOTEQUAL]:
+            savecat = self.__token.category
+            self.__advance()
+            self.__expr()
+
+            right = self.__operand_stack.pop()
+            left = self.__operand_stack.pop()
+
+            if savecat == Token.EQUAL:
+                self.__operand_stack.append(left == right)  # Push True or False
+
+            elif savecat == Token.NOTEQUAL:
+                self.__operand_stack.append(left != right)  # Push True or False
+
+            elif savecat == Token.LESSER:
+                self.__operand_stack.append(left < right)  # Push True or False
+
+            elif savecat == Token.GREATER:
+                self.__operand_stack.append(left > right)  # Push True or False
+
+            elif savecat == Token.LESSEQUAL:
+                self.__operand_stack.append(left <= right)  # Push True or False
+
+            elif savecat == Token.GREATEQUAL:
+                self.__operand_stack.append(left >= right)  # Push True or False
 
     def __forstmt(self):
         """Parses for loops"""
