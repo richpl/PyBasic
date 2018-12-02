@@ -53,7 +53,8 @@ class BASICToken:
         UNSIGNEDFLOAT   = 35  # Floating point number
         STRING          = 36  # String values
         TO              = 37  # TO keyword
-        ERROR           = 38  # None of the above
+        NEW             = 38  # NEW command
+        ERROR           = 39  # None of the above
 
         # Displayable names for each token category
         catnames = ['EOF', 'LET', 'LIST', 'PRINT', 'RUN',
@@ -63,7 +64,7 @@ class BASICToken:
         'DIM', 'GREATER', 'LESSER', 'STEP', 'GOTO', 'GOSUB',
         'INPUT', 'REM', 'RETURN', 'SAVE', 'LOAD',
         'NOTEQUAL', 'LESSEQUAL', 'GREATEREQUAL',
-        'UNSIGNEDFLOAT', 'STRING', 'TO', 'ERROR']
+        'UNSIGNEDFLOAT', 'STRING', 'TO', 'NEW', 'ERROR']
 
         smalltokens = {'=': ASSIGNOP, '(': LEFTPAREN, ')': RIGHTPAREN,
                        '+': PLUS, '-': MINUS, '*': TIMES, '/': DIVIDE,
@@ -78,7 +79,7 @@ class BASICToken:
                     'EXIT': EXIT, 'DIM': DIM, 'STEP': STEP,
                     'GOTO': GOTO, 'GOSUB': GOSUB,
                     'INPUT': INPUT, 'REM': REM, 'RETURN': RETURN,
-                    'SAVE': SAVE, 'LOAD': LOAD}
+                    'SAVE': SAVE, 'LOAD': LOAD, 'NEW': NEW}
 
         def __init__(self, column, category, lexeme):
 
