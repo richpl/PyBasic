@@ -19,7 +19,8 @@ $ python interpreter.py
 ## To do list
 
 * Distinguish string variables from number variables (dollar suffix)
-* Printing strings and multiple items
+* Printing strings and multiple items broken
+* Use of '=' for assignment and equality testing causing problems
 * GOSUB
 * Array types
 * Deletion of individual program statements
