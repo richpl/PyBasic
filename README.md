@@ -180,12 +180,12 @@ expression evaluates to true, otherwise the following statement is executed.
 
 Allowable relational operators are:
 
-* = (equal, note that in BASIC the same operator is used for assignment)
-* < (less than)
-* > (greater than)
-* <= (less than or equal)
-* >= (greater than or equal)
-* <> (not equal)
+* '=' (equal, note that in BASIC the same operator is used for assignment)
+* '<' (less than)
+* '>' (greater than)
+* '<=' (less than or equal)
+* '>=' (greater than or equal)
+* '<>' (not equal)
 
 ## Architecture
 
