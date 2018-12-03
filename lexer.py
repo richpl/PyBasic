@@ -128,7 +128,7 @@ class Lexer:
             # Process operator symbols
             elif c in Token.smalltokens:
                 save = c
-                c = self.__get_next_char() # c might be '' (end of stmt)
+                c = self.__get_next_char()  # c might be '' (end of stmt)
                 twochar = save + c
 
                 if twochar in Token.smalltokens:
