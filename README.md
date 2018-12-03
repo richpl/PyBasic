@@ -20,11 +20,9 @@ $ python interpreter.py
 
 * Distinguish string variables from number variables (dollar suffix)
 * Printing strings and multiple items broken
-* Use of '=' for assignment and equality testing causing problems
 * GOSUB
 * Array types
 * Deletion of individual program statements
-* IF-THEN-ELSE
 * FOR loops
 
 ## Commands
@@ -161,7 +159,33 @@ TBD
 
 ### Conditional branching
 
-TBD
+Conditional branches are implemented using the IF-THEN-ELSE statement. The expression is evaluated and the appropriate jump
+made depending upon the result of the evaluation.
+
+```
+> 10 REM Print the greatest number
+> 20 LET I = 10
+> 30 LET J = 20
+> 40 IF I > J THEN 50 ELSE 70
+> 50 PRINT I
+> 60 GOTO 80
+> 70 PRINT J
+> 80 REM Finished
+> RUN
+20
+```
+
+Note that the ELSE clause is optional and may be omitted. In this case, the THEN branch is taken if the
+expression evaluates to true, otherwise the following statement is executed.
+
+Allowable relational operators are:
+
+* = (equal, note that in BASIC the same operator is used for assignment)
+* < (less than)
+* > (greater than)
+* <= (less than or equal)
+* >= (greater than or equal)
+* <> (not equal)
 
 ## Architecture
 
