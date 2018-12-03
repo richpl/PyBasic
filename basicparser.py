@@ -309,6 +309,12 @@ class BASICParser:
         """Parses a relational expression
         """
         self.__expr()
+
+        # Since BASIC uses same operator for both
+        # assignment and equality, we need to check for this
+        if self.__token.category == Token.ASSIGNOP:
+            self.__token.category = Token.EQUAL
+
         if self.__token.category in [Token.LESSER, Token.LESSEQUAL,
                               Token.GREATER, Token.GREATEQUAL,
                               Token.EQUAL, Token.NOTEQUAL]:
