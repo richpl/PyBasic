@@ -20,14 +20,16 @@ $ python interpreter.py
 
 * Distinguish string variables from number variables (dollar suffix)
 * Printing strings and multiple items broken
+* Retaining alphabetic case within strings
 * GOSUB
 * Array types
 * Deletion of individual program statements
 * FOR loops
+* User input
 
 ## Commands
 
-Programs may be listed using the LIST command:
+Programs may be listed using the **LIST** command:
 
 ```
 > LIST
@@ -35,14 +37,14 @@ Programs may be listed using the LIST command:
 20 PRINT I
 ```
 
-A program is executed using the RUN command:
+A program is executed using the **RUN** command:
 
 ```
 > RUN
 10
 ```
 
-A program may be saved to disk using the SAVE command. Not that the full path must be specified within double quotes:
+A program may be saved to disk using the **SAVE** command. Not that the full path must be specified within double quotes:
 
 ```
 > SAVE "C:\path\to\my\file"
@@ -52,7 +54,7 @@ Program written to file
 
 Saving is achieved by pickling the Python object that represents the BASIC program, i.e. the saved file is *not* a textual copy of the program statements.
 
-The program may be re-loaded (i.e. unpickled) from disk using the LOAD command, again specifying the full path using double quotes:
+The program may be re-loaded (i.e. unpickled) from disk using the **LOAD** command, again specifying the full path using double quotes:
 
 ```
 > LOAD "C:\path\to\my\file"
@@ -60,7 +62,7 @@ Program read from file
 >
 ```
 
-The program may be erased from memory using the NEW command:
+The program may be erased from memory using the **NEW** command:
 
 ```
 > 10 LET I = 10
@@ -71,7 +73,7 @@ The program may be erased from memory using the NEW command:
 >
 ```
 
-Finally, it is possible to terminate the interpreter by issuing the EXIT command:
+Finally, it is possible to terminate the interpreter by issuing the **EXIT** command:
 
 ```
 > EXIT
@@ -95,11 +97,9 @@ As per usual in old school BASIC, all program statements must be prefixed with a
 
 Note that all statements, including variable names are case insensitive (in fact, all lower case characters are converted to upper case internally by the lexical analyser).
 
-Arrays - TODO
-
 ### Comments
 
-The REM statement is used to indicate a comment, and occupies an entire statement. It has no effect on execution:
+The **REM** statement is used to indicate a comment, and occupies an entire statement. It has no effect on execution:
 
 ```
 > 10 REM THIS IS A COMMENT
@@ -116,7 +116,7 @@ Assignment may be made to number variables (which can contain either integers or
 
 Note that 'I' and 'I$' are considered to be separate variables. Note that string literals must always be enclosed within double quotes (not single quotes). Using no quotes will result in a syntax error.
 
-The LET keyword is also optional:
+The **LET** keyword is also optional:
 
 ```
 > 10 I = 10
@@ -124,7 +124,7 @@ The LET keyword is also optional:
 
 ### Printing to standard output
 
-The PRINT statement is used to print to the screen:
+The **PRINT** statement is used to print to the screen:
 
 ```
 > 10 PRINT 2 * 4
@@ -137,7 +137,7 @@ HELLO
 
 ### Unconditional branching
 
-Like it or loath it, the GOTO statement is an integral part of BASIC, and is used to transfer control to the statement with the specified line number:
+Like it or loath it, the **GOTO** statement is an integral part of BASIC, and is used to transfer control to the statement with the specified line number:
 
 ```
 > 10 PRINT "HELLO"
@@ -159,7 +159,7 @@ TBD
 
 ### Conditional branching
 
-Conditional branches are implemented using the IF-THEN-ELSE statement. The expression is evaluated and the appropriate jump
+Conditional branches are implemented using the **IF-THEN-ELSE** statement. The expression is evaluated and the appropriate jump
 made depending upon the result of the evaluation.
 
 ```
