@@ -17,6 +17,19 @@ import pickle
 
 def main():
 
+    banner = (
+        """
+        PPPP   Y   Y  BBBB    AAA    SSSS    I     CCC
+        P   P   Y Y   B   B  A   A  S        I    C   
+        P   P   Y Y   B   B  A   A  S        I    C
+        PPPP     Y    BBBB   AAAAA  SSSS     I    C
+        P        Y    B   B  A   A      S    I    C
+        P        Y    B   B  A   A      S    I    C
+        P        Y    BBBB   A   A  SSSS     I     CCC
+        """)
+
+    print(banner)
+
     lexer = Lexer()
     program = Program()
 
