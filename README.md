@@ -18,9 +18,6 @@ $ python interpreter.py
 
 ## To do list
 
-* Distinguish string variables from number variables (dollar suffix)
-* Printing strings and multiple items broken
-* Retaining alphabetic case within strings
 * GOSUB
 * Array types
 * Deletion of individual program statements
@@ -95,7 +92,8 @@ As per usual in old school BASIC, all program statements must be prefixed with a
 10 LET I = 200
 ```
 
-Note that all statements, including variable names are case insensitive (in fact, all lower case characters are converted to upper case internally by the lexical analyser).
+Note that all keywords and variable names are case insensitive (and will be converted to upper case internally by the lexical analyser).
+String literals will retain their case however.
 
 ### Comments
 
@@ -105,13 +103,15 @@ The **REM** statement is used to indicate a comment, and occupies an entire stat
 > 10 REM THIS IS A COMMENT
 ```
 
+Note that comments will be automatically normalised to upper case.
+
 ### Assignment
 
 Assignment may be made to number variables (which can contain either integers or floating point numbers) and string variables (string variables are distinguished by their dollar suffix). The interpreter will enforce this division between the two types:
 
 ```
 > 10 LET I = 10
-> 20 LET I$ = "HELLO"
+> 20 LET I$ = "Hello"
 ```
 
 Note that 'I' and 'I$' are considered to be separate variables. Note that string literals must always be enclosed within double quotes (not single quotes). Using no quotes will result in a syntax error.
@@ -130,9 +130,18 @@ The **PRINT** statement is used to print to the screen:
 > 10 PRINT 2 * 4
 > RUN
 8
-> 10 PRINT "HELLO"
+> 10 PRINT "Hello"
 > RUN
-HELLO
+Hello
+```
+
+Multiple items may be printed by providing a comma separated list. The items in the list will be printed immediately after one
+another, so spaces must be inserted if these are required:
+
+```
+> 10 PRINT 345, " hello ", 678
+> RUN
+345 hello 678
 ```
 
 ### Unconditional branching
@@ -140,12 +149,12 @@ HELLO
 Like it or loath it, the **GOTO** statement is an integral part of BASIC, and is used to transfer control to the statement with the specified line number:
 
 ```
-> 10 PRINT "HELLO"
+> 10 PRINT "Hello"
 > 20 GOTO 10
 > RUN
-HELLO
-HELLO
-HELLO
+Hello
+Hello
+Hello
 ...
 ```
 
@@ -163,14 +172,14 @@ Conditional branches are implemented using the **IF-THEN-ELSE** statement. The e
 made depending upon the result of the evaluation.
 
 ```
-> 10 REM Print the greatest number
+> 10 REM PRINT THE GREATEST NUMBER
 > 20 LET I = 10
 > 30 LET J = 20
 > 40 IF I > J THEN 50 ELSE 70
 > 50 PRINT I
 > 60 GOTO 80
 > 70 PRINT J
-> 80 REM Finished
+> 80 REM FINISHED
 > RUN
 20
 ```
