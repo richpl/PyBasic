@@ -117,11 +117,15 @@ class BASICParser:
         """
         self.__advance()   # Advance past PRINT token
         self.__relexpr()
+        print(self.__operand_stack.pop(), end='')
+
         while self.__token.category == Token.COMMA:
             self.__advance()
             self.__relexpr()
+            print(self.__operand_stack.pop(), end='')
 
-        print(self.__operand_stack.pop())
+        # Final newline
+        print()
 
     def __letstmt(self):
         """Parses a LET statement,
@@ -153,7 +157,17 @@ class BASICParser:
         self.__advance()
         self.__consume(Token.ASSIGNOP)
         self.__relexpr()
-        self.__symbol_table[left] = self.__operand_stack.pop()
+
+        # Check that we are using the right variable name format
+        right = self.__operand_stack.pop()
+
+        if left.endswith('$') and not isinstance(right, str):
+            raise SyntaxError('Syntax error: Attempt to assign non string to string variable')
+
+        elif not left.endswith('$') and isinstance(right, str):
+            raise SyntaxError('Syntax error: Attempt to assign string to numeric variable')
+
+        self.__symbol_table[left] = right
 
     def __expr(self):
         """Parses a numerical expression consisting
@@ -226,6 +240,7 @@ class BASICParser:
             self.__advance()
 
         elif self.__token.category == Token.STRING:
+            self.__operand_stack.append(self.__token.lexeme)
             self.__advance()
 
         elif self.__token.category == Token.NAME:
