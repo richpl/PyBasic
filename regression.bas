@@ -1,17 +1,20 @@
-10 REM A BASIC program that can be used for regression testing
-20 REM of all interpreter functionality
-30 LET I = 100
-40 LET J = 200
-50 REM Should print a result of 300
-60 PRINT I + J
-70 REM Should print a result of 20000
-80 PRINT I * J
-90 REM Should print a result of 20100
-100 PRINT 100 + I * J
-110 IF I > J THEN 120 ELSE 150
-120 REM Should print I
-130 PRINT I
-140 GOTO 170
-150 REM should print J
-160 PRINT J
-170 PRINT "Finished"
+10 REM A BASIC PROGRAM THAT CAN BE USED FOR REGRESSION TESTING
+20 REM OF ALL INTERPRETER FUNCTIONALITY
+30 PRINT "*** Testing basic arithmetic functions ***"
+40 LET I = 100
+50 LET J = 200
+60 PRINT "Expecting the sum to be 300:"
+70 PRINT I + J
+80 PRINT "Expecting the product to be 20000:"
+90 PRINT I * J
+100 PRINT "Expecting the sum to be 20100:"
+110 PRINT 100 + I * J
+120 IF I > J THEN 130 ELSE 160
+130 PRINT "Should not print the smaller value of I which is ", I
+140 PRINT I
+150 GOTO 180
+160 PRINT "Should print the larger value of J which is ", J
+170 PRINT J
+180 PRINT "*** Testing subroutine behaviour ***"
+190 PRINT "*** Testing loops ***"
+170 PRINT "*** Finished ***"
