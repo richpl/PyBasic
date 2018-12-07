@@ -24,7 +24,7 @@ def main():
     # the user enters 'EXIT'
     while True:
 
-        stmt = input('> ').upper()
+        stmt = input('> ')
 
         try:
             tokenlist = lexer.tokenize(stmt)
