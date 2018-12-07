@@ -117,6 +117,9 @@ class Lexer:
                     if not (c.isalpha() or c == '$'):
                         break
 
+                # Normalise keywords and names to upper case
+                token.lexeme = token.lexeme.upper()
+
                 # Determine if the lexeme is a variable name or a
                 # reserved word
                 if token.lexeme in Token.keywords:
