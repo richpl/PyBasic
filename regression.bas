@@ -17,4 +17,4 @@
 170 PRINT J
 180 PRINT "*** Testing subroutine behaviour ***"
 190 PRINT "*** Testing loops ***"
-170 PRINT "*** Finished ***"
+200 PRINT "*** Finished ***"
