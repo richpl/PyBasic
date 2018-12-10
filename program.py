@@ -8,7 +8,7 @@ line number.
 
 from basictoken import BASICToken as Token
 from basicparser import BASICParser
-from sys import stderr
+from jumptype import JumpType
 
 
 class Program:
@@ -80,9 +80,8 @@ class Program:
 
         :param line_number: The line number
 
-        :return: The next line number to
-        be executed if the statement has caused
-        a branch, None otherwise
+        :return: The JumpType to indicate to the program
+        how to branch if necessary, None otherwise
 
         """
         if line_number not in self.__program.keys():
@@ -111,17 +110,27 @@ class Program:
             # Run through the program until the
             # has line number has been reached
             while True:
-                new_line_number = self.__execute(self.get_next_line_number())
+                jumptype = self.__execute(self.get_next_line_number())
 
-                if new_line_number:
-                    try:
-                        index = line_numbers.index(new_line_number)
+                if jumptype:
+                    if jumptype.jtype == JumpType.JUMP:
+                        # GOTO or conditional branch encountered
+                        try:
+                            index = line_numbers.index(jumptype.jtarget)
 
-                    except ValueError:
-                        raise RuntimeError("Invalid line number supplied: "
-                                           + str(new_line_number))
+                        except ValueError:
+                            raise RuntimeError("Invalid line number supplied: "
+                                               + str(jumptype.jtarget))
 
-                    self.set_next_line_number(new_line_number)
+                    elif jumptype.jtype == JumpType.GOSUB:
+                        # Subroutine call encountered
+                        j = 10 # Placeholder code
+
+                    elif jumptype.jtype == JumpType.LOOP:
+                        # Loop return encountered
+                        j = 10 # Placeholder code
+
+                    self.set_next_line_number(jumptype.jtarget)
 
                 else:
                     index = index + 1
