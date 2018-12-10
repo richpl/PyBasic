@@ -7,6 +7,8 @@ A simple interactive BASIC interpreter written in Python. It is based heavily on
 The interpreter is a homage to the home computers of the early 1980s, and when executed, presents an interactive prompt ('>') typical of such a home computer. Commands to run, list, save and load BASIC programs can be entered at the prompt as well as program statements themselves. 
 
 The BASIC dialect that has been implemented is slightly simplified, and naturally avoids machine specific instructions, such as those concerned with sound and graphics for example. It allows a limited range of arithmetic expressions composed of multiplication, division, addition and subtraction (including parenthesised subterms). Variable types follow the typical BASIC convention: they can either be strings or numbers (the latter may be integers or floating point numbers).
+Interestingly, since the dialect only contains bounded loops, it is not actually Turing complete (this would require unbounded loops controlled
+by the evaluation of a loop condition).
 
 The interpreter can be invoked as follows:
 
@@ -23,6 +25,7 @@ $ python interpreter.py
 * Deletion of individual program statements
 * FOR loops
 * User input
+* Check PRINT without arguments and with a trailing comma
 
 ## Commands
 
@@ -204,8 +207,11 @@ The interpreter is implemented using the following Python classes:
 and provides a simple token pretty printing method.
 * lexer.py - This class implements the lexical analyser. Lexical analysis is performed on one statement at a time, as each statement is
 entered into the interpreter.
-* basicparser.py - This class implements a parser for individual BASIC statements. Since the parser is oriented to the processing of individual statements, it uses a
-signalling mechanism to its caller indicate when program level actions are required, such as recording the return address
+* basicparser.py - This class implements a parser for individual BASIC statements. This is somewhat inefficient in that statements,
+for example those in a loop, must be re-parsed every time they are executed. However, such a model allows us to develop an
+interactive interpreter where statements can be gradually added to the program between runs.
+Since the parser is oriented to the processing of individual statements, it uses a
+signalling mechanism (using JumpType objects) to its caller indicate when program level actions are required, such as recording the return address
 following a subroutine jump. However, thr parser does maintain a symbol table (implemented as a dictionary) in order to record
 the value of variables as they are assigned.
 * program.py - This class implements an actual basic program, which is represented as a dictionary. Dictionary keys are
@@ -213,9 +219,11 @@ statement line numbers and the corresponding value is the list of tokens that ma
 Statements are executed by calling the parser to parse one statement at a time. This class
 maintains a program counter, an indication of which line number should be executed next. The program counter is incremented to the next line
 number in sequence, unless executed a statement has resulted in a branch. The parser indicates this by signalling to the program object that
-calls it.
+calls it using a JumpType object.
 * interpreter.py - This class provides the interface to the user. It allows the user to both input program statements and to execute
 the resulting program. It also allows the user to run commands, for example to save and load programs, or to list them.
+* jumptype.py - Implements a JumpType object that allows the parser to signal the type of jump defined in the statement
+just parsed (GOTO, conditional branch evaluation, loop return or subroutine call).
 
 ## Open issues
 
