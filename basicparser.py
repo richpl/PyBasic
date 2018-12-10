@@ -6,6 +6,7 @@ statement when supplied.
 """
 
 from basictoken import BASICToken as Token
+from jumptype import JumpType
 
 
 class BASICParser:
@@ -31,9 +32,8 @@ class BASICParser:
            represent a BASIC statement without
            its corresponding line number.
 
-           :return: The next line number to
-           be executed if the statement has caused
-           a branch, None otherwise
+        :return: The JumpType to indicate to the program
+        how to branch if necessary, None otherwise
 
         """
         self.__tokenlist = tokenlist
@@ -68,9 +68,8 @@ class BASICParser:
     def __stmt(self):
         """Parses a program statement
 
-        :return: The next line number to
-        be executed if the statement has caused
-        a branch, None otherwise
+        :return: The JumpType to indicate to the program
+        how to branch if necessary, None otherwise
 
         """
         if self.__token.category in [Token.FOR, Token.IF]:
@@ -82,9 +81,8 @@ class BASICParser:
     def __simplestmt(self):
         """Parses a non-compound program statement
 
-        :return: The next line number to
-        be executed if the statement has caused
-        a branch, None otherwise
+        :return: The JumpType to indicate to the program
+        how to branch if necessary, None otherwise
 
         """
         if self.__token.category == Token.NAME:
@@ -137,13 +135,15 @@ class BASICParser:
     def __gotostmt(self):
         """Parses a GOTO statement
 
-        :return: The target line number
+        :return: A JumpType containing the target line number
         of the GOTO
 
         """
         self.__advance()  # Advance past GOTO token
         self.__expr()
-        return self.__operand_stack.pop()
+
+        # Set up and return the jump type
+        return JumpType(jtarget=self.__operand_stack.pop())
 
     def __assignmentstmt(self):
         """Parses an assignment statement,
@@ -274,9 +274,8 @@ class BASICParser:
         specifically if-then-else and
         for loops
 
-        :return: The next line number to
-        be executed if the statement has caused
-        a branch, None otherwise
+        :return: The JumpType to indicate to the program
+        how to branch if necessary, None otherwise
 
         """
         if self.__token.category == Token.FOR:
@@ -290,9 +289,8 @@ class BASICParser:
         """Parses if-then-else
         statements
 
-        :return: The next line number to
-        be executed if the statement has caused
-        a branch, None otherwise
+        :return: The JumpType to indicate to the program
+        how to branch if necessary, None otherwise
 
         """
         self.__advance()  # Advance past the IF
@@ -308,13 +306,16 @@ class BASICParser:
 
         # Jump if the expression evaluated to True
         if saveval:
-            return then_jump
+            # Set up and return the jump type
+            return JumpType(jtarget=then_jump)
 
         # See if there is an ELSE part
         if self.__token.category == Token.ELSE:
             self.__advance()
             self.__expr()
-            return self.__operand_stack.pop()
+
+            # Set up and return the jump type
+            return JumpType(jtarget=self.__operand_stack.pop())
 
         else:
             # No ELSE action
