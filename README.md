@@ -1,4 +1,4 @@
-# PyBasic - Program like it's 1979!
+# A BASIC Interpreter - Program like it's 1979!
 
 ## Introduction
 
