@@ -100,6 +100,12 @@ class BASICParser:
         elif self.__token.category == Token.GOTO:
             return self.__gotostmt()
 
+        elif self.__token.category == Token.GOSUB:
+            return self.__gosubstmt()
+
+        elif self.__token.category == Token.RETURN:
+            return self.__returnstmt()
+
         else:
             # Ignore comments, but raise an error
             # for anything else
@@ -144,6 +150,29 @@ class BASICParser:
 
         # Set up and return the jump type
         return JumpType(jtarget=self.__operand_stack.pop())
+
+    def __gosubstmt(self):
+        """Parses a GOSUB statement
+
+        :return: A JumpType containing the first line number
+        of the subroutine
+
+        """
+
+        self.__advance()  # Advance past GOSUB token
+        self.__expr()
+
+        # Set up and return the jump type
+        return JumpType(jtarget=self.__operand_stack.pop(),
+                        jtype=JumpType.GOSUB)
+
+    def __returnstmt(self):
+        """Parses a RETURN statement"""
+
+        self.__advance()  # Advance past RETURN token
+
+        # Set up and return the jump type
+        return JumpType(jtype=JumpType.RETURN)
 
     def __assignmentstmt(self):
         """Parses an assignment statement,
