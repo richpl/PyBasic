@@ -17,6 +17,14 @@
 170 GOTO 180
 180 PRINT "Should print the larger value of J which is ", J
 190 PRINT J
-200 PRINT "*** Testing subroutine behaviour ***"
-210 PRINT "*** Testing loops ***"
-220 PRINT "*** Finished ***"
+200 GOTO 220
+210 PRINT "Should not print this line"
+220 PRINT "*** Testing subroutine behaviour ***"
+230 PRINT "Calling subroutine"
+240 GOSUB 500
+250 PRINT "Exited subroutine"
+260 PRINT "*** Testing loops ***"
+270 PRINT "*** Finished ***"
+500 REM A SUBROUTINE TEST
+510 PRINT "Executing the subroutine"
+520 RETURN
