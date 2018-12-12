@@ -59,7 +59,7 @@ class Program:
 
         except TypeError as err:
             raise TypeError("Invalid line number: " +
-                            err)
+                            str(err))
 
     def line_numbers(self):
         """Returns a list of all the
@@ -99,11 +99,18 @@ class Program:
 
     def execute(self):
         """Execute the program"""
+        # Initialise return stack for subroutine returns
+        # and loop returns
+        self.__return_stack = []
+
         line_numbers = self.line_numbers()
 
         if len(line_numbers) > 0:
-            # Obtain the line number of the first
-            # statement
+            # Set up an index into the ordered list
+            # of line numbers that can be used for
+            # sequential statement execution. The index
+            # will be incremented by one, unless modified by
+            # a jump
             index = 0
             self.set_next_line_number(line_numbers[index])
 
@@ -113,24 +120,53 @@ class Program:
                 jumptype = self.__execute(self.get_next_line_number())
 
                 if jumptype:
-                    if jumptype.jtype == JumpType.JUMP:
+                    if jumptype.jtype == JumpType.SIMPLE_JUMP:
                         # GOTO or conditional branch encountered
                         try:
                             index = line_numbers.index(jumptype.jtarget)
 
                         except ValueError:
-                            raise RuntimeError("Invalid line number supplied: "
+                            raise RuntimeError("Invalid line number supplied in GOTO or conditional branch: "
                                                + str(jumptype.jtarget))
+
+                        self.set_next_line_number(jumptype.jtarget)
 
                     elif jumptype.jtype == JumpType.GOSUB:
                         # Subroutine call encountered
-                        j = 10 # Placeholder code
+                        # Add line number of next instruction to
+                        # the return stack
+                        if index + 1 < len(line_numbers):
+                            self.__return_stack.append(line_numbers[index + 1])
 
-                    elif jumptype.jtype == JumpType.LOOP:
+                        else:
+                            raise RuntimeError("GOSUB at end of program, nowhere to return to")
+
+                        # Set the index to be the subroutine start line
+                        # number
+                        try:
+                            index = line_numbers.index(jumptype.jtarget)
+
+                        except ValueError:
+                            raise RuntimeError("Invalid line number supplied in subroutine call: "
+                                               + str(jumptype.jtarget))
+
+                        self.set_next_line_number(jumptype.jtarget)
+
+                    elif jumptype.jtype == JumpType.RETURN:
+                        # Subroutine return encountered
+                        # Pop return address from the stack
+                        try:
+                            index = line_numbers.index(self.__return_stack.pop())
+
+                        except ValueError:
+                            raise RuntimeError("Invalid subroutine return in line " +
+                                               str(self.get_next_line_number()))
+
+                        self.set_next_line_number(line_numbers[index])
+
+                    elif jumptype.jtype == JumpType.LOOP_BEGIN:
                         # Loop return encountered
                         j = 10 # Placeholder code
-
-                    self.set_next_line_number(jumptype.jtarget)
 
                 else:
                     index = index + 1
