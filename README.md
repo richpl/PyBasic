@@ -2,11 +2,22 @@
 
 ## Introduction
 
-A simple interactive BASIC interpreter written in Python. It is based heavily on material in the excellent book *Writing Interpreters and Compilers for the Raspberry Pi Using Python* by Anthony J. Dos Reis. However, I have had to adapt the Python interpreter presented in the book, both to work with the BASIC programming language and to produce an interactive command line interface. The interpreter therefore adopts the key techniques for interpreter and compiler writing, the use of a lexical analysis stage followed by a parser which implements the context free grammar representing the target programming language.
+*This project is still a work in progress and under active development*
 
-The interpreter is a homage to the home computers of the early 1980s, and when executed, presents an interactive prompt ('>') typical of such a home computer. Commands to run, list, save and load BASIC programs can be entered at the prompt as well as program statements themselves. 
+A simple interactive BASIC interpreter written in Python. It is based heavily on material in the excellent book *Writing Interpreters
+and Compilers for the Raspberry Pi Using Python* by Anthony J. Dos Reis. However, I have had to adapt the Python interpreter presented
+in the book, both to work with the BASIC programming language and to produce an interactive command line interface. The interpreter
+therefore adopts the key techniques for interpreter and compiler writing, the use of a lexical analysis stage followed by a parser
+which implements the context free grammar representing the target programming language.
 
-The BASIC dialect that has been implemented is slightly simplified, and naturally avoids machine specific instructions, such as those concerned with sound and graphics for example. It allows a limited range of arithmetic expressions composed of multiplication, division, addition and subtraction (including parenthesised subterms). Variable types follow the typical BASIC convention: they can either be strings or numbers (the latter may be integers or floating point numbers).
+The interpreter is a homage to the home computers of the early 1980s, and when executed, presents an interactive prompt ('>')
+typical of such a home computer. Commands to run, list, save and load BASIC programs can be entered at the prompt as well as
+program statements themselves.
+
+The BASIC dialect that has been implemented is slightly simplified, and naturally avoids machine specific instructions, such as those
+concerned with sound and graphics for example. It allows a limited range of arithmetic expressions composed of multiplication, division,
+addition and subtraction (including parenthesised subterms). Variable types follow the typical BASIC convention: they can either be strings
+or numbers (the latter may be integers or floating point numbers).
 Interestingly, since the dialect only contains bounded loops, it is not actually Turing complete (this would require unbounded loops controlled
 by the evaluation of a loop condition).
 
@@ -16,16 +27,16 @@ The interpreter can be invoked as follows:
 $ python interpreter.py
 ```
 
-*This project is still a work in progress and under active development*
-
 ## To do list
 
-* GOSUB
+* STOP statement to prevent overunning into subroutines
 * Array types
 * Deletion of individual program statements
 * FOR loops
 * User input
 * Check PRINT without arguments and with a trailing comma
+* Bug check GOSUB with wrong jump target
+* Test calling a subroutine from within a subroutine
 
 ## Commands
 
@@ -108,6 +119,10 @@ The **REM** statement is used to indicate a comment, and occupies an entire stat
 
 Note that comments will be automatically normalised to upper case.
 
+### Stopping a program
+
+TBD
+
 ### Assignment
 
 Assignment may be made to number variables (which can contain either integers or floating point numbers) and string variables (string variables are distinguished by their dollar suffix). The interpreter will enforce this division between the two types:
@@ -163,7 +178,23 @@ Hello
 
 ### Subroutine calls
 
-TBD
+The **GOSUB** statement is used to generate a subroutine call. Control is passed back to the program at the
+next statement after the call by a **RETURN** statement at the end of the subroutine:
+
+```
+> 10 GOSUB 100
+> 20 PRINT "This happens after the subroutine"
+> 30 STOP
+> 100 REM HERE IS THE SUBROUTINE
+> 110 PRINT "This happens in the subroutine"
+> RUN
+This happens in the subroutine
+This happens after the subroutine
+>
+```
+
+Note that without use of the **STOP** statement, execution will run past the last statement
+of the main program (line 30) and will re-execute the subroutine again (at line 100).
 
 ### Loops
 
