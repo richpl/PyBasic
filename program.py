@@ -9,6 +9,7 @@ line number.
 from basictoken import BASICToken as Token
 from basicparser import BASICParser
 from jumptype import JumpType
+import pickle
 
 
 class Program:
@@ -22,6 +23,10 @@ class Program:
 
         # Program counter
         self.__next_stmt = 0
+
+        # Initialise return stack for subroutine returns
+        # and loop returns
+        self.__return_stack = []
 
     def list(self):
         """Lists the program"""
@@ -40,6 +45,32 @@ class Program:
                     print(token.lexeme, end=' ')
 
             print(flush=True)
+
+    def save(self, file):
+        """Save the program
+
+        :param file: The name and path of the save file
+
+        """
+        try:
+            with open(file, 'wb') as outfile:
+                pickle.dump(self.__program, outfile)
+                outfile.close()
+
+        except OSError:
+            raise OSError("Could not save to file")
+
+    def load(self, file):
+        """Load the program
+
+        :param file: The name and path of the file to be loaded"""
+        try:
+            with open(file, 'rb') as infile:
+                self.__program = pickle.load(infile)
+                infile.close()
+
+        except OSError:
+            raise OSError("Could not read file")
 
     def add_stmt(self, tokenlist):
         """
@@ -99,9 +130,6 @@ class Program:
 
     def execute(self):
         """Execute the program"""
-        # Initialise return stack for subroutine returns
-        # and loop returns
-        self.__return_stack = []
 
         line_numbers = self.line_numbers()
 
@@ -139,7 +167,7 @@ class Program:
                             self.__return_stack.append(line_numbers[index + 1])
 
                         else:
-                            raise RuntimeError("GOSUB at end of program, nowhere to return to")
+                            raise RuntimeError("GOSUB at end of program, nowhere to return")
 
                         # Set the index to be the subroutine start line
                         # number
@@ -161,6 +189,10 @@ class Program:
                         except ValueError:
                             raise RuntimeError("Invalid subroutine return in line " +
                                                str(self.get_next_line_number()))
+
+                        except IndexError:
+                            raise RuntimeError("RETURN encountered without corresponding " +
+                                               "subroutine call in line " + str(self.get_next_line_number()))
 
                         self.set_next_line_number(line_numbers[index])
 
