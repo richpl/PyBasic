@@ -12,7 +12,6 @@ from basictoken import BASICToken as Token
 from lexer import Lexer
 from program import Program
 from sys import stderr
-import pickle
 
 
 def main():
@@ -67,25 +66,13 @@ def main():
 
                 # Save the program to disk
                 elif tokenlist[0].category == Token.SAVE:
-                    try:
-                        with open(tokenlist[1].lexeme, 'wb') as outfile:
-                            pickle.dump(program, outfile)
-                            outfile.close()
-                            print("Program written to file")
-
-                    except OSError:
-                        raise OSError("Could not write to file")
+                    program.save(tokenlist[1].lexeme)
+                    print("Program written to file")
 
                 # Load the program from disk
                 elif tokenlist[0].category == Token.LOAD:
-                    try:
-                        with open(tokenlist[1].lexeme, 'rb') as infile:
-                            program = pickle.load(infile)
-                            infile.close()
-                            print("Program read from file")
-
-                    except OSError:
-                        raise OSError("Could not read file")
+                    program.load(tokenlist[1].lexeme)
+                    print("Program read from file")
 
                 # Delete the program from memory
                 elif tokenlist[0].category == Token.NEW:
