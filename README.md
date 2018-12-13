@@ -171,6 +171,7 @@ The **PRINT** statement is used to print to the screen:
 > 10 PRINT "Hello"
 > RUN
 Hello
+>
 ```
 
 Multiple items may be printed by providing a comma separated list. The items in the list will be printed immediately after one
@@ -180,6 +181,7 @@ another, so spaces must be inserted if these are required:
 > 10 PRINT 345, " hello ", 678
 > RUN
 345 hello 678
+>
 ```
 
 A blank line may be printed by using the **PRINT** statement without arguments:
