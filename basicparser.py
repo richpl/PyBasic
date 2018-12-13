@@ -120,13 +120,16 @@ class BASICParser:
 
         """
         self.__advance()   # Advance past PRINT token
-        self.__relexpr()
-        print(self.__operand_stack.pop(), end='')
 
-        while self.__token.category == Token.COMMA:
-            self.__advance()
+        # Check there are items to print
+        if not self.__tokenindex >= len(self.__tokenlist):
             self.__relexpr()
             print(self.__operand_stack.pop(), end='')
+
+            while self.__token.category == Token.COMMA:
+                self.__advance()
+                self.__relexpr()
+                print(self.__operand_stack.pop(), end='')
 
         # Final newline
         print()
