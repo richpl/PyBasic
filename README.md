@@ -16,8 +16,24 @@ program statements themselves.
 
 The BASIC dialect that has been implemented is slightly simplified, and naturally avoids machine specific instructions, such as those
 concerned with sound and graphics for example. It allows a limited range of arithmetic expressions composed of multiplication, division,
-addition and subtraction (including parenthesised subterms). Variable types follow the typical BASIC convention: they can either be strings
+addition and subtraction (including the use of parenthesises to change precedence), thus:
+
+```
+> 10 PRINT 2 * 3
+> 20 PRINT 20 / 10
+> 30 PRINT 10 + 10
+> 40 PRINT 10 - 10
+> RUN
+6
+2
+20
+0
+>
+```
+
+Variable types follow the typical BASIC convention: they can either be strings
 or numbers (the latter may be integers or floating point numbers).
+
 Interestingly, since the dialect only contains bounded loops, it is not actually Turing complete (this would require unbounded loops controlled
 by the evaluation of a loop condition).
 
@@ -34,8 +50,6 @@ $ python interpreter.py
 * Deletion of individual program statements
 * FOR loops
 * User input
-* Check PRINT without arguments and with a trailing comma
-* Bug check GOSUB with wrong jump target
 * Test calling a subroutine from within a subroutine
 
 ## Commands
@@ -46,6 +60,7 @@ Programs may be listed using the **LIST** command:
 > LIST
 10 LET I = 10
 20 PRINT I
+>
 ```
 
 A program is executed using the **RUN** command:
@@ -53,6 +68,7 @@ A program is executed using the **RUN** command:
 ```
 > RUN
 10
+>
 ```
 
 A program may be saved to disk using the **SAVE** command. Not that the full path must be specified within double quotes:
@@ -63,7 +79,8 @@ Program written to file
 >
 ```
 
-Saving is achieved by pickling the Python object that represents the BASIC program, i.e. the saved file is *not* a textual copy of the program statements.
+Saving is achieved by pickling the Python object that represents the BASIC program, i.e. the saved file is *not* a textual copy of
+the program statements.
 
 The program may be re-loaded (i.e. unpickled) from disk using the **LOAD** command, again specifying the full path using double quotes:
 
@@ -95,7 +112,9 @@ c:\
 
 ### Statement structure
 
-As per usual in old school BASIC, all program statements must be prefixed with a line number which indicates the order in which the statements may be executed. There is no renumber command to allow all line numbers to be modified. A statement may be modified or replaced by re-entering a statement with the same line number:
+As per usual in old school BASIC, all program statements must be prefixed with a line number which indicates the order in which the
+statements may be executed. There is no renumber command to allow all line numbers to be modified. A statement may be modified or
+replaced by re-entering a statement with the same line number:
 
 ```
 > 10 LET I = 10
@@ -104,6 +123,7 @@ As per usual in old school BASIC, all program statements must be prefixed with a
 > 10 LET I = 200
 > LIST
 10 LET I = 200
+>
 ```
 
 Note that all keywords and variable names are case insensitive (and will be converted to upper case internally by the lexical analyser).
@@ -162,6 +182,19 @@ another, so spaces must be inserted if these are required:
 345 hello 678
 ```
 
+A blank line may be printed by using the **PRINT** statement without arguments:
+
+```
+> 10 PRINT "Here is a blank line:"
+> 20 PRINT
+> 30 PRINT "There it was"
+> RUN
+Here is a blank line:
+
+There it was
+>
+```
+
 ### Unconditional branching
 
 Like it or loath it, the **GOTO** statement is an integral part of BASIC, and is used to transfer control to the statement with the specified line number:
@@ -216,6 +249,7 @@ made depending upon the result of the evaluation.
 > 80 REM FINISHED
 > RUN
 20
+>
 ```
 
 Note that the ELSE clause is optional and may be omitted. In this case, the THEN branch is taken if the
