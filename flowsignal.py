@@ -20,19 +20,21 @@ class FlowSignal:
 
     # Jump categories
     SIMPLE_JUMP        = 0  # Indicates a simple jump as the result
-                     # of a GOTO or conditional branch
+                            # of a GOTO or conditional branch
 
-    GOSUB       = 1  # Indicates a subroutine call where the
-                     # return address must be the following instruction
+    GOSUB              = 1  # Indicates a subroutine call where the
+                            # return address must be the following instruction
 
-    LOOP_BEGIN  = 2  # Indicates the start of a FOR loop
+    LOOP_BEGIN         = 2  # Indicates the start of a FOR loop
 
-    LOOP_END    = 3  # Indicates a NEXT jump back to the start of a loop
+    LOOP_REPEAT        = 3  # Indicates that loop must repeat
 
-    RETURN      = 4  # Indicates a subroutine return where the return
-                     # address is on the return stack
+    LOOP_END           = 4  # Indicates that loop must terminate
 
-    STOP        = 5  # Indicates that execution should cease
+    RETURN             = 5  # Indicates a subroutine return where the return
+                            # address is on the return stack
+
+    STOP               = 6  # Indicates that execution should cease
 
     def __init__(self, ftarget=-1, ftype=SIMPLE_JUMP):
         """Creates a new FlowSignal for a branch. If the jump
@@ -50,15 +52,16 @@ class FlowSignal:
         """
 
         if ftype not in [self.GOSUB, self.SIMPLE_JUMP, self.LOOP_BEGIN,
-                         self.LOOP_END, self.RETURN, self.STOP]:
+                         self.LOOP_REPEAT, self.LOOP_END, self.RETURN, self.STOP]:
             raise TypeError("Invalid flow signal type supplied: " + str(ftype))
 
         if ftarget == -1 and \
            ftype in [self.SIMPLE_JUMP, self.GOSUB]:
-            raise TypeError("Invalid jump target supplied for JUMP type: " + str(ftarget))
+            raise TypeError("Invalid jump target supplied for jump type: " + str(ftarget))
 
         if ftarget != -1 and \
-           ftype in [self.RETURN, self.LOOP_BEGIN, self.LOOP_END, self.STOP]:
+           ftype in [self.RETURN, self.LOOP_BEGIN, self.LOOP_REPEAT,
+                     self.LOOP_END, self.STOP]:
             raise TypeError("Jump target wrongly supplied for flow signal " + str(ftype))
 
         self.ftype = ftype
