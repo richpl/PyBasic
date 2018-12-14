@@ -25,6 +25,7 @@
 250 PRINT "Exited subroutine"
 260 PRINT "*** Testing loops ***"
 270 PRINT "*** Finished ***"
+280 STOP
 500 REM A SUBROUTINE TEST
 510 PRINT "Executing the subroutine"
 520 RETURN
