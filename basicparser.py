@@ -6,7 +6,7 @@ statement when supplied.
 """
 
 from basictoken import BASICToken as Token
-from jumptype import JumpType
+from flowsignal import FlowSignal
 
 
 class BASICParser:
@@ -32,7 +32,7 @@ class BASICParser:
            represent a BASIC statement without
            its corresponding line number.
 
-        :return: The JumpType to indicate to the program
+        :return: The FlowSignal to indicate to the program
         how to branch if necessary, None otherwise
 
         """
@@ -68,7 +68,7 @@ class BASICParser:
     def __stmt(self):
         """Parses a program statement
 
-        :return: The JumpType to indicate to the program
+        :return: The FlowSignal to indicate to the program
         how to branch if necessary, None otherwise
 
         """
@@ -81,7 +81,7 @@ class BASICParser:
     def __simplestmt(self):
         """Parses a non-compound program statement
 
-        :return: The JumpType to indicate to the program
+        :return: The FlowSignal to indicate to the program
         how to branch if necessary, None otherwise
 
         """
@@ -105,6 +105,9 @@ class BASICParser:
 
         elif self.__token.category == Token.RETURN:
             return self.__returnstmt()
+
+        elif self.__token.category == Token.STOP:
+            return self.__stopstmt()
 
         else:
             # Ignore comments, but raise an error
@@ -144,7 +147,7 @@ class BASICParser:
     def __gotostmt(self):
         """Parses a GOTO statement
 
-        :return: A JumpType containing the target line number
+        :return: A FlowSignal containing the target line number
         of the GOTO
 
         """
@@ -152,12 +155,12 @@ class BASICParser:
         self.__expr()
 
         # Set up and return the jump type
-        return JumpType(jtarget=self.__operand_stack.pop())
+        return FlowSignal(ftarget=self.__operand_stack.pop())
 
     def __gosubstmt(self):
         """Parses a GOSUB statement
 
-        :return: A JumpType containing the first line number
+        :return: A FlowSignal containing the first line number
         of the subroutine
 
         """
@@ -166,8 +169,8 @@ class BASICParser:
         self.__expr()
 
         # Set up and return the jump type
-        return JumpType(jtarget=self.__operand_stack.pop(),
-                        jtype=JumpType.GOSUB)
+        return FlowSignal(ftarget=self.__operand_stack.pop(),
+                          ftype=FlowSignal.GOSUB)
 
     def __returnstmt(self):
         """Parses a RETURN statement"""
@@ -175,7 +178,13 @@ class BASICParser:
         self.__advance()  # Advance past RETURN token
 
         # Set up and return the jump type
-        return JumpType(jtype=JumpType.RETURN)
+        return FlowSignal(ftype=FlowSignal.RETURN)
+
+    def __stopstmt(self):
+        """Parses a STOP statement"""
+
+        self.__advance()  # Advance past STOP token
+        return FlowSignal(ftype=FlowSignal.STOP)
 
     def __assignmentstmt(self):
         """Parses an assignment statement,
@@ -306,7 +315,7 @@ class BASICParser:
         specifically if-then-else and
         for loops
 
-        :return: The JumpType to indicate to the program
+        :return: The FlowSignal to indicate to the program
         how to branch if necessary, None otherwise
 
         """
@@ -321,7 +330,7 @@ class BASICParser:
         """Parses if-then-else
         statements
 
-        :return: The JumpType to indicate to the program
+        :return: The FlowSignal to indicate to the program
         how to branch if necessary, None otherwise
 
         """
@@ -339,7 +348,7 @@ class BASICParser:
         # Jump if the expression evaluated to True
         if saveval:
             # Set up and return the jump type
-            return JumpType(jtarget=then_jump)
+            return FlowSignal(ftarget=then_jump)
 
         # See if there is an ELSE part
         if self.__token.category == Token.ELSE:
@@ -347,7 +356,7 @@ class BASICParser:
             self.__expr()
 
             # Set up and return the jump type
-            return JumpType(jtarget=self.__operand_stack.pop())
+            return FlowSignal(ftarget=self.__operand_stack.pop())
 
         else:
             # No ELSE action
