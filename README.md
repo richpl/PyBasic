@@ -47,9 +47,9 @@ $ python interpreter.py
 
 * Array types
 * Deletion of individual program statements
-* FOR loops
+* FOR loops - find way to signal last loop without removing loop variable from symbol table
+* FOR loops - add STEP
 * User input
-* Test calling a subroutine from within a subroutine
 
 ## Commands
 
@@ -152,8 +152,8 @@ one
 ```
 
 A program will automatically cease execution when it reaches the final statement, so a **STOP** may not be necessary. However
-a **STOP** *will* be required if subroutines have been defined at the end of the program, otherwise execution will proceed
-to execute those subroutines without a corresponding subroutine call. This will cause an error when the **RETURN**
+a **STOP** *will* be required if subroutines have been defined at the end of the program, otherwise execution will continue
+through to those subroutines without a corresponding subroutine call. This will cause an error when the **RETURN**
 statement is processed and the interpreter attempts to return control back to the caller.
 
 ### Assignment
@@ -244,9 +244,29 @@ This happens after the subroutine
 Note that without use of the **STOP** statement, execution will run past the last statement
 of the main program (line 30) and will re-execute the subroutine again (at line 100).
 
+Subroutines may be nested, that is, a subroutine call may be made within another subroutine.
+
 ### Loops
 
-TBD
+Bounded loops are achieved through the use of **FOR-NEXT** statements. The loop is controlled by a numeric
+loop variable that is incremented or decremented from a start value to an end value. The loop terminates when
+the loop variable reaches the end value. The loop variable must also be specified in the **NEXT**
+statement at the end of the loop.
+
+```
+> 10 FOR I = 1 TO 3
+> 20 PRINT "hello"
+> 30 NEXT I
+> RUN
+hello
+hello
+hello
+>
+```
+
+Loops may be nested within one another.
+
+**STEP** - TODO
 
 ### Conditional branching
 
