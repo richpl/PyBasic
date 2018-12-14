@@ -200,8 +200,61 @@ class Program:
                         break
 
                     elif flowsignal.ftype == FlowSignal.LOOP_BEGIN:
-                        # Loop return encountered
-                        j = 10 # Placeholder code
+                        # Loop start encountered
+                        # Put loop line number on the stack so
+                        # that it can be returned to when the loop
+                        # repeats
+                        self.__return_stack.append(self.get_next_line_number())
+
+                        # Continue to the next statement in the loop
+                        index = index + 1
+
+                        if index < len(line_numbers):
+                            self.set_next_line_number(line_numbers[index])
+
+                        else:
+                            # Reached end of program
+                            raise RuntimeError("Program terminated within a loop")
+
+                    elif flowsignal.ftype == FlowSignal.LOOP_REPEAT:
+                        # Loop repeat encountered
+                        # Pop the loop start address from the stack
+                        try:
+                            index = line_numbers.index(self.__return_stack.pop())
+
+                        except ValueError:
+                            raise RuntimeError("Invalid loop exit in line " +
+                                               str(self.get_next_line_number()))
+
+                        except IndexError:
+                            raise RuntimeError("NEXT encountered without corresponding " +
+                                               "FOR loop in line " + str(self.get_next_line_number()))
+
+                        self.set_next_line_number(line_numbers[index])
+
+                    elif flowsignal.ftype == FlowSignal.LOOP_END:
+                        # Loop end encountered. Remove loop start from stack
+                        # and continue execution with following statement
+                        try:
+                            self.__return_stack.pop()
+
+                        except ValueError:
+                            raise RuntimeError("Invalid loop exit in line " +
+                                               str(self.get_next_line_number()))
+
+                        except IndexError:
+                            raise RuntimeError("1NEXT encountered without corresponding " +
+                                               "FOR loop in line " + str(self.get_next_line_number()))
+
+                        # Continue to the next statement in the loop
+                        index = index + 1
+
+                        if index < len(line_numbers):
+                            self.set_next_line_number(line_numbers[index])
+
+                        else:
+                            # Reached end of program
+                            break
 
                 else:
                     index = index + 1
