@@ -8,7 +8,7 @@ line number.
 
 from basictoken import BASICToken as Token
 from basicparser import BASICParser
-from jumptype import JumpType
+from flowsignal import FlowSignal
 import pickle
 
 
@@ -111,7 +111,7 @@ class Program:
 
         :param line_number: The line number
 
-        :return: The JumpType to indicate to the program
+        :return: The FlowSignal to indicate to the program
         how to branch if necessary, None otherwise
 
         """
@@ -145,21 +145,21 @@ class Program:
             # Run through the program until the
             # has line number has been reached
             while True:
-                jumptype = self.__execute(self.get_next_line_number())
+                flowsignal = self.__execute(self.get_next_line_number())
 
-                if jumptype:
-                    if jumptype.jtype == JumpType.SIMPLE_JUMP:
+                if flowsignal:
+                    if flowsignal.ftype == FlowSignal.SIMPLE_JUMP:
                         # GOTO or conditional branch encountered
                         try:
-                            index = line_numbers.index(jumptype.jtarget)
+                            index = line_numbers.index(flowsignal.ftarget)
 
                         except ValueError:
                             raise RuntimeError("Invalid line number supplied in GOTO or conditional branch: "
-                                               + str(jumptype.jtarget))
+                                               + str(flowsignal.ftarget))
 
-                        self.set_next_line_number(jumptype.jtarget)
+                        self.set_next_line_number(flowsignal.ftarget)
 
-                    elif jumptype.jtype == JumpType.GOSUB:
+                    elif flowsignal.ftype == FlowSignal.GOSUB:
                         # Subroutine call encountered
                         # Add line number of next instruction to
                         # the return stack
@@ -172,15 +172,15 @@ class Program:
                         # Set the index to be the subroutine start line
                         # number
                         try:
-                            index = line_numbers.index(jumptype.jtarget)
+                            index = line_numbers.index(flowsignal.ftarget)
 
                         except ValueError:
                             raise RuntimeError("Invalid line number supplied in subroutine call: "
-                                               + str(jumptype.jtarget))
+                                               + str(flowsignal.ftarget))
 
-                        self.set_next_line_number(jumptype.jtarget)
+                        self.set_next_line_number(flowsignal.ftarget)
 
-                    elif jumptype.jtype == JumpType.RETURN:
+                    elif flowsignal.ftype == FlowSignal.RETURN:
                         # Subroutine return encountered
                         # Pop return address from the stack
                         try:
@@ -196,7 +196,10 @@ class Program:
 
                         self.set_next_line_number(line_numbers[index])
 
-                    elif jumptype.jtype == JumpType.LOOP_BEGIN:
+                    elif flowsignal.ftype == FlowSignal.STOP:
+                        break
+
+                    elif flowsignal.ftype == FlowSignal.LOOP_BEGIN:
                         # Loop return encountered
                         j = 10 # Placeholder code
 
