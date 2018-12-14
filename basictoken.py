@@ -83,7 +83,7 @@ class BASICToken:
                     'GOTO': GOTO, 'GOSUB': GOSUB,
                     'INPUT': INPUT, 'REM': REM, 'RETURN': RETURN,
                     'SAVE': SAVE, 'LOAD': LOAD, 'NEW': NEW,
-                    'STOP': STOP}
+                    'STOP': STOP, 'TO': TO}
 
         def __init__(self, column, category, lexeme):
 
