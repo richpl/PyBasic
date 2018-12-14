@@ -23,9 +23,18 @@
 230 PRINT "Calling subroutine"
 240 GOSUB 500
 250 PRINT "Exited subroutine"
-260 PRINT "*** Testing loops ***"
-270 PRINT "*** Finished ***"
-280 STOP
+260 PRINT "Now testing nested subroutines"
+270 GOSUB 600
+280 PRINT "*** Testing loops ***"
+290 PRINT "*** Finished ***"
+300 STOP
 500 REM A SUBROUTINE TEST
 510 PRINT "Executing the subroutine"
 520 RETURN
+600 REM AN OUTER SUBROUTINE
+610 GOSUB 700
+620 PRINT "This should be printed second"
+630 RETURN
+700 REM A NESTED SUBROUTINE
+710 PRINT "This should be printed first"
+720 RETURN
