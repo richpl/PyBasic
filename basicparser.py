@@ -72,7 +72,7 @@ class BASICParser:
         how to branch if necessary, None otherwise
 
         """
-        if self.__token.category in [Token.FOR, Token.IF]:
+        if self.__token.category in [Token.FOR, Token.IF, Token.NEXT]:
             return self.__compoundstmt()
 
         else:
@@ -154,7 +154,7 @@ class BASICParser:
         self.__advance()  # Advance past GOTO token
         self.__expr()
 
-        # Set up and return the jump type
+        # Set up and return the flow signal
         return FlowSignal(ftarget=self.__operand_stack.pop())
 
     def __gosubstmt(self):
@@ -168,7 +168,7 @@ class BASICParser:
         self.__advance()  # Advance past GOSUB token
         self.__expr()
 
-        # Set up and return the jump type
+        # Set up and return the flow signal
         return FlowSignal(ftarget=self.__operand_stack.pop(),
                           ftype=FlowSignal.GOSUB)
 
@@ -177,7 +177,7 @@ class BASICParser:
 
         self.__advance()  # Advance past RETURN token
 
-        # Set up and return the jump type
+        # Set up and return the flow signal
         return FlowSignal(ftype=FlowSignal.RETURN)
 
     def __stopstmt(self):
@@ -313,15 +313,17 @@ class BASICParser:
     def __compoundstmt(self):
         """Parses compound statements,
         specifically if-then-else and
-        for loops
+        loops
 
         :return: The FlowSignal to indicate to the program
         how to branch if necessary, None otherwise
 
         """
         if self.__token.category == Token.FOR:
-            self.__forstmt()
-            return None
+            return self.__forstmt()
+
+        elif self.__token.category == Token.NEXT:
+            return self.__nextstmt()
 
         elif self.__token.category == Token.IF:
             return self.__ifstmt()
@@ -334,7 +336,8 @@ class BASICParser:
         how to branch if necessary, None otherwise
 
         """
-        self.__advance()  # Advance past the IF
+
+        self.__advance()  # Advance past IF token
         self.__relexpr()
 
         # Save result of expression
@@ -347,7 +350,7 @@ class BASICParser:
 
         # Jump if the expression evaluated to True
         if saveval:
-            # Set up and return the jump type
+            # Set up and return the flow signal
             return FlowSignal(ftarget=then_jump)
 
         # See if there is an ELSE part
@@ -355,12 +358,93 @@ class BASICParser:
             self.__advance()
             self.__expr()
 
-            # Set up and return the jump type
+            # Set up and return the flow signal
             return FlowSignal(ftarget=self.__operand_stack.pop())
 
         else:
             # No ELSE action
             return None
+
+    def __forstmt(self):
+        """Parses for loops
+
+        :return: The FlowSignal to indicate that
+        a loop start has been processed
+
+        """
+
+        # Set up default loop increment value
+        step = 1
+
+        self.__advance()  # Advance past FOR token
+
+        # Process the loop variable initialisation
+        loop_variable = self.__token.lexeme  # Save lexeme of
+                                             # the current token
+
+        if loop_variable.endswith('$'):
+            raise SyntaxError('Syntax error: Loop variable is not numeric')
+
+        self.__advance()  # Advance past loop variable
+        self.__consume(Token.ASSIGNOP)
+        self.__expr()
+
+        # Check that we are using the right variable name format
+        # for numeric variables
+        start_val = self.__operand_stack.pop()
+
+        # Advance past the 'TO' keyword
+        self.__consume(Token.TO)
+
+        # Process the terminating value
+        self.__expr()
+        end_val = self.__operand_stack.pop()
+        self.__advance()  # Advance past end value
+
+        # If this variable is not in the symbol table,
+        # this is the first time we have entered the loop
+        if loop_variable not in self.__symbol_table:
+            self.__symbol_table[loop_variable] = start_val
+
+        else:
+            # We need to modify the loop variable
+            # according to the STEP value
+            self.__symbol_table[loop_variable] += step
+
+            # If the loop variable has reached the end value,
+            # remove it from the symbol table to signal that
+            # this is the last loop iteration
+            if self.__symbol_table[loop_variable] >= end_val:
+                del self.__symbol_table[loop_variable]  # TODO Fix - loop variable cannot be used in last loop!!
+
+        # Set up and return the flow signal
+        return FlowSignal(ftype=FlowSignal.LOOP_BEGIN)
+
+    def __nextstmt(self):
+        """Processes a NEXT statement that terminates
+        a loop
+
+        :return: A FlowSignal indicating that a loop
+        end has been processed
+
+        """
+
+        self.__advance()  # Advance past NEXT token
+
+        # Obtain the loop variable and check if it
+        # is still within the symbol table
+        loop_variable = self.__token.lexeme
+
+        # If the loop variable is still in the table,
+        # it is still valid and we must repeat the loop
+        if loop_variable in self.__symbol_table:  # TODO Fix - find a better mechanism
+            return FlowSignal(ftype=FlowSignal.LOOP_REPEAT)
+
+        else:
+            # This was the last iteration of the loop
+            # and execution should continue to the next
+            # statement
+            return FlowSignal(ftype=FlowSignal.LOOP_END)
 
     def __relexpr(self):
         """Parses a relational expression
@@ -400,8 +484,7 @@ class BASICParser:
             elif savecat == Token.GREATEQUAL:
                 self.__operand_stack.append(left >= right)  # Push True or False
 
-    def __forstmt(self):
-        """Parses for loops"""
-        # TODO
+
+
 
 
