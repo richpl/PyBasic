@@ -47,8 +47,6 @@ $ python interpreter.py
 
 * Array types
 * Deletion of individual program statements
-* FOR loops - find way to signal last loop without removing loop variable from symbol table
-* FOR loops - add STEP
 * User input
 
 ## Commands
@@ -89,7 +87,21 @@ Program read from file
 >
 ```
 
-The program may be erased from memory using the **NEW** command:
+Individual program statements may be deleted by entering their line number only:
+
+```
+> 10 PRINT "Hello"
+> 20 PRINT "Goodbye"
+> LIST
+10 PRINT "Hello"
+20 PRINT "Goodbye"
+> 10
+> LIST
+20 PRINT "Goodbye"
+>
+```
+
+The program may be erased entirely from memory using the **NEW** command:
 
 ```
 > 10 LET I = 10
@@ -266,7 +278,24 @@ hello
 
 Loops may be nested within one another.
 
-**STEP** - TODO
+The **STEP** statement allows the loop variable to be incremented or decremented by
+a specified amount. For example, to count down from 5 in steps of -1:
+
+```
+> 10 FOR I = 5 TO 1 STEP -1
+> 20 PRINT I
+> 30 NEXT I
+> RUN
+5
+4
+3
+2
+1
+>
+```
+
+Note that the start value, end value and step value need not be integers, but can be floating
+point numbers as well.
 
 ### Conditional branching
 
@@ -299,6 +328,10 @@ Allowable relational operators are:
 * '>=' (greater than or equal)
 * '<>' (not equal)
 
+### User input
+
+TBD
+
 ## Architecture
 
 The interpreter is implemented using the following Python classes:
@@ -327,4 +360,5 @@ the result of a jump defined in the statement just parsed (GOTO, conditional bra
 
 ## Open issues
 
-Currently there is no way to terminate an infinite loop in a BASIC program without terminating the intepreter itself (e.g. using Ctrl-C).
+* Currently there is no way to terminate an infinite loop in a BASIC program without terminating the intepreter itself (e.g. using Ctrl-C).
+
