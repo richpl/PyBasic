@@ -29,11 +29,14 @@ class BASICParser:
         # Set to keep track of extant loop variables
         self. __loop_vars = set()
 
-    def parse(self, tokenlist):
+    def parse(self, tokenlist, line_number):
         """Must be initialised with the list of
-           BTokens to be processed. These tokens
-           represent a BASIC statement without
-           its corresponding line number.
+        BTokens to be processed. These tokens
+        represent a BASIC statement without
+        its corresponding line number.
+
+        :param tokenlist: The tokenized program statement
+        :param line_number: The line number of the statement
 
         :return: The FlowSignal to indicate to the program
         how to branch if necessary, None otherwise
@@ -41,6 +44,9 @@ class BASICParser:
         """
         self.__tokenlist = tokenlist
         self.__tokenindex = 0
+
+        # Remember the line number to aid error reporting
+        self.__line_number = line_number
 
         # Assign the first token
         self.__token = self.__tokenlist[self.__tokenindex]
@@ -66,7 +72,8 @@ class BASICParser:
             self.__advance()
 
         else:
-            raise RuntimeError('Expecting ' + Token.catnames[expected_category])
+            raise RuntimeError('Expecting ' + Token.catnames[expected_category] +
+                               ' in line ' + str(self.__line_number))
 
     def __stmt(self):
         """Parses a program statement
@@ -116,7 +123,8 @@ class BASICParser:
             # Ignore comments, but raise an error
             # for anything else
             if self.__token.category != Token.REM:
-                raise RuntimeError('Expecting program statement')
+                raise RuntimeError('Expecting program statement in line '
+                                   + str(self.__line_number))
 
     def __printstmt(self):
         """Parses a PRINT statement, causing
@@ -206,10 +214,12 @@ class BASICParser:
         right = self.__operand_stack.pop()
 
         if left.endswith('$') and not isinstance(right, str):
-            raise SyntaxError('Syntax error: Attempt to assign non string to string variable')
+            raise SyntaxError('Syntax error: Attempt to assign non string to string variable' +
+                              ' in line ' + str(self.__line_number))
 
         elif not left.endswith('$') and isinstance(right, str):
-            raise SyntaxError('Syntax error: Attempt to assign string to numeric variable')
+            raise SyntaxError('Syntax error: Attempt to assign string to numeric variable' +
+                              ' in line ' + str(self.__line_number))
 
         self.__symbol_table[left] = right
 
@@ -292,7 +302,8 @@ class BASICParser:
                 self.__operand_stack.append(self.__sign*self.__symbol_table[self.__token.lexeme])
 
             else:
-                raise RuntimeError('Name ' + self.__token.lexeme + ' is not defined')
+                raise RuntimeError('Name ' + self.__token.lexeme + ' is not defined' +
+                                   ' in line ' + str(self.__line_number))
 
             self.__advance()
 
@@ -311,7 +322,8 @@ class BASICParser:
             self.__consume(Token.RIGHTPAREN)
 
         else:
-            raise RuntimeError('Expecting factor in numeric expression')
+            raise RuntimeError('Expecting factor in numeric expression' +
+                               ' in line ' + str(self.__line_number))
 
     def __compoundstmt(self):
         """Parses compound statements,
@@ -386,7 +398,8 @@ class BASICParser:
                                              # the current token
 
         if loop_variable.endswith('$'):
-            raise SyntaxError('Syntax error: Loop variable is not numeric')
+            raise SyntaxError('Syntax error: Loop variable is not numeric' +
+                              ' in line ' + str(self.__line_number))
 
         self.__advance()  # Advance past loop variable
         self.__consume(Token.ASSIGNOP)
@@ -415,7 +428,8 @@ class BASICParser:
             # Check whether we are decrementing or
             # incrementing
             if step == 0:
-                raise IndexError("Zero step value supplied for loop")
+                raise IndexError('Zero step value supplied for loop' +
+                                 ' in line ' + str(self.__line_number))
 
             elif step < 0:
                 increment = False
