@@ -26,6 +26,9 @@ class BASICParser:
         self.__tokenlist = []
         self.__tokenindex = None
 
+        # Set to keep track of extant loop variables
+        self. __loop_vars = set()
+
     def parse(self, tokenlist):
         """Must be initialised with the list of
            BTokens to be processed. These tokens
@@ -399,12 +402,32 @@ class BASICParser:
         # Process the terminating value
         self.__expr()
         end_val = self.__operand_stack.pop()
-        self.__advance()  # Advance past end value
 
-        # If this variable is not in the symbol table,
-        # this is the first time we have entered the loop
-        if loop_variable not in self.__symbol_table:
+        # Check if there is a STEP value
+        increment = True
+        if not self.__tokenindex >= len(self.__tokenlist):
+            self.__consume(Token.STEP)
+
+            # Acquire the step value
+            self.__expr()
+            step = self.__operand_stack.pop()
+
+            # Check whether we are decrementing or
+            # incrementing
+            if step == 0:
+                raise IndexError("Zero step value supplied for loop")
+
+            elif step < 0:
+                increment = False
+
+        # If the loop variable is not in the set of extant
+        # variables, this is the first time we have entered the loop
+        if loop_variable not in self.__loop_vars:
             self.__symbol_table[loop_variable] = start_val
+
+            # Also add loop variable to set of extant loop
+            # variables
+            self.__loop_vars.add(loop_variable)
 
         else:
             # We need to modify the loop variable
@@ -412,10 +435,16 @@ class BASICParser:
             self.__symbol_table[loop_variable] += step
 
             # If the loop variable has reached the end value,
-            # remove it from the symbol table to signal that
+            # remove it from the set of extant loop variables to signal that
             # this is the last loop iteration
-            if self.__symbol_table[loop_variable] >= end_val:
-                del self.__symbol_table[loop_variable]  # TODO Fix - loop variable cannot be used in last loop!!
+            if increment:
+                if self.__symbol_table[loop_variable] >= end_val:
+                    self.__loop_vars.remove(loop_variable)
+
+            else:
+                # We are decrementing
+                if self.__symbol_table[loop_variable] <= end_val:
+                    self.__loop_vars.remove(loop_variable)
 
         # Set up and return the flow signal
         return FlowSignal(ftype=FlowSignal.LOOP_BEGIN)
@@ -435,14 +464,18 @@ class BASICParser:
         # is still within the symbol table
         loop_variable = self.__token.lexeme
 
-        # If the loop variable is still in the table,
+        # If the loop variable is still in the set of
+        # extant loop variables,
         # it is still valid and we must repeat the loop
-        if loop_variable in self.__symbol_table:  # TODO Fix - find a better mechanism
+        if loop_variable in self.__loop_vars:
             return FlowSignal(ftype=FlowSignal.LOOP_REPEAT)
 
         else:
-            # This was the last iteration of the loop
-            # and execution should continue to the next
+            # This was the last iteration of the loop,
+            # remove the loop variable from the symbol table
+            del self.__symbol_table[loop_variable]
+
+            # Execution should continue to the next
             # statement
             return FlowSignal(ftype=FlowSignal.LOOP_END)
 
