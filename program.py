@@ -122,7 +122,7 @@ class Program:
         statement = self.__program[line_number]
 
         try:
-            return self.__parser.parse(statement)
+            return self.__parser.parse(statement, line_number)
 
         except RuntimeError as err:
             raise RuntimeError(str(err) + ' in line ' +
@@ -271,7 +271,20 @@ class Program:
 
     def delete(self):
         """Deletes the program by emptying the dictionary"""
-        self.__program = {}
+        self.__program.clear()
+
+    def delete_statement(self, line_number):
+        """Deletes a statement from the program with
+        the specified line number, if it exists
+
+        :param line_number: The line number to be deleted
+
+        """
+        try:
+            del self.__program[line_number]
+
+        except KeyError:
+            raise KeyError("Line number does not exist")
 
     def get_next_line_number(self):
         """Returns the line number of the next statement
