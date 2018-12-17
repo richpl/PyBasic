@@ -26,8 +26,22 @@
 260 PRINT "Now testing nested subroutines"
 270 GOSUB 600
 280 PRINT "*** Testing loops ***"
-290 PRINT "*** Finished ***"
-300 STOP
+290 PRINT "This loop should count to 5 in increments of 1:"
+300 FOR I = 1 TO 5
+310 PRINT I
+320 NEXT I
+330 PRINT "This loop should count back from 10 to 1 in increments of 2:"
+340 FOR I = 10 TO 1 STEP -2
+350 PRINT I
+360 NEXT I
+370 PRINT "These nested loops should print 11, 12, 13, 21, 22, 23:"
+380 FOR I = 1 TO 2
+390 FOR J = 1 TO 3
+400 PRINT I, J
+410 NEXT J
+420 NEXT I
+430 PRINT "*** Finished ***"
+440 STOP
 500 REM A SUBROUTINE TEST
 510 PRINT "Executing the subroutine"
 520 RETURN
