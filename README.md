@@ -46,7 +46,6 @@ $ python interpreter.py
 ## To do list
 
 * Array types
-* Deletion of individual program statements
 * User input
 
 ## Commands
@@ -361,4 +360,5 @@ the result of a jump defined in the statement just parsed (GOTO, conditional bra
 ## Open issues
 
 * Currently there is no way to terminate an infinite loop in a BASIC program without terminating the intepreter itself (e.g. using Ctrl-C).
+* Negative values are printed with a space (e.g. '- 5') in program listings because of tokenization. This does not affect functionality.
 
