@@ -47,6 +47,7 @@ $ python interpreter.py
 
 * Array types
 * User input
+* Erroneous loop cases (e.g. FOR I = 5 TO -3) not dealt with properly
 
 ## Commands
 
@@ -294,7 +295,8 @@ a specified amount. For example, to count down from 5 in steps of -1:
 ```
 
 Note that the start value, end value and step value need not be integers, but can be floating
-point numbers as well.
+point numbers as well. If the loop variable was previously assigned in the program, its value will
+be replaced by the start value, it will not be evaluated.
 
 ### Conditional branching
 
