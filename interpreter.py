@@ -53,8 +53,14 @@ def main():
 
                 # Add a new program statement, beginning
                 # a line number
-                elif tokenlist[0].category == Token.UNSIGNEDINT:
+                elif tokenlist[0].category == Token.UNSIGNEDINT\
+                     and len(tokenlist) > 1:
                     program.add_stmt(tokenlist)
+
+                # Delete a statement from the program
+                elif tokenlist[0].category == Token.UNSIGNEDINT \
+                        and len(tokenlist) == 1:
+                    program.delete_statement(int(tokenlist[0].lexeme))
 
                 # Execute the program
                 elif tokenlist[0].category == Token.RUN:
