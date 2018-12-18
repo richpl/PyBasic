@@ -47,7 +47,6 @@ $ python interpreter.py
 
 * Array types
 * User input
-* Erroneous loop cases (e.g. FOR I = 5 TO -3) not dealt with properly
 
 ## Commands
 
