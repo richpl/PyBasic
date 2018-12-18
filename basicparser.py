@@ -448,17 +448,17 @@ class BASICParser:
             # according to the STEP value
             self.__symbol_table[loop_variable] += step
 
-            # If the loop variable has reached the end value,
-            # remove it from the set of extant loop variables to signal that
-            # this is the last loop iteration
-            if increment:
-                if self.__symbol_table[loop_variable] >= end_val:
-                    self.__loop_vars.remove(loop_variable)
+        # If the loop variable has reached the end value,
+        # remove it from the set of extant loop variables to signal that
+        # this is the last loop iteration
+        if increment:
+            if self.__symbol_table[loop_variable] >= end_val:
+                self.__loop_vars.remove(loop_variable)
 
-            else:
-                # We are decrementing
-                if self.__symbol_table[loop_variable] <= end_val:
-                    self.__loop_vars.remove(loop_variable)
+        else:
+            # We are decrementing
+            if self.__symbol_table[loop_variable] <= end_val:
+                self.__loop_vars.remove(loop_variable)
 
         # Set up and return the flow signal
         return FlowSignal(ftype=FlowSignal.LOOP_BEGIN)
