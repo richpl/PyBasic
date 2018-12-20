@@ -64,7 +64,11 @@ def main():
 
                 # Execute the program
                 elif tokenlist[0].category == Token.RUN:
-                    program.execute()
+                    try:
+                        program.execute()
+
+                    except KeyboardInterrupt:
+                        print("Program terminated")
 
                 # List the program
                 elif tokenlist[0].category == Token.LIST:
