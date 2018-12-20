@@ -30,7 +30,7 @@
 300 FOR I = 1 TO 5
 310 PRINT I
 320 NEXT I
-330 PRINT "This loop should count back from 10 to 1 in increments of 2:"
+330 PRINT "This loop should count back from 10 to 1 in decrements of 2:"
 340 FOR I = 10 TO 1 STEP -2
 350 PRINT I
 360 NEXT I
