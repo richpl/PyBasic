@@ -47,6 +47,7 @@ $ python interpreter.py
 
 * Array types
 * User input
+* Mechanism to allow program termination through Ctrl-C does not work
 
 ## Commands
 
@@ -356,10 +357,13 @@ calls it using a FlowSignal object.
 * interpreter.py - This class provides the interface to the user. It allows the user to both input program statements and to execute
 the resulting program. It also allows the user to run commands, for example to save and load programs, or to list them.
 * flowsignal.py - Implements a FlowSignal object that allows the parser to signal a change in control flow. or example, as
-the result of a jump defined in the statement just parsed (GOTO, conditional branch evaluation, loop return or subroutine call, or STOP).
+the result of a jump defined in the statement just parsed (GOTO, conditional branch evaluation), a loop decision,
+a subroutine call, or program termination. This paradigm of using the parser to simply parse individual statements, the Program
+object to make control flow decisions and to track execution, and a signalling mechanism to allow the parser to signal
+control flow changes to the Program object, is used consistently throughout the implementation.
 
 ## Open issues
 
-* Currently there is no way to terminate an infinite loop in a BASIC program without terminating the intepreter itself (e.g. using Ctrl-C).
+* It is not possible to renumber a program. This would require considerable extra functionality.
 * Negative values are printed with a space (e.g. '- 5') in program listings because of tokenization. This does not affect functionality.
 
