@@ -216,6 +216,24 @@ class Program:
                             # Reached end of program
                             raise RuntimeError("Program terminated within a loop")
 
+                    elif flowsignal.ftype == FlowSignal.LOOP_SKIP:
+                        # Loop variable has reached end value, so ignore
+                        # all statements within loop and move the corresponding
+                        # NEXT statement tp tidy up
+                        index = index + 1
+                        while index < len(line_numbers):
+                            next_line_number = line_numbers[index]
+                            temp_tokenlist = self.__program[next_line_number]
+                            if temp_tokenlist[0].category == Token.NEXT and \
+                               len(temp_tokenlist) > 1:
+                                # Check the loop variable to ensure we have not found
+                                # the NEXT statement for a nested loop
+                                if temp_tokenlist[1].lexeme == flowsignal.ftarget:
+                                    self.set_next_line_number(next_line_number)
+                                    break
+
+                            index = index + 1
+
                     elif flowsignal.ftype == FlowSignal.LOOP_REPEAT:
                         # Loop repeat encountered
                         # Pop the loop start address from the stack
@@ -235,16 +253,6 @@ class Program:
                     elif flowsignal.ftype == FlowSignal.LOOP_END:
                         # Loop end encountered. Remove loop start from stack
                         # and continue execution with following statement
-                        try:
-                            self.__return_stack.pop()
-
-                        except ValueError:
-                            raise RuntimeError("Invalid loop exit in line " +
-                                               str(self.get_next_line_number()))
-
-                        except IndexError:
-                            raise RuntimeError("1NEXT encountered without corresponding " +
-                                               "FOR loop in line " + str(self.get_next_line_number()))
 
                         # Continue to the next statement in the loop
                         index = index + 1
