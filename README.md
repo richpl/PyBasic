@@ -47,7 +47,6 @@ $ python interpreter.py
 
 * Array types
 * User input
-* Mechanism to allow program termination through Ctrl-C does not work
 
 ## Commands
 
@@ -117,6 +116,27 @@ Finally, it is possible to terminate the interpreter by issuing the **EXIT** com
 ```
 > EXIT
 c:\
+```
+
+On occasion, it might be necessary to force termination of a program and return to the
+interpreter, for example, because it is caught in an infinite loop. This can be achieved by
+using Ctrl-C to force the program to stop:
+
+```
+> 10 PRINT "Hello"
+> 20 GOTO 10
+> RUN
+"Hello"
+"Hello"
+"Hello"
+...
+...
+<Ctrl-C>
+Program terminated
+> LIST
+10 PRINT "Hello"
+20 GOTO 10
+>
 ```
 
 ## Programming language constructs
