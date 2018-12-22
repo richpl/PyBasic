@@ -434,6 +434,8 @@ class BASICParser:
             elif step < 0:
                 increment = False
 
+        # Now determine the status of the loop
+
         # If the loop variable is not in the set of extant
         # variables, this is the first time we have entered the loop
         if loop_variable not in self.__loop_vars:
@@ -451,51 +453,37 @@ class BASICParser:
         # If the loop variable has reached the end value,
         # remove it from the set of extant loop variables to signal that
         # this is the last loop iteration
-        if increment:
-            if self.__symbol_table[loop_variable] > end_val:
-                self.__loop_vars.remove(loop_variable)
-                return FlowSignal(ftype=FlowSignal.LOOP_SKIP,
-                                  ftarget = loop_variable)
+        stop = False
+        if increment and self.__symbol_table[loop_variable] > end_val:
+            stop = True
 
+        elif not increment and self.__symbol_table[loop_variable] < end_val:
+            stop = True
+
+        if stop:
+            # Loop must terminate, so remove loop vriable from set of
+            # extant loop variables and remove loop variable from
+            # symbol table
+            self.__loop_vars.remove(loop_variable)
+            del self.__symbol_table[loop_variable]
+            return FlowSignal(ftype=FlowSignal.LOOP_SKIP,
+                              ftarget=loop_variable)
         else:
-            # We are decrementing
-            if self.__symbol_table[loop_variable] < end_val:
-                self.__loop_vars.remove(loop_variable)
-                return FlowSignal(ftype=FlowSignal.LOOP_SKIP,
-                                  ftarget=loop_variable)
-
-        # Set up and return the flow signal
-        return FlowSignal(ftype=FlowSignal.LOOP_BEGIN)
+            # Set up and return the flow signal
+            return FlowSignal(ftype=FlowSignal.LOOP_BEGIN)
 
     def __nextstmt(self):
         """Processes a NEXT statement that terminates
         a loop
 
         :return: A FlowSignal indicating that a loop
-        end has been processed
+        has been processed
 
         """
 
         self.__advance()  # Advance past NEXT token
 
-        # Obtain the loop variable and check if it
-        # is still within the symbol table
-        loop_variable = self.__token.lexeme
-
-        # If the loop variable is still in the set of
-        # extant loop variables,
-        # it is still valid and we must repeat the loop
-        if loop_variable in self.__loop_vars:
-            return FlowSignal(ftype=FlowSignal.LOOP_REPEAT)
-
-        else:
-            # This was the last iteration of the loop,
-            # remove the loop variable from the symbol table
-            del self.__symbol_table[loop_variable]
-
-            # Execution should continue to the next
-            # statement
-            return FlowSignal(ftype=FlowSignal.LOOP_END)
+        return FlowSignal(ftype=FlowSignal.LOOP_REPEAT)
 
     def __relexpr(self):
         """Parses a relational expression
