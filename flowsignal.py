@@ -44,25 +44,19 @@ class FlowSignal:
     # there does not need to be an ftarget value associated with the signal.
     LOOP_REPEAT        = 3
 
-    # An indication from a processed NEXT statement that the loop must
-    # terminate. The next instruction to execute will be the one following
-    # the NEXT statement, so there should be
-    # no ftarget value specified
-    LOOP_END           = 4
-
     # An indication from a FOR statement that the loop should be skipped because
     # loop variable has reached its end value. The ftarget should be
     # the loop variable to look for in the terminating NEXT statement
-    LOOP_SKIP          = 5
+    LOOP_SKIP          = 4
 
     # Indicates a subroutine return has been processed, where the return
     # address is on the return stack. There should be therefore
     # be no ftarget value specified
-    RETURN             = 6
+    RETURN             = 5
 
     # Indicates that execution should cease because a stop statement has
     # been processed. There should be therefore be no ftarget value specified
-    STOP               = 7
+    STOP               = 6
 
     def __init__(self, ftarget=None, ftype=SIMPLE_JUMP):
         """Creates a new FlowSignal for a branch. If the jump
@@ -70,16 +64,16 @@ class FlowSignal:
         either a GOTO or conditional branch and the type is assigned as
         SIMPLE_JUMP. If no jump_target is supplied, then a jump_type must be
         supplied, which must either be GOSUB, RETURN, LOOP_BEGIN,
-        LOOP_END, LOOP_REPEAT, LOOP_SKIP or STOP. In the latter cases
+        LOOP_REPEAT, LOOP_SKIP or STOP. In the latter cases
         the jump target is assigned an arbitrary value of None.
 
         :param ftarget: The associated value
         :param ftype: Either GOSUB, SIMPLE_JUMP, RETURN, LOOP_BEGIN,
-        LOOP_SKIP, LOOP_END or STOP
+        LOOP_SKIP or STOP
         """
 
         if ftype not in [self.GOSUB, self.SIMPLE_JUMP, self.LOOP_BEGIN,
-                         self.LOOP_REPEAT, self.LOOP_END, self.RETURN,
+                         self.LOOP_REPEAT, self.RETURN,
                          self.LOOP_SKIP, self.STOP]:
             raise TypeError("Invalid flow signal type supplied: " + str(ftype))
 
@@ -89,7 +83,7 @@ class FlowSignal:
 
         if ftarget != None and \
            ftype in [self.RETURN, self.LOOP_BEGIN, self.LOOP_REPEAT,
-                     self.LOOP_END, self.STOP]:
+                     self.STOP]:
             raise TypeError("Target wrongly supplied for flow signal " + str(ftype))
 
         self.ftype = ftype
