@@ -145,6 +145,11 @@ class Program:
             # Run through the program until the
             # has line number has been reached
             while True:
+                # Check we have not reached end of program
+                if index >= len(line_numbers):
+                    # Terminate the program
+                    break
+
                 flowsignal = self.__execute(self.get_next_line_number())
 
                 if flowsignal:
@@ -218,19 +223,25 @@ class Program:
 
                     elif flowsignal.ftype == FlowSignal.LOOP_SKIP:
                         # Loop variable has reached end value, so ignore
-                        # all statements within loop and move the corresponding
-                        # NEXT statement tp tidy up
+                        # all statements within loop and move past the corresponding
+                        # NEXT statement
                         index = index + 1
                         while index < len(line_numbers):
                             next_line_number = line_numbers[index]
                             temp_tokenlist = self.__program[next_line_number]
+
                             if temp_tokenlist[0].category == Token.NEXT and \
                                len(temp_tokenlist) > 1:
                                 # Check the loop variable to ensure we have not found
                                 # the NEXT statement for a nested loop
                                 if temp_tokenlist[1].lexeme == flowsignal.ftarget:
-                                    self.set_next_line_number(next_line_number)
-                                    break
+                                    # Move the statement after this NEXT, if there
+                                    # is one
+                                    index = index + 1
+                                    if index < len(line_numbers):
+                                        next_line_number = line_numbers[index]  # Statement after the NEXT
+                                        self.set_next_line_number(next_line_number)
+                                        break
 
                             index = index + 1
 
@@ -249,20 +260,6 @@ class Program:
                                                "FOR loop in line " + str(self.get_next_line_number()))
 
                         self.set_next_line_number(line_numbers[index])
-
-                    elif flowsignal.ftype == FlowSignal.LOOP_END:
-                        # Loop end encountered. Remove loop start from stack
-                        # and continue execution with following statement
-
-                        # Continue to the next statement in the loop
-                        index = index + 1
-
-                        if index < len(line_numbers):
-                            self.set_next_line_number(line_numbers[index])
-
-                        else:
-                            # Reached end of program
-                            break
 
                 else:
                     index = index + 1
