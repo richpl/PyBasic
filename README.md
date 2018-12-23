@@ -34,9 +34,6 @@ addition and subtraction (including the use of parenthesises to change precedenc
 Variable types follow the typical BASIC convention: they can either be strings
 or numbers (the latter may be integers or floating point numbers).
 
-Interestingly, since the dialect only contains bounded loops, it is not actually Turing complete (this would require unbounded loops controlled
-by the evaluation of a loop condition).
-
 The interpreter can be invoked as follows:
 
 ```
@@ -47,6 +44,7 @@ $ python interpreter.py
 
 * Array types
 * User input
+* Selected numeric functions (e.g. square root)
 
 ## Commands
 
