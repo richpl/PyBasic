@@ -145,11 +145,6 @@ class Program:
             # Run through the program until the
             # has line number has been reached
             while True:
-                # Check we have not reached end of program
-                if index >= len(line_numbers):
-                    # Terminate the program
-                    break
-
                 flowsignal = self.__execute(self.get_next_line_number())
 
                 if flowsignal:
@@ -244,6 +239,11 @@ class Program:
                                         break
 
                             index = index + 1
+
+                        # Check we have not reached end of program
+                        if index >= len(line_numbers):
+                            # Terminate the program
+                            break
 
                     elif flowsignal.ftype == FlowSignal.LOOP_REPEAT:
                         # Loop repeat encountered
