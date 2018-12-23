@@ -125,8 +125,7 @@ class Program:
             return self.__parser.parse(statement, line_number)
 
         except RuntimeError as err:
-            raise RuntimeError(str(err) + ' in line ' +
-                               str(line_number))
+            raise RuntimeError(str(err))
 
     def execute(self):
         """Execute the program"""
