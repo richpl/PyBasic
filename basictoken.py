@@ -57,6 +57,7 @@ class BASICToken:
         EQUAL           = 39  # '='
         COMMA           = 40  # ','
         STOP            = 41  # STOP keyword
+        COLON           = 42  # ':'
 
         # Displayable names for each token category
         catnames = ['EOF', 'LET', 'LIST', 'PRINT', 'RUN',
@@ -67,13 +68,14 @@ class BASICToken:
         'INPUT', 'REM', 'RETURN', 'SAVE', 'LOAD',
         'NOTEQUAL', 'LESSEQUAL', 'GREATEQUAL',
         'UNSIGNEDFLOAT', 'STRING', 'TO', 'NEW', 'EQUAL',
-        'COMMA', 'STOP']
+        'COMMA', 'STOP', 'COLON']
 
         smalltokens = {'=': ASSIGNOP, '(': LEFTPAREN, ')': RIGHTPAREN,
                        '+': PLUS, '-': MINUS, '*': TIMES, '/': DIVIDE,
                        '\n': NEWLINE, '<': LESSER,
                        '>': GREATER, '<>': NOTEQUAL,
-                       '<=': LESSEQUAL, '>=': GREATEQUAL, ',': COMMA}
+                       '<=': LESSEQUAL, '>=': GREATEQUAL, ',': COMMA,
+                       ':': COLON}
 
         # Dictionary of BASIC reserved words
         keywords = {'LET': LET, 'LIST': LIST, 'PRINT': PRINT,
