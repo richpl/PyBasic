@@ -119,6 +119,10 @@ class BASICParser:
         elif self.__token.category == Token.STOP:
             return self.__stopstmt()
 
+        elif self.__token.category == Token.INPUT:
+            self.__inputstmt()
+            return None
+
         else:
             # Ignore comments, but raise an error
             # for anything else
@@ -195,6 +199,10 @@ class BASICParser:
         """Parses a STOP statement"""
 
         self.__advance()  # Advance past STOP token
+
+        # Clear the symbol table
+        self.__symbol_table.clear()
+
         return FlowSignal(ftype=FlowSignal.STOP)
 
     def __assignmentstmt(self):
@@ -222,6 +230,64 @@ class BASICParser:
                               ' in line ' + str(self.__line_number))
 
         self.__symbol_table[left] = right
+
+    def __inputstmt(self):
+        """Parses an input statement, extracts the input
+        from the user and places the values into the
+        symbol table
+
+        """
+        self.__advance()  # Advance past INPUT token
+
+        prompt = '? '
+        if self.__token.category == Token.STRING:
+            # Acquire the input prompt
+            self.__relexpr()
+            prompt = self.__operand_stack.pop()
+            self.__consume(Token.COLON)
+
+        # Acquire the comma separated input variables
+        variables = []
+        if not self.__tokenindex >= len(self.__tokenlist):
+            variables.append(self.__token.lexeme)
+            self.__advance()  # Advance past variable
+
+            while self.__token.category == Token.COMMA:
+                self.__advance()  # Advance past comma
+                variables.append(self.__token.lexeme)
+                self.__advance()  # Advance past variable
+
+        # Gather input from the user into the variables
+        inputvals = input(prompt).split(',')  # TODO All values are quoted
+
+        for variable in variables:
+            left = variable
+
+            try:
+                right = inputvals.pop(0)
+
+                if left.endswith('$'):
+                    # Python inserts quotes around input data
+                    if not right.find('"') == 1 and \
+                       not right.find('"', 2):
+                        raise ValueError('Non-string input provided to a string variable ' +
+                                         'in line ' + str(self.__line_number))
+
+                    else:
+                        # Strip the quotes from the stored string
+                        self.__symbol_table[left] = right.replace('"', '')
+
+                elif not left.endswith('$'):
+                    try:
+                        self.__symbol_table[left] = int(right)
+
+                    except ValueError:
+                        raise ValueError('String input provided to a numeric variable ' +
+                                         'in line ' + str(self.__line_number))
+
+            except IndexError:
+                # No more input to process
+                pass
 
     def __expr(self):
         """Parses a numerical expression consisting
