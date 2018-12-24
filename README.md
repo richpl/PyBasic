@@ -43,8 +43,9 @@ $ python interpreter.py
 ## To do list
 
 * Array types
-* User input
 * Selected numeric functions (e.g. square root)
+* Fix bug, space inserted when printing string variables
+* Symbol table is only cleared when STOP statement processed
 
 ## Commands
 
@@ -349,7 +350,48 @@ Allowable relational operators are:
 
 ### User input
 
-TBD
+The **INPUT** statement is used to solicit input from the user:
+
+```
+> 10 INPUT A
+> 20 PRINT A
+> RUN
+? 22
+22
+>
+```
+
+The default input prompt of '? ' may be changed by inserting a prompt string, which must be terminated
+by a colon, thus:
+
+```
+> 10 INPUT "Input a number - ": A
+> 20 PRINT A
+> RUN
+Input a number - 22
+22
+>
+```
+
+Multiple items may be input by supplying a comma separated list. Input variables will be assigned
+to as many input values as supplied at run time. If there are more input values supplied than input
+variables, the excess input values will be ignored. Conversely, if not enough input values are
+supplied, then the excess input variables will not be initialised (and will trigger an error if
+an attempt is made to evaluate those variables later in the program).
+
+Further, numeric input values must be valid numbers (integers or floating point), and must
+be unquoted. String input values must be surrounded by double quotes:
+
+```
+> 10 INPUT "Num, Str, Num: ": A, B$, C
+> 20 PRINT A, B$, C
+> RUN
+Num, Str, Num: 22, " hello ", 33
+22 hello 33
+>
+```
+
+A mismatch between the input value and input variable type will trigger an error.
 
 ## Architecture
 
