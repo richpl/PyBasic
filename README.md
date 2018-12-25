@@ -266,6 +266,7 @@ next statement after the call by a **RETURN** statement at the end of the subrou
 > 30 STOP
 > 100 REM HERE IS THE SUBROUTINE
 > 110 PRINT "This happens in the subroutine"
+> 120 RETURN
 > RUN
 This happens in the subroutine
 This happens after the subroutine
