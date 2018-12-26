@@ -58,6 +58,7 @@ class BASICToken:
         COMMA           = 40  # ','
         STOP            = 41  # STOP keyword
         COLON           = 42  # ':'
+        ON              = 43  # ON keyword
 
         # Displayable names for each token category
         catnames = ['EOF', 'LET', 'LIST', 'PRINT', 'RUN',
@@ -68,7 +69,7 @@ class BASICToken:
         'INPUT', 'REM', 'RETURN', 'SAVE', 'LOAD',
         'NOTEQUAL', 'LESSEQUAL', 'GREATEQUAL',
         'UNSIGNEDFLOAT', 'STRING', 'TO', 'NEW', 'EQUAL',
-        'COMMA', 'STOP', 'COLON']
+        'COMMA', 'STOP', 'COLON', 'ON']
 
         smalltokens = {'=': ASSIGNOP, '(': LEFTPAREN, ')': RIGHTPAREN,
                        '+': PLUS, '-': MINUS, '*': TIMES, '/': DIVIDE,
@@ -85,7 +86,7 @@ class BASICToken:
                     'GOTO': GOTO, 'GOSUB': GOSUB,
                     'INPUT': INPUT, 'REM': REM, 'RETURN': RETURN,
                     'SAVE': SAVE, 'LOAD': LOAD, 'NEW': NEW,
-                    'STOP': STOP, 'TO': TO}
+                    'STOP': STOP, 'TO': TO, 'ON':ON}
 
         def __init__(self, column, category, lexeme):
 
