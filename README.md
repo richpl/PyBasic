@@ -278,6 +278,9 @@ of the main program (line 30) and will re-execute the subroutine again (at line 
 
 Subroutines may be nested, that is, a subroutine call may be made within another subroutine.
 
+A subroutine may also be called using the **ON-GOSUB** statement (see Conditional branching
+below).
+
 ### Loops
 
 Bounded loops are achieved through the use of **FOR-NEXT** statements. The loop is controlled by a numeric
@@ -339,6 +342,23 @@ made depending upon the result of the evaluation.
 
 Note that the ELSE clause is optional and may be omitted. In this case, the THEN branch is taken if the
 expression evaluates to true, otherwise the following statement is executed.
+
+It is also possible to call a subroutine depending upon the result of a relational expression
+using the **ON-GOSUB** statement. If the expression evaluates to true, then the subroutine is
+called, otherwise execution continues to the next statement without making the call:
+
+```
+> 10 LET I = 10
+> 20 LET J = 5
+> 30 ON I > J GOSUB 100
+> 40 STOP
+> 100 REM THE SUBROUTINE
+> 110 PRINT "I is greater thn J"
+> 120 RETURN
+> RUN
+I is greater than J
+>
+```
 
 Allowable relational operators are:
 
