@@ -82,7 +82,8 @@ class BASICParser:
         how to branch if necessary, None otherwise
 
         """
-        if self.__token.category in [Token.FOR, Token.IF, Token.NEXT]:
+        if self.__token.category in [Token.FOR, Token.IF, Token.NEXT,
+                                     Token.ON]:
             return self.__compoundstmt()
 
         else:
@@ -409,6 +410,9 @@ class BASICParser:
         elif self.__token.category == Token.IF:
             return self.__ifstmt()
 
+        elif self.__token.category == Token.ON:
+            return self.__ongosubstmt()
+
     def __ifstmt(self):
         """Parses if-then-else
         statements
@@ -550,6 +554,32 @@ class BASICParser:
         self.__advance()  # Advance past NEXT token
 
         return FlowSignal(ftype=FlowSignal.LOOP_REPEAT)
+
+    def __ongosubstmt(self):
+        """Process the ON-GOSUB statement
+
+        :return: A FlowSignal indicating the subroutine line number
+        if the condition is true, None otherwise
+
+        """
+
+        self.__advance()  # Advance past ON token
+        self.__relexpr()
+
+        # Save result of expression
+        saveval = self.__operand_stack.pop()
+
+        # Process the GOSUB part and save the jump value
+        self.__consume(Token.GOSUB)
+        self.__expr()
+        line_number = self.__operand_stack.pop()
+
+        if saveval:
+            return FlowSignal(ftype=FlowSignal.GOSUB,
+                              ftarget=line_number)
+
+        else:
+            return None
 
     def __relexpr(self):
         """Parses a relational expression
