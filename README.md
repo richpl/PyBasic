@@ -414,14 +414,26 @@ Num, Str, Num: 22, " hello ", 33
 
 A mismatch between the input value and input variable type will trigger an error.
 
+## Example programs
+
+A number of example BASIC programs have been supplied in the repository:
+
+* *REGRESSION.BAS* - A program to exercise the key programming language constructs
+in such a way as to allow verification that the interpreter is functioning correctly.
+
+* *FACTORIAL.BAS* - A simple BASIC program to take a number, *N*, as input from the user and
+calculate the corresponding factorial *N!*.
+
 ## Architecture
 
 The interpreter is implemented using the following Python classes:
 
 * basictoken.py - This implements the tokens that are produced by the lexical analyser. The class mostly defines token categories
 and provides a simple token pretty printing method.
+
 * lexer.py - This class implements the lexical analyser. Lexical analysis is performed on one statement at a time, as each statement is
 entered into the interpreter.
+
 * basicparser.py - This class implements a parser for individual BASIC statements. This is somewhat inefficient in that statements,
 for example those in a loop, must be re-parsed every time they are executed. However, such a model allows us to develop an
 interactive interpreter where statements can be gradually added to the program between runs.
@@ -429,14 +441,17 @@ Since the parser is oriented to the processing of individual statements, it uses
 signalling mechanism (using FlowSignal objects) to its caller indicate when program level actions are required, such as recording the return address
 following a subroutine jump. However, the parser does maintain a symbol table (implemented as a dictionary) in order to record
 the value of variables as they are assigned.
+
 * program.py - This class implements an actual basic program, which is represented as a dictionary. Dictionary keys are
 statement line numbers and the corresponding value is the list of tokens that make up the statement with that line number.
 Statements are executed by calling the parser to parse one statement at a time. This class
 maintains a program counter, an indication of which line number should be executed next. The program counter is incremented to the next line
 number in sequence, unless executed a statement has resulted in a branch. The parser indicates this by signalling to the program object that
 calls it using a FlowSignal object.
+
 * interpreter.py - This class provides the interface to the user. It allows the user to both input program statements and to execute
 the resulting program. It also allows the user to run commands, for example to save and load programs, or to list them.
+
 * flowsignal.py - Implements a FlowSignal object that allows the parser to signal a change in control flow. or example, as
 the result of a jump defined in the statement just parsed (GOTO, conditional branch evaluation), a loop decision,
 a subroutine call, or program termination. This paradigm of using the parser to simply parse individual statements, the Program
