@@ -7,6 +7,7 @@ statement when supplied.
 
 from basictoken import BASICToken as Token
 from flowsignal import FlowSignal
+import math
 
 
 class BASICParser:
@@ -364,7 +365,8 @@ class BASICParser:
             self.__operand_stack.append(self.__token.lexeme)
             self.__advance()
 
-        elif self.__token.category == Token.NAME:
+        elif self.__token.category == Token.NAME and \
+             self.__token.category not in Token.functions:
             if self.__token.lexeme in self.__symbol_table:
                 self.__operand_stack.append(self.__sign*self.__symbol_table[self.__token.lexeme])
 
@@ -387,6 +389,9 @@ class BASICParser:
                 self.__operand_stack[-1] = -self.__operand_stack[-1]
 
             self.__consume(Token.RIGHTPAREN)
+
+        elif self.__token.category in Token.functions:
+            self.__operand_stack.append(self.__evaluate_function(self.__token.category))
 
         else:
             raise RuntimeError('Expecting factor in numeric expression' +
@@ -619,7 +624,50 @@ class BASICParser:
             elif savecat == Token.GREATEQUAL:
                 self.__operand_stack.append(left >= right)  # Push True or False
 
+    def __evaluate_function(self, category):
+        """Evaluate the function in the statement
+        and return the result.
 
+        :return: The result of the function
+
+        """
+
+        self.__advance()  # Advance past function name
+        self.__consume(Token.LEFTPAREN)
+
+        # Process arguments according to function
+        if category == Token.SQRT:
+            self.__expr()
+            value = self.__operand_stack.pop()
+
+            self.__consume(Token.RIGHTPAREN)
+
+            try:
+                return math.sqrt(value)
+
+            except ValueError:
+                raise ValueError("Invalid value supplied to SQRT in line " +
+                                 str(self.__line_number))
+
+        elif category == Token.POW:
+            self.__expr()
+            base = self.__operand_stack.pop()
+
+            self.__consume(Token.COMMA)
+
+            self.__expr()
+            exponent = self.__operand_stack.pop()
+
+            try:
+                return math.pow(base, exponent)
+
+            except ValueError:
+                raise ValueError("Invalid value supplied to POW in line " +
+                                 str(self.__line_number))
+
+        else:
+            raise SyntaxError("Unrecognised function in line " +
+                              str(self.__line_number))
 
 
 
