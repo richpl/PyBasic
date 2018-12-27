@@ -43,7 +43,6 @@ $ python interpreter.py
 ## To do list
 
 * Array types
-* Selected numeric functions (e.g. square root)
 * Fix bug, space inserted when printing string variables
 * Symbol table is only cleared when STOP statement processed
 
@@ -413,6 +412,25 @@ Num, Str, Num: 22, " hello ", 33
 ```
 
 A mismatch between the input value and input variable type will trigger an error.
+
+### Numeric functions
+
+Selected numeric functions are provided, and may be used in any numeric expression. For example,
+the square root function, **SQRT**, can be applied expressions consisting of both literals and variables:
+
+```
+> 10 LET I = 6
+> 20 PRINT SQRT(I - 2)
+> RUN
+2.0
+>
+```
+
+Allowable numeric functions are:
+
+* **SQRT**(x) - Calculates the square root of *x*
+
+* **POW**(x, y) - Calculates *x* to the power *y*
 
 ## Example programs
 
