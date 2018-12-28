@@ -16,7 +16,7 @@ program statements themselves.
 
 The BASIC dialect that has been implemented is slightly simplified, and naturally avoids machine specific instructions, such as those
 concerned with sound and graphics for example. It allows a limited range of arithmetic expressions composed of multiplication, division,
-addition and subtraction (including the use of parenthesises to change precedence), thus:
+addition and subtraction (including the use of parentheses to change precedence), thus:
 
 ```
 > 10 PRINT 2 * 3
