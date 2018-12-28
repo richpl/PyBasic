@@ -444,8 +444,7 @@ calculate the corresponding factorial *N!*.
 
 ## Grammar
 
-**EXIT**
-Exits the interpreter
+**EXIT** - Exits the interpreter
 
 **FOR** *loop-variable* = *start-value* **TO** *end-value* [**STEP** *increment*] - Bounded loop
 
