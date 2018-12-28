@@ -202,9 +202,6 @@ class BASICParser:
 
         self.__advance()  # Advance past STOP token
 
-        # Clear the symbol table
-        self.__symbol_table.clear()
-
         return FlowSignal(ftype=FlowSignal.STOP)
 
     def __assignmentstmt(self):
@@ -277,7 +274,8 @@ class BASICParser:
 
                     else:
                         # Strip the quotes from the stored string
-                        self.__symbol_table[left] = right.replace('"', '')
+                        stripped = right.strip()  # May be space before or after quotes
+                        self.__symbol_table[left] = stripped.replace('"', '')
 
                 elif not left.endswith('$'):
                     try:
