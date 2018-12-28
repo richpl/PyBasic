@@ -447,56 +447,39 @@ calculate the corresponding factorial *N!*.
 **EXIT**
 Exits the interpreter
 
-**FOR** *loop-variable* = *start-value* **TO** *end-value* [**STEP** *increment*]
-Bounded loop
+**FOR** *loop-variable* = *start-value* **TO** *end-value* [**STEP** *increment*] - Bounded loop
 
-**GOSUB** *line-number*
-Subroutine call
+**GOSUB** *line-number* - Subroutine call
 
-**GOTO** *line-number*
-Unconditional branch
+**GOTO** *line-number* - Unconditional branch
 
-**IF** *relational-expression* **THEN** *line-number* [**ELSE** *line-number*]
-Conditional branch
+**IF** *relational-expression* **THEN** *line-number* [**ELSE** *line-number*] - Conditional branch
 
-**INPUT** [*input prompt*:] *variable-list*
-Processes user input presented as a comma separated list
+**INPUT** [*input prompt*:] *variable-list* - Processes user input presented as a comma separated list
 
-[**LET**] *variable* = *numeric-expression* | *string expression*
-Assigns a value to a variable
+[**LET**] *variable* = *numeric-expression* | *string expression* - Assigns a value to a variable
 
-**LIST**
-Lists the program
+**LIST** - Lists the program
 
-**LOAD** *filename*
-Loads a program from disk
+**LOAD** *filename* - Loads a program from disk
 
-**NEW**
-Clears the program from memory
+**NEW** - Clears the program from memory
 
-**NEXT** *loop-variable*
-See **FOR** statement
+**NEXT** *loop-variable* - See **FOR** statement
 
-**ON** *relational-expression* **GOSUB** *line-number*
-Conditional subroutine call
+**ON** *relational-expression* **GOSUB** *line-number* - Conditional subroutine call
 
-**PRINT** *print-list*
-Prints a comma separated list of literals or variables
+**PRINT** *print-list* - Prints a comma separated list of literals or variables
 
-**REM** *comment*
-Internal program documentation
+**REM** *comment* - Internal program documentation
 
-**RETURN**
-Return from a subroutine
+**RETURN** - Return from a subroutine
 
-**RUN**
-Runs the program
+**RUN** - Runs the program
 
-**SAVE** *filename*
-Saves a program to disk
+**SAVE** *filename* - Saves a program to disk
 
-**STOP**   
-Terminates a program
+**STOP** - Terminates a program
 
 ## Architecture
 
