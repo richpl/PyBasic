@@ -31,6 +31,8 @@ addition and subtraction (including the use of parenthesises to change precedenc
 >
 ```
 
+Additional numerical operations may be performed using numeric functions (see below).
+
 Variable types follow the typical BASIC convention: they can either be strings
 or numbers (the latter may be integers or floating point numbers).
 
@@ -439,6 +441,62 @@ in such a way as to allow verification that the interpreter is functioning corre
 
 * *FACTORIAL.BAS* - A simple BASIC program to take a number, *N*, as input from the user and
 calculate the corresponding factorial *N!*.
+
+## Grammar
+
+**EXIT**
+Exits the interpreter
+
+**FOR** *loop-variable* = *start-value* **TO** *end-value* [**STEP** *increment*]
+Bounded loop
+
+**GOSUB** *line-number*
+Subroutine call
+
+**GOTO** *line-number*
+Unconditional branch
+
+**IF** *relational-expression* **THEN** *line-number* [**ELSE** *line-number*]
+Conditional branch
+
+**INPUT** [*input prompt*:] *variable-list*
+Processes user input presented as a comma separated list
+
+[**LET**] *variable* = *numeric-expression* | *string expression*
+Assigns a value to a variable
+
+**LIST**
+Lists the program
+
+**LOAD** *filename*
+Loads a program from disk
+
+**NEW**
+Clears the program from memory
+
+**NEXT** *loop-variable*
+See **FOR** statement
+
+**ON** *relational-expression* **GOSUB** *line-number*
+Conditional subroutine call
+
+**PRINT** *print-list*
+Prints a comma separated list of literals or variables
+
+**REM** *comment*
+Internal program documentation
+
+**RETURN**
+Return from a subroutine
+
+**RUN**
+Runs the program
+
+**SAVE** *filename*
+Saves a program to disk
+
+**STOP**
+Terminates a program
 
 ## Architecture
 
