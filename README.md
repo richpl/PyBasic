@@ -495,7 +495,7 @@ Runs the program
 **SAVE** *filename*
 Saves a program to disk
 
-**STOP**
+**STOP**   
 Terminates a program
 
 ## Architecture
