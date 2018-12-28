@@ -468,6 +468,8 @@ calculate the corresponding factorial *N!*.
 
 **ON** *relational-expression* **GOSUB** *line-number* - Conditional subroutine call
 
+**POW**(*base*, *exponent*) - Calculates the result of raising the base to the power of the exponent
+
 **PRINT** *print-list* - Prints a comma separated list of literals or variables
 
 **REM** *comment* - Internal program documentation
@@ -477,6 +479,8 @@ calculate the corresponding factorial *N!*.
 **RUN** - Runs the program
 
 **SAVE** *filename* - Saves a program to disk
+
+**SQRT**(*numerical-expression*) - Calculates the square root of the expression
 
 **STOP** - Terminates a program
 
