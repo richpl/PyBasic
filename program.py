@@ -19,8 +19,6 @@ class Program:
         # statements, keyed by line number
         self.__program = {}
 
-        self.__parser = BASICParser()
-
         # Program counter
         self.__next_stmt = 0
 
@@ -129,6 +127,8 @@ class Program:
 
     def execute(self):
         """Execute the program"""
+
+        self.__parser = BASICParser()
 
         line_numbers = self.line_numbers()
 
