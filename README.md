@@ -40,12 +40,6 @@ The interpreter can be invoked as follows:
 $ python interpreter.py
 ```
 
-## To do list
-
-* Array types
-* Fix bug, space inserted when printing string variables
-* Symbol table is only cleared when STOP statement processed
-
 ## Commands
 
 Programs may be listed using the **LIST** command:
@@ -203,6 +197,10 @@ The **LET** keyword is also optional:
 > 10 I = 10
 ```
 
+### Arrays
+
+TBD
+
 ### Printing to standard output
 
 The **PRINT** statement is used to print to the screen:
@@ -339,7 +337,7 @@ made depending upon the result of the evaluation.
 >
 ```
 
-Note that the ELSE clause is optional and may be omitted. In this case, the THEN branch is taken if the
+Note that the **ELSE** clause is optional and may be omitted. In this case, the **THEN** branch is taken if the
 expression evaluates to true, otherwise the following statement is executed.
 
 It is also possible to call a subroutine depending upon the result of a relational expression
