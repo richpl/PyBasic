@@ -60,7 +60,8 @@ class BASICToken:
         COLON           = 42  # ':'
         ON              = 43  # ON keyword
         POW             = 44  # Power function
-        SQRT            = 45  # Square root function
+        SQR             = 45  # Square root function
+        ABS             = 46  # Absolute value function
 
         # Displayable names for each token category
         catnames = ['EOF', 'LET', 'LIST', 'PRINT', 'RUN',
@@ -71,7 +72,7 @@ class BASICToken:
         'INPUT', 'REM', 'RETURN', 'SAVE', 'LOAD',
         'NOTEQUAL', 'LESSEQUAL', 'GREATEQUAL',
         'UNSIGNEDFLOAT', 'STRING', 'TO', 'NEW', 'EQUAL',
-        'COMMA', 'STOP', 'COLON', 'ON', 'POW', 'SQRT']
+        'COMMA', 'STOP', 'COLON', 'ON', 'POW', 'SQR', 'ABS']
 
         smalltokens = {'=': ASSIGNOP, '(': LEFTPAREN, ')': RIGHTPAREN,
                        '+': PLUS, '-': MINUS, '*': TIMES, '/': DIVIDE,
@@ -89,10 +90,10 @@ class BASICToken:
                     'INPUT': INPUT, 'REM': REM, 'RETURN': RETURN,
                     'SAVE': SAVE, 'LOAD': LOAD, 'NEW': NEW,
                     'STOP': STOP, 'TO': TO, 'ON':ON, 'POW': POW,
-                    'SQRT': SQRT}
+                    'SQR': SQR, 'ABS': ABS}
 
         # Functions
-        functions = {POW, SQRT}
+        functions = {POW, SQR, ABS}
 
         def __init__(self, column, category, lexeme):
 
