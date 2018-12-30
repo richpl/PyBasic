@@ -634,7 +634,7 @@ class BASICParser:
         self.__consume(Token.LEFTPAREN)
 
         # Process arguments according to function
-        if category == Token.SQRT:
+        if category == Token.SQR:
             self.__expr()
             value = self.__operand_stack.pop()
 
@@ -644,7 +644,7 @@ class BASICParser:
                 return math.sqrt(value)
 
             except ValueError:
-                raise ValueError("Invalid value supplied to SQRT in line " +
+                raise ValueError("Invalid value supplied to SQR in line " +
                                  str(self.__line_number))
 
         elif category == Token.POW:
@@ -661,6 +661,19 @@ class BASICParser:
 
             except ValueError:
                 raise ValueError("Invalid value supplied to POW in line " +
+                                 str(self.__line_number))
+
+        elif category == Token.ABS:
+            self.__expr()
+            value = self.__operand_stack.pop()
+
+            self.__consume(Token.RIGHTPAREN)
+
+            try:
+                return abs(value)
+
+            except ValueError:
+                raise ValueError("Invalid value supplied to ABS in line " +
                                  str(self.__line_number))
 
         else:
