@@ -62,6 +62,7 @@ class BASICToken:
         POW             = 44  # Power function
         SQR             = 45  # Square root function
         ABS             = 46  # Absolute value function
+        DIM             = 47  # DIM keyword
 
         # Displayable names for each token category
         catnames = ['EOF', 'LET', 'LIST', 'PRINT', 'RUN',
@@ -72,7 +73,8 @@ class BASICToken:
         'INPUT', 'REM', 'RETURN', 'SAVE', 'LOAD',
         'NOTEQUAL', 'LESSEQUAL', 'GREATEQUAL',
         'UNSIGNEDFLOAT', 'STRING', 'TO', 'NEW', 'EQUAL',
-        'COMMA', 'STOP', 'COLON', 'ON', 'POW', 'SQR', 'ABS']
+        'COMMA', 'STOP', 'COLON', 'ON', 'POW', 'SQR', 'ABS',
+        'DIM']
 
         smalltokens = {'=': ASSIGNOP, '(': LEFTPAREN, ')': RIGHTPAREN,
                        '+': PLUS, '-': MINUS, '*': TIMES, '/': DIVIDE,
@@ -90,7 +92,7 @@ class BASICToken:
                     'INPUT': INPUT, 'REM': REM, 'RETURN': RETURN,
                     'SAVE': SAVE, 'LOAD': LOAD, 'NEW': NEW,
                     'STOP': STOP, 'TO': TO, 'ON':ON, 'POW': POW,
-                    'SQR': SQR, 'ABS': ABS}
+                    'SQR': SQR, 'ABS': ABS, 'DIM': DIM}
 
         # Functions
         functions = {POW, SQR, ABS}
