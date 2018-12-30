@@ -4,10 +4,10 @@
 
 *This project is still a work in progress and under active development*
 
-A simple interactive BASIC interpreter written in Python. It is based heavily on material in the excellent book *Writing Interpreters
+A simple interactive BASIC interpreter written in Python 3. It is based heavily on material in the excellent book *Writing Interpreters
 and Compilers for the Raspberry Pi Using Python* by Anthony J. Dos Reis. However, I have had to adapt the Python interpreter presented
 in the book, both to work with the BASIC programming language and to produce an interactive command line interface. The interpreter
-therefore adopts the key techniques for interpreter and compiler writing, the use of a lexical analysis stage followed by a parser
+therefore adopts the key techniques for interpreter and compiler writing, the use of a lexical analysis stage followed by a recursive descent parser
 which implements the context free grammar representing the target programming language.
 
 The interpreter is a homage to the home computers of the early 1980s, and when executed, presents an interactive prompt ('>')
@@ -33,8 +33,9 @@ addition and subtraction (including the use of parentheses to change precedence)
 
 Additional numerical operations may be performed using numeric functions (see below).
 
-Variable types follow the typical BASIC convention: they can either be strings
-or numbers (the latter may be integers or floating point numbers).
+There is reasonably comprehensive error checking. Syntax errors will be picked up and reported on by the
+lexical analyser as statements are entered. Runtime errors will highlight the cause and the line number of
+the offending statement.
 
 The interpreter can be invoked as follows:
 
@@ -79,6 +80,9 @@ The program may be re-loaded (i.e. unpickled) from disk using the **LOAD** comma
 Program read from file
 >
 ```
+
+Since loading is performed by unpickling the program object from a file, only BASIC programs *previously saved
+by the interpreter* may be loaded.
 
 Individual program statements may be deleted by entering their line number only:
 
@@ -151,8 +155,22 @@ replaced by re-entering a statement with the same line number:
 >
 ```
 
+### Variables
+
+Variable types follow the typical BASIC convention. *Simple* variables may contain either be strings
+or numbers (the latter may be integers or floating point numbers). *Array* variables may contain arrays
+of either strings or numbers.
+
 Note that all keywords and variable names are case insensitive (and will be converted to upper case internally by the lexical analyser).
-String literals will retain their case however.
+String literals will retain their case however. There is no inherent limit on the length of variable names or string literals,
+this will be dictated by the limitations of Python. The range of numeric values is also dependent upon the underlying
+Python implementation.
+
+Numeric variables have no suffix, whereas string variables are always suffixed by '$'. Note that 'I' and 'I$' are
+considered to be separate variables. Note that string literals must always be enclosed within double quotes (not single quotes).
+Using no quotes will result in a syntax error.
+
+Array variables - TBD
 
 ### Comments
 
@@ -184,24 +202,19 @@ statement is processed and the interpreter attempts to return control back to th
 
 ### Assignment
 
-Assignment may be made to number variables (which can contain either integers or floating point numbers) and string variables (string variables are distinguished by their dollar suffix). The interpreter will enforce this division between the two types:
+Assignment may be made to number variables (which can contain either integers or floating point numbers) and string variables
+(string variables are distinguished by their dollar suffix). The interpreter will enforce this division between the two types:
 
 ```
 > 10 LET I = 10
 > 20 LET I$ = "Hello"
 ```
 
-Note that 'I' and 'I$' are considered to be separate variables. Note that string literals must always be enclosed within double quotes (not single quotes). Using no quotes will result in a syntax error.
-
 The **LET** keyword is also optional:
 
 ```
 > 10 I = 10
 ```
-
-### Arrays
-
-TBD
 
 ### Printing to standard output
 
