@@ -429,11 +429,11 @@ A mismatch between the input value and input variable type will trigger an error
 ### Numeric functions
 
 Selected numeric functions are provided, and may be used in any numeric expression. For example,
-the square root function, **SQRT**, can be applied expressions consisting of both literals and variables:
+the square root function, **SQR**, can be applied expressions consisting of both literals and variables:
 
 ```
 > 10 LET I = 6
-> 20 PRINT SQRT(I - 2)
+> 20 PRINT SQR(I - 2)
 > RUN
 2.0
 >
@@ -441,9 +441,11 @@ the square root function, **SQRT**, can be applied expressions consisting of bot
 
 Allowable numeric functions are:
 
-* **SQRT**(x) - Calculates the square root of *x*
+* **ABS**(x) - Calculates the absolute value of *x*
 
 * **POW**(x, y) - Calculates *x* to the power *y*
+
+* **SQR**(x) - Calculates the square root of *x*
 
 ## Example programs
 
