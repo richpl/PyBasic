@@ -63,6 +63,8 @@ class BASICToken:
         SQR             = 45  # Square root function
         ABS             = 46  # Absolute value function
         DIM             = 47  # DIM keyword
+        RANDOMIZE       = 48  # RANDOMIZE keyword
+        RND             = 49  # RND keyword
 
         # Displayable names for each token category
         catnames = ['EOF', 'LET', 'LIST', 'PRINT', 'RUN',
@@ -74,7 +76,7 @@ class BASICToken:
         'NOTEQUAL', 'LESSEQUAL', 'GREATEQUAL',
         'UNSIGNEDFLOAT', 'STRING', 'TO', 'NEW', 'EQUAL',
         'COMMA', 'STOP', 'COLON', 'ON', 'POW', 'SQR', 'ABS',
-        'DIM']
+        'DIM', 'RANDOMIZE', 'RND']
 
         smalltokens = {'=': ASSIGNOP, '(': LEFTPAREN, ')': RIGHTPAREN,
                        '+': PLUS, '-': MINUS, '*': TIMES, '/': DIVIDE,
@@ -92,10 +94,11 @@ class BASICToken:
                     'INPUT': INPUT, 'REM': REM, 'RETURN': RETURN,
                     'SAVE': SAVE, 'LOAD': LOAD, 'NEW': NEW,
                     'STOP': STOP, 'TO': TO, 'ON':ON, 'POW': POW,
-                    'SQR': SQR, 'ABS': ABS, 'DIM': DIM}
+                    'SQR': SQR, 'ABS': ABS, 'DIM': DIM,
+                    'RANDOMIZE': RANDOMIZE, 'RND': RND}
 
         # Functions
-        functions = {POW, SQR, ABS}
+        functions = {POW, SQR, ABS, RND}
 
         def __init__(self, column, category, lexeme):
 
