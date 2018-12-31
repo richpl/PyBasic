@@ -445,6 +445,17 @@ Allowable numeric functions are:
 
 * **POW**(x, y) - Calculates *x* to the power *y*
 
+* **RND** - Generates a pseudo random number N, where *0 <= N < 1*. Can be
+reset using the RANDOMIZE instruction with an optional seed value: e.g.
+
+```
+> 10 RANDOMIZE 100 
+> 20 PRINT RND
+> RUN
+0.1456692551041303
+>
+```
+
 * **SQR**(x) - Calculates the square root of *x*
 
 ## Example programs
@@ -473,7 +484,7 @@ calculate the corresponding factorial *N!*.
 
 **INPUT** [*input-prompt*:] *variable-list* - Processes user input presented as a comma separated list
 
-[**LET**] *variable* = *numeric-expression* | *string expression* - Assigns a value to a variable
+[**LET**] *variable* = *numeric-expression* | *string-expression* - Assigns a value to a variable
 
 **LIST** - Lists the program
 
@@ -489,9 +500,14 @@ calculate the corresponding factorial *N!*.
 
 **PRINT** *print-list* - Prints a comma separated list of literals or variables
 
+**RANDOMIZE** [*numeric-expression*] - Resets random number generator to an unpredictable sequence. With
+optional seed (*numeric expression*), the sequence is predictable. 
+
 **REM** *comment* - Internal program documentation
 
 **RETURN** - Return from a subroutine
+
+**RND** - Generates a pseudo random number N, where 0 <= N < 1
 
 **RUN** - Runs the program
 
