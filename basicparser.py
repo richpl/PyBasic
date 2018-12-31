@@ -1,15 +1,46 @@
 #! /usr/bin/python
 
-"""Implements a BASIC parser that parses a single
-statement when supplied.
-
-"""
-
 from basictoken import BASICToken as Token
 from flowsignal import FlowSignal
 import math
 
+"""Implements a BASIC array, which may have up
+to three dimensions of fixed size.
 
+"""
+class BASICArray:
+
+    def __init__(self, dimensions):
+        """Initialises te object with the specified
+        number of dimensions. Maximum number of
+        dimensions is three
+
+        :param dimensions: List of array dimensions and their
+        corresponding sizes
+
+        """
+        if len(dimensions) == 0:
+            raise SyntaxError("Zero dimensional array specified")
+
+        if len(dimensions) == 1:
+            self.data = [None for x in range(dimensions[0])]
+            self.dims = 1
+
+        if len(dimensions) == 2:
+            self.data = [[None for x in range(dimensions[1])] for x in range(dimensions[0])]
+            self.dims = 2
+
+        if len(dimensions) > 2:
+            self.data = [[[None for x in range(dimensions[2])] for x in range(dimensions[1])] for x in range(dimensions[0])]
+            self.dims = 3
+
+    def pretty_print(self):
+        print(str(self.data))
+
+"""Implements a BASIC parser that parses a single
+statement when supplied.
+
+"""
 class BASICParser:
 
     def __init__(self):
@@ -125,6 +156,10 @@ class BASICParser:
             self.__inputstmt()
             return None
 
+        elif self.__token.category == Token.DIM:
+            self.__dimstmt()
+            return None
+
         else:
             # Ignore comments, but raise an error
             # for anything else
@@ -229,6 +264,41 @@ class BASICParser:
                               ' in line ' + str(self.__line_number))
 
         self.__symbol_table[left] = right
+
+    def __dimstmt(self):
+        """Parses  DIM statement and creates a symbol
+        table entry for an array of the specified
+        dimensions.
+
+        """
+        self.__advance()  # Advance past DIM keyword
+
+        # Extract the array name, append a suffix so
+        # that we can distinguish from simple variables
+        # in the symbol table
+        name = self.__token.lexeme + '_array'
+        self.__advance()  # Advance past array name
+
+        self.__consume(Token.LEFTPAREN)
+
+        # Extract the dimensions
+        dimensions = []
+        if not self.__tokenindex >= len(self.__tokenlist):
+            self.__expr()
+            dimensions.append(self.__operand_stack.pop())
+
+            while self.__token.category == Token.COMMA:
+                self.__advance()  # Advance past comma
+                self.__expr()
+                dimensions.append(self.__operand_stack.pop())
+
+        self.__consume(Token.RIGHTPAREN)
+
+        if len(dimensions) > 3:
+            raise SyntaxError("Maximum number of array dimensions is three " +
+                              "in line " + str(self.__line_number))
+
+        self.__symbol_table[name] = BASICArray(dimensions)
 
     def __inputstmt(self):
         """Parses an input statement, extracts the input
@@ -679,6 +749,4 @@ class BASICParser:
         else:
             raise SyntaxError("Unrecognised function in line " +
                               str(self.__line_number))
-
-
 
