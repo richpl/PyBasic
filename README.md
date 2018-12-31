@@ -459,6 +459,8 @@ calculate the corresponding factorial *N!*.
 
 ## Grammar
 
+**ABS**(*numerical-expression*) - Calculates the absolute value of *x*
+
 **EXIT** - Exits the interpreter
 
 **FOR** *loop-variable* = *start-value* **TO** *end-value* [**STEP** *increment*] - Bounded loop
@@ -469,7 +471,7 @@ calculate the corresponding factorial *N!*.
 
 **IF** *relational-expression* **THEN** *line-number* [**ELSE** *line-number*] - Conditional branch
 
-**INPUT** [*input prompt*:] *variable-list* - Processes user input presented as a comma separated list
+**INPUT** [*input-prompt*:] *variable-list* - Processes user input presented as a comma separated list
 
 [**LET**] *variable* = *numeric-expression* | *string expression* - Assigns a value to a variable
 
@@ -495,7 +497,7 @@ calculate the corresponding factorial *N!*.
 
 **SAVE** *filename* - Saves a program to disk
 
-**SQRT**(*numerical-expression*) - Calculates the square root of the expression
+**SQR**(*numerical-expression*) - Calculates the square root of the expression
 
 **STOP** - Terminates a program
 
