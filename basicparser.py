@@ -3,6 +3,7 @@
 from basictoken import BASICToken as Token
 from flowsignal import FlowSignal
 import math
+import random
 
 """Implements a BASIC array, which may have up
 to three dimensions of fixed size.
@@ -158,6 +159,10 @@ class BASICParser:
 
         elif self.__token.category == Token.DIM:
             self.__dimstmt()
+            return None
+
+        elif self.__token.category == Token.RANDOMIZE:
+            self.__randomizestmt()
             return None
 
         else:
@@ -327,7 +332,7 @@ class BASICParser:
                 self.__advance()  # Advance past variable
 
         # Gather input from the user into the variables
-        inputvals = input(prompt).split(',')  # TODO All values are quoted
+        inputvals = input(prompt).split(',')
 
         for variable in variables:
             left = variable
@@ -701,10 +706,11 @@ class BASICParser:
         """
 
         self.__advance()  # Advance past function name
-        self.__consume(Token.LEFTPAREN)
 
         # Process arguments according to function
         if category == Token.SQR:
+            self.__consume(Token.LEFTPAREN)
+
             self.__expr()
             value = self.__operand_stack.pop()
 
@@ -718,6 +724,8 @@ class BASICParser:
                                  str(self.__line_number))
 
         elif category == Token.POW:
+            self.__consume(Token.LEFTPAREN)
+
             self.__expr()
             base = self.__operand_stack.pop()
 
@@ -734,6 +742,8 @@ class BASICParser:
                                  str(self.__line_number))
 
         elif category == Token.ABS:
+            self.__consume(Token.LEFTPAREN)
+
             self.__expr()
             value = self.__operand_stack.pop()
 
@@ -746,7 +756,27 @@ class BASICParser:
                 raise ValueError("Invalid value supplied to ABS in line " +
                                  str(self.__line_number))
 
+        elif category == Token.RND:
+            return random.random()
+
         else:
             raise SyntaxError("Unrecognised function in line " +
                               str(self.__line_number))
+
+
+    def __randomizestmt(self):
+        """Implements a function to seed the random
+        number generator
+
+        """
+        self.__advance()  # Advance past RANDOMIZE token
+
+        if not self.__tokenindex >= len(self.__tokenlist):
+            self.__expr()  # Process the seed
+            seed = self.__operand_stack.pop()
+
+            random.seed(seed)
+
+        else:
+            random.seed()
 
