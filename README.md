@@ -468,6 +468,8 @@ in such a way as to allow verification that the interpreter is functioning corre
 * *FACTORIAL.BAS* - A simple BASIC program to take a number, *N*, as input from the user and
 calculate the corresponding factorial *N!*.
 
+* *ROCK_SCISSORS_PAPER.BAS* - A BASIC implementation of the rock-paper-scissors game.
+
 ## Grammar
 
 **ABS**(*numerical-expression*) - Calculates the absolute value of *x*
