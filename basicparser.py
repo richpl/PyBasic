@@ -254,21 +254,28 @@ class BASICParser:
         left = self.__token.lexeme  # Save lexeme of
                                     # the current token
         self.__advance()
-        self.__consume(Token.ASSIGNOP)
-        self.__relexpr()
 
-        # Check that we are using the right variable name format
-        right = self.__operand_stack.pop()
+        if self.__token.category == Token.LEFTPAREN:
+            # We are assiging to an array
+            self.__arrayassignmentstmt(left)
 
-        if left.endswith('$') and not isinstance(right, str):
-            raise SyntaxError('Syntax error: Attempt to assign non string to string variable' +
-                              ' in line ' + str(self.__line_number))
+        else:
+            # We are assigning to a simple variable
+            self.__consume(Token.ASSIGNOP)
+            self.__relexpr()
 
-        elif not left.endswith('$') and isinstance(right, str):
-            raise SyntaxError('Syntax error: Attempt to assign string to numeric variable' +
-                              ' in line ' + str(self.__line_number))
+            # Check that we are using the right variable name format
+            right = self.__operand_stack.pop()
 
-        self.__symbol_table[left] = right
+            if left.endswith('$') and not isinstance(right, str):
+                raise SyntaxError('Syntax error: Attempt to assign non string to string variable' +
+                                  ' in line ' + str(self.__line_number))
+
+            elif not left.endswith('$') and isinstance(right, str):
+                raise SyntaxError('Syntax error: Attempt to assign string to numeric variable' +
+                                  ' in line ' + str(self.__line_number))
+
+            self.__symbol_table[left] = right
 
     def __dimstmt(self):
         """Parses  DIM statement and creates a symbol
@@ -304,6 +311,68 @@ class BASICParser:
                               "in line " + str(self.__line_number))
 
         self.__symbol_table[name] = BASICArray(dimensions)
+
+    def __arrayassignmentstmt(self, name):
+        """Parses an assignment to an array variable
+
+        :param name: Array name
+
+        """
+        self.__consume(Token.LEFTPAREN)
+
+        # Capture the index variables
+        # Extract the dimensions
+        indexvars = []
+        if not self.__tokenindex >= len(self.__tokenlist):
+            self.__expr()
+            indexvars.append(self.__operand_stack.pop())
+
+            while self.__token.category == Token.COMMA:
+                self.__advance()  # Advance past comma
+                self.__expr()
+                indexvars.append(self.__operand_stack.pop())
+
+        try:
+            BASICarray = self.__symbol_table[name + '_array']
+
+        except KeyError:
+            raise KeyError('Array could not be found in line ' +
+                           str(self.__line_number))
+
+        if BASICarray.dims != len(indexvars):
+            raise IndexError('Incorrect number of indices applied to array ' +
+                             'in line ' + str(self.__line_number))
+
+        self.__consume(Token.RIGHTPAREN)
+        self.__consume(Token.ASSIGNOP)
+
+        self.__relexpr()
+
+        # Check that we are using the right variable name format
+        right = self.__operand_stack.pop()
+
+        if name.endswith('$') and not isinstance(right, str):
+            raise SyntaxError('Attempt to assign non string to string array' +
+                              ' in line ' + str(self.__line_number))
+
+        elif not name.endswith('$') and isinstance(right, str):
+            raise SyntaxError('Attempt to assign string to numeric array' +
+                              ' in line ' + str(self.__line_number))
+
+        # Assign to the specified array index
+        try:
+            if len(indexvars) == 1:
+                BASICarray.data[indexvars[0]] = right
+
+            elif len(indexvars) == 2:
+                BASICarray.data[indexvars[0]][indexvars[1]] = right
+
+            elif len(indexvars) == 2:
+                BASICarray.data[indexvars[0]][indexvars[1]][indexvars[2]] = right
+
+        except IndexError:
+            raise IndexError('Array index out of range in line ' +
+                             str(self.__line_number))
 
     def __inputstmt(self):
         """Parses an input statement, extracts the input
