@@ -170,7 +170,29 @@ Numeric variables have no suffix, whereas string variables are always suffixed b
 considered to be separate variables. Note that string literals must always be enclosed within double quotes (not single quotes).
 Using no quotes will result in a syntax error.
 
-Array variables - TBD
+Array variables are defined using the **DIM** statement, which explicitly lists how
+many dimensions the array has, and the sizes of those dimensions:
+
+```
+> REM DEFINE A THREE DIMENSIONAL NUMERIC ARRAY
+> 10 DIM A(3, 3, 3)
+```
+
+Note that the index of each dimension always starts at *zero*, and arrays may have a maximum of
+three dimensions.
+
+Like simple variables, array variables may contain either numeric values only, or 
+string values only. A string array has its name suffixed by a '$' character, while a numeric array does not carry
+a suffix. An attempt to assign a string value to a numeric array or vice versa will generate an error.
+
+Numeric simple variables, string simple variables, numeric array variables and
+string array variables are all distinct. For example, the variables *I*, *I$*, *I(10)* and *I$(10)* may all
+be used within the same program and will be treated as distinct from one another. However, array variables
+with the same name but different *dimensionality* are treated as the same. For example,
+using a **DIM** statement to define *I(5)* and then a second **DIM** statement to define *I(5, 5)* will
+result in the second definition (the two dimensional array) overwriting the first definition (the one dimensional array).
+
+*TODO - Use of arrays in expressions has yet to be implemented*
 
 ### Comments
 
@@ -202,7 +224,7 @@ statement is processed and the interpreter attempts to return control back to th
 
 ### Assignment
 
-Assignment may be made to number variables (which can contain either integers or floating point numbers) and string variables
+Assignment may be made to numeric simple variables (which can contain either integers or floating point numbers) and string simple variables
 (string variables are distinguished by their dollar suffix). The interpreter will enforce this division between the two types:
 
 ```
@@ -215,6 +237,20 @@ The **LET** keyword is also optional:
 ```
 > 10 I = 10
 ```
+
+Array variables may also have values assigned to them. The indexes can be derived from numeric 
+expressions:
+
+```
+> 10 DIM NUMS(3, 3)
+> 20 DIM STRS$(3, 3)
+> 30 LET INDEX = 0
+> 40 LET NUMS(INDEX, INDEX) = 55
+> 50 LET STRS$(INDEX, INDEX) = "hello"
+```
+
+Attempts to assign the wrong type (number or string) to a numeric or string array, attempts to assign a value to an array by specifying the wrong number
+of dimensions, and attempts to assign to an array using an out of range index, will all result in an error.
 
 ### Printing to standard output
 
@@ -480,6 +516,8 @@ as we all would have done in the 1980s!*
 
 **ABS**(*numerical-expression*) - Calculates the absolute value of *x*
 
+**DIM** *array-variable*(*dimensions*) - Defines a new array variable
+
 **EXIT** - Exits the interpreter
 
 **FOR** *loop-variable* = *start-value* **TO** *end-value* [**STEP** *increment*] - Bounded loop
@@ -492,7 +530,7 @@ as we all would have done in the 1980s!*
 
 **INPUT** [*input-prompt*:] *variable-list* - Processes user input presented as a comma separated list
 
-[**LET**] *variable* = *numeric-expression* | *string-expression* - Assigns a value to a variable
+[**LET**] *variable* = *numeric-expression* | *string-expression* - Assigns a value to a simple variable or array variable
 
 **LIST** - Lists the program
 
