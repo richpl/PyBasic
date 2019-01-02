@@ -462,13 +462,19 @@ reset using the RANDOMIZE instruction with an optional seed value: e.g.
 
 A number of example BASIC programs have been supplied in the repository:
 
-* *REGRESSION.BAS* - A program to exercise the key programming language constructs
+* *regression.bas* - A program to exercise the key programming language constructs
 in such a way as to allow verification that the interpreter is functioning correctly.
 
-* *FACTORIAL.BAS* - A simple BASIC program to take a number, *N*, as input from the user and
+* *factorial.bas* - A simple BASIC program to take a number, *N*, as input from the user and
 calculate the corresponding factorial *N!*.
 
-* *ROCK_SCISSORS_PAPER.BAS* - A BASIC implementation of the rock-paper-scissors game.
+* *rock_scissors_paper.bas* - A BASIC implementation of the rock-paper-scissors game.
+
+*Note that you cannot simply load these programs from the text files. They must
+be entered line by line into the interpreter. The program can then be saved and 
+reloaded using the* **SAVE** and **LOAD** *commands as described above. Of course,
+this is no more inconvenient than saving a program to cassette tape and reloading it,
+as we all would have done in the 1980s!*
 
 ## Grammar
 
