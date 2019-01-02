@@ -553,7 +553,7 @@ calls it using a FlowSignal object.
 * interpreter.py - This class provides the interface to the user. It allows the user to both input program statements and to execute
 the resulting program. It also allows the user to run commands, for example to save and load programs, or to list them.
 
-* flowsignal.py - Implements a FlowSignal object that allows the parser to signal a change in control flow. or example, as
+* flowsignal.py - Implements a FlowSignal object that allows the parser to signal a change in control flow. For example, as
 the result of a jump defined in the statement just parsed (GOTO, conditional branch evaluation), a loop decision,
 a subroutine call, or program termination. This paradigm of using the parser to simply parse individual statements, the Program
 object to make control flow decisions and to track execution, and a signalling mechanism to allow the parser to signal
