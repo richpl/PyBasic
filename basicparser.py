@@ -507,6 +507,8 @@ class BASICParser:
             self.__operand_stack.append(self.__token.lexeme)
             self.__advance()
 
+        # TODO Array evaluation
+
         elif self.__token.category == Token.NAME and \
              self.__token.category not in Token.functions:
             if self.__token.lexeme in self.__symbol_table:
@@ -655,6 +657,9 @@ class BASICParser:
 
         # If the loop variable is not in the set of extant
         # variables, this is the first time we have entered the loop
+        # Note that we cannot use the presence of the loop variable in
+        # the symbol table for this test, as the same variable may already
+        # have been instantiated elsewhere in the program
         if loop_variable not in self.__loop_vars:
             self.__symbol_table[loop_variable] = start_val
 
