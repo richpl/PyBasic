@@ -482,7 +482,7 @@ Allowable numeric functions are:
 * **POW**(x, y) - Calculates *x* to the power *y*
 
 * **RND** - Generates a pseudo random number N, where *0 <= N < 1*. Can be
-reset using the RANDOMIZE instruction with an optional seed value: e.g.
+reset using the **RANDOMIZE** instruction with an optional seed value: e.g.
 
 ```
 > 10 RANDOMIZE 100 
@@ -514,7 +514,7 @@ as we all would have done in the 1980s!*
 
 ## Grammar
 
-**ABS**(*numerical-expression*) - Calculates the absolute value of *x*
+**ABS**(*numerical-expression*) - Calculates the absolute value of the result of *numerical-expression*
 
 **DIM** *array-variable*(*dimensions*) - Defines a new array variable
 
