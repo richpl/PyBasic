@@ -21,7 +21,7 @@
 210 PRINT "Should not print this line"
 220 PRINT "*** Testing subroutine behaviour ***"
 230 PRINT "Calling subroutine"
-240 GOSUB 500
+240 GOSUB 540
 250 PRINT "Exited subroutine"
 260 PRINT "Now testing nested subroutines"
 270 GOSUB 600
@@ -40,11 +40,20 @@
 400 PRINT I, J
 410 NEXT J
 420 NEXT I
-430 PRINT "*** Finished ***"
-440 STOP
-500 REM A SUBROUTINE TEST
-510 PRINT "Executing the subroutine"
-520 RETURN
+430 PRINT "*** Testing arrays ***"
+440 DIM A(3, 3)
+450 FOR I = 0 TO 2
+460 FOR J = 0 TO 2
+470 LET A(I, J) = 5
+480 NEXT J
+490 NEXT I
+500 PRINT "This should print 555"
+510 PRINT A(0, 0), A(1, 1), A(2, 2)
+520 PRINT "*** Finished ***"
+530 STOP
+540 REM A SUBROUTINE TEST
+550 PRINT "Executing the subroutine"
+560 RETURN
 600 REM AN OUTER SUBROUTINE
 610 GOSUB 700
 620 PRINT "This should be printed second"
