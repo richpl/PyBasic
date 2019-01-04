@@ -2,8 +2,6 @@
 
 ## Introduction
 
-*This project is still a work in progress and under active development*
-
 A simple interactive BASIC interpreter written in Python 3. It is based heavily on material in the excellent book *Writing Interpreters
 and Compilers for the Raspberry Pi Using Python* by Anthony J. Dos Reis. However, I have had to adapt the Python interpreter presented
 in the book, both to work with the BASIC programming language and to produce an interactive command line interface. The interpreter
@@ -157,14 +155,16 @@ replaced by re-entering a statement with the same line number:
 
 ### Variables
 
-Variable types follow the typical BASIC convention. *Simple* variables may contain either be strings
-or numbers (the latter may be integers or floating point numbers). *Array* variables may contain arrays
-of either strings or numbers.
+Variable types follow the typical BASIC convention. *Simple* variables may contain either strings
+or numbers (the latter may be integers or floating point numbers). Likewise *array* variables may contain arrays
+of either strings or numbers, but they cannot be mixed in the same array.
 
 Note that all keywords and variable names are case insensitive (and will be converted to upper case internally by the lexical analyser).
 String literals will retain their case however. There is no inherent limit on the length of variable names or string literals,
 this will be dictated by the limitations of Python. The range of numeric values is also dependent upon the underlying
-Python implementation.
+Python implementation. Note that variable names must only consist of alphabetic characters, not numbers or
+special characters (e.g. *MYVAR5* and *MY_VAR* are invalid). Alphanumeric variable names that include special
+characters such as underscores are a possible future enhancement.
 
 Numeric variables have no suffix, whereas string variables are always suffixed by '$'. Note that 'I' and 'I$' are
 considered to be separate variables. Note that string literals must always be enclosed within double quotes (not single quotes).
@@ -178,21 +178,37 @@ many dimensions the array has, and the sizes of those dimensions:
 > 10 DIM A(3, 3, 3)
 ```
 
-Note that the index of each dimension always starts at *zero*, and arrays may have a maximum of
-three dimensions.
+Note that the index of each dimension always starts at *zero*. So in the above example, valid index values for array *A* will be *0, 1* or *2*
+for each dimension. Arrays may have a maximum of three dimensions.
 
-Like simple variables, array variables may contain either numeric values only, or 
-string values only. A string array has its name suffixed by a '$' character, while a numeric array does not carry
+As for simple variables, a string array has its name suffixed by a '$' character, while a numeric array does not carry
 a suffix. An attempt to assign a string value to a numeric array or vice versa will generate an error.
 
-Numeric simple variables, string simple variables, numeric array variables and
-string array variables are all distinct. For example, the variables *I*, *I$*, *I(10)* and *I$(10)* may all
-be used within the same program and will be treated as distinct from one another. However, array variables
+Note that the same variable name cannot be used for both an array and a simple variable. For example, the variables 
+*I$* and *I$(10)* should not be used within the same program, the results may be unpredictable. Also, array variables
 with the same name but different *dimensionality* are treated as the same. For example,
 using a **DIM** statement to define *I(5)* and then a second **DIM** statement to define *I(5, 5)* will
 result in the second definition (the two dimensional array) overwriting the first definition (the one dimensional array).
 
-*TODO - Use of arrays in expressions has yet to be implemented*
+Array values may be used within any expression, such as in a **PRINT** statement for string values, or in any numerical
+expression for number values. However, you must be specific about which array element you are referencing, using the
+correct number of in-range indexes. If that particular array value has not yet been assigned, then an error 
+message will be
+printed.
+
+```
+> 10 DIM MYARRAY(2, 2, 2)
+> 20 LET MYARRAY(0, 1, 0) = 56
+> 30 PRINT A(0, 1, 0)
+> RUN
+56
+> 30 PRINT A(0, 0, 0)
+> RUN
+Empty array value returned in line 30
+>
+```
+
+As in all implementations of BASIC, there is no garbage collection!
 
 ### Comments
 
@@ -214,7 +230,7 @@ The **STOP** statement may be used to cease program execution:
 > 30 PRINT "two"
 > RUN
 one
->
+> 
 ```
 
 A program will automatically cease execution when it reaches the final statement, so a **STOP** may not be necessary. However
@@ -601,4 +617,7 @@ control flow changes to the Program object, is used consistently throughout the 
 
 * It is not possible to renumber a program. This would require considerable extra functionality.
 * Negative values are printed with a space (e.g. '- 5') in program listings because of tokenization. This does not affect functionality.
+* Note that variable names must only consist of alphabetic characters, not numbers or
+special characters (e.g. *MYVAR5* and *MY_VAR* are invalid). Alphanumeric variable names that include special
+characters such as underscores are a possible future enhancement.
 
