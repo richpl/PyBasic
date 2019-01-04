@@ -367,7 +367,7 @@ class BASICParser:
             elif len(indexvars) == 2:
                 BASICarray.data[indexvars[0]][indexvars[1]] = right
 
-            elif len(indexvars) == 2:
+            elif len(indexvars) == 3:
                 BASICarray.data[indexvars[0]][indexvars[1]][indexvars[2]] = right
 
         except IndexError:
@@ -507,11 +507,41 @@ class BASICParser:
             self.__operand_stack.append(self.__token.lexeme)
             self.__advance()
 
-        # TODO Array evaluation
-
         elif self.__token.category == Token.NAME and \
              self.__token.category not in Token.functions:
-            if self.__token.lexeme in self.__symbol_table:
+            # Check if this is a simple or array variable
+            if (self.__token.lexeme + '_array') in self.__symbol_table:
+                # Capture the current lexeme
+                arrayname = self.__token.lexeme + '_array'
+
+                # Array must be processed
+                # Capture the index variables
+                self.__advance()  # Advance past the array name
+
+                self.__consume(Token.LEFTPAREN)
+
+                indexvars = []
+                if not self.__tokenindex >= len(self.__tokenlist):
+                    self.__expr()
+                    indexvars.append(self.__operand_stack.pop())
+
+                    while self.__token.category == Token.COMMA:
+                        self.__advance()  # Advance past comma
+                        self.__expr()
+                        indexvars.append(self.__operand_stack.pop())
+
+                BASICarray = self.__symbol_table[arrayname]
+                arrayval = self.__get_array_val(BASICarray, indexvars)
+
+                if arrayval:
+                    self.__operand_stack.append(self.__sign*arrayval)
+
+                else:
+                    raise IndexError('Empty array value returned in line ' +
+                                     str(self.__line_number))
+
+            elif self.__token.lexeme in self.__symbol_table:
+                # Simple variable must be processed
                 self.__operand_stack.append(self.__sign*self.__symbol_table[self.__token.lexeme])
 
             else:
@@ -540,6 +570,36 @@ class BASICParser:
         else:
             raise RuntimeError('Expecting factor in numeric expression' +
                                ' in line ' + str(self.__line_number))
+
+    def __get_array_val(self, BASICarray, indexvars):
+        """Extracts the value from the given BASICArray at the specified indexes
+
+        :param BASICarray: The BASICArray
+        :param indexvars: The list of indexes, one for each dimension
+
+        :return: The value at the indexed position in the array
+
+        """
+        if BASICarray.dims != len(indexvars):
+            raise IndexError('Incorrect number of indices applied to array ' +
+                             'in line ' + str(self.__line_number))
+
+        # Fetch the value from the array
+        try:
+            if len(indexvars) == 1:
+                arrayval = BASICarray.data[indexvars[0]]
+
+            elif len(indexvars) == 2:
+                arrayval = BASICarray.data[indexvars[0]][indexvars[1]]
+
+            elif len(indexvars) == 3:
+                arrayval = BASICarray.data[indexvars[0]][indexvars[1]][indexvars[2]]
+
+        except IndexError:
+            raise IndexError('Array index out of range in line ' +
+                             str(self.__line_number))
+
+        return arrayval
 
     def __compoundstmt(self):
         """Parses compound statements,
