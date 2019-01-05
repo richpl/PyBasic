@@ -868,6 +868,8 @@ class BASICParser:
             self.__expr()
             exponent = self.__operand_stack.pop()
 
+            self.__consume(Token.RIGHTPAREN)
+
             try:
                 return math.pow(base, exponent)
 
