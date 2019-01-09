@@ -842,22 +842,10 @@ class BASICParser:
         self.__advance()  # Advance past function name
 
         # Process arguments according to function
-        if category == Token.SQR:
-            self.__consume(Token.LEFTPAREN)
+        if category == Token.RND:
+            return random.random()
 
-            self.__expr()
-            value = self.__operand_stack.pop()
-
-            self.__consume(Token.RIGHTPAREN)
-
-            try:
-                return math.sqrt(value)
-
-            except ValueError:
-                raise ValueError("Invalid value supplied to SQR in line " +
-                                 str(self.__line_number))
-
-        elif category == Token.POW:
+        if category == Token.POW:
             self.__consume(Token.LEFTPAREN)
 
             self.__expr()
@@ -877,14 +865,22 @@ class BASICParser:
                 raise ValueError("Invalid value supplied to POW in line " +
                                  str(self.__line_number))
 
+        self.__consume(Token.LEFTPAREN)
+
+        self.__expr()
+        value = self.__operand_stack.pop()
+
+        self.__consume(Token.RIGHTPAREN)
+
+        if category == Token.SQR:
+            try:
+                return math.sqrt(value)
+
+            except ValueError:
+                raise ValueError("Invalid value supplied to SQR in line " +
+                                 str(self.__line_number))
+
         elif category == Token.ABS:
-            self.__consume(Token.LEFTPAREN)
-
-            self.__expr()
-            value = self.__operand_stack.pop()
-
-            self.__consume(Token.RIGHTPAREN)
-
             try:
                 return abs(value)
 
@@ -892,13 +888,57 @@ class BASICParser:
                 raise ValueError("Invalid value supplied to ABS in line " +
                                  str(self.__line_number))
 
-        elif category == Token.RND:
-            return random.random()
+        elif category == Token.ATN:
+            try:
+                return math.atan(value)
+
+            except ValueError:
+                raise ValueError("Invalid value supplied to ATN in line " +
+                                 str(self.__line_number))
+
+        elif category == Token.COS:
+            try:
+                return math.cos(value)
+
+            except ValueError:
+                raise ValueError("Invalid value supplied to COS in line " +
+                                 str(self.__line_number))
+
+        elif category == Token.EXP:
+            try:
+                return math.exp(value)
+
+            except ValueError:
+                raise ValueError("Invalid value supplied to EXP in line " +
+                                 str(self.__line_number))
+
+        elif category == Token.LOG:
+            try:
+                return math.log(value)
+
+            except ValueError:
+                raise ValueError("Invalid value supplied to LOG in line " +
+                                 str(self.__line_number))
+
+        elif category == Token.SIN:
+            try:
+                return math.sin(value)
+
+            except ValueError:
+                raise ValueError("Invalid value supplied to SIN in line " +
+                                 str(self.__line_number))
+
+        elif category == Token.TAN:
+            try:
+                return math.tan(value)
+
+            except ValueError:
+                raise ValueError("Invalid value supplied to TAN in line " +
+                                 str(self.__line_number))
 
         else:
             raise SyntaxError("Unrecognised function in line " +
                               str(self.__line_number))
-
 
     def __randomizestmt(self):
         """Implements a function to seed the random
