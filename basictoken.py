@@ -65,6 +65,12 @@ class BASICToken:
         DIM             = 47  # DIM keyword
         RANDOMIZE       = 48  # RANDOMIZE keyword
         RND             = 49  # RND keyword
+        ATN             = 50  # Arctangent function
+        COS             = 51  # Cosine function
+        EXP             = 52  # Exponential function
+        LOG             = 53  # Natural logarithm function
+        SIN             = 54  # Sine function
+        TAN             = 55  # Tangent function
 
         # Displayable names for each token category
         catnames = ['EOF', 'LET', 'LIST', 'PRINT', 'RUN',
@@ -76,7 +82,8 @@ class BASICToken:
         'NOTEQUAL', 'LESSEQUAL', 'GREATEQUAL',
         'UNSIGNEDFLOAT', 'STRING', 'TO', 'NEW', 'EQUAL',
         'COMMA', 'STOP', 'COLON', 'ON', 'POW', 'SQR', 'ABS',
-        'DIM', 'RANDOMIZE', 'RND']
+        'DIM', 'RANDOMIZE', 'RND', 'ATN', 'COS', 'EXP',
+        'LOG', 'SIN', 'TAN']
 
         smalltokens = {'=': ASSIGNOP, '(': LEFTPAREN, ')': RIGHTPAREN,
                        '+': PLUS, '-': MINUS, '*': TIMES, '/': DIVIDE,
@@ -94,11 +101,13 @@ class BASICToken:
                     'INPUT': INPUT, 'REM': REM, 'RETURN': RETURN,
                     'SAVE': SAVE, 'LOAD': LOAD, 'NEW': NEW,
                     'STOP': STOP, 'TO': TO, 'ON':ON, 'POW': POW,
-                    'SQR': SQR, 'ABS': ABS, 'DIM': DIM,
-                    'RANDOMIZE': RANDOMIZE, 'RND': RND}
+                    'SQR': SQR, 'ABS': ABS,
+                    'RANDOMIZE': RANDOMIZE, 'RND': RND,
+                    'ATN': ATN, 'COS': COS, 'EXP': EXP,
+                    'LOG': LOG, 'SIN': SIN, 'TAN': TAN}
 
         # Functions
-        functions = {POW, SQR, ABS, RND}
+        functions = {ABS, ATN, COS, EXP, LOG, POW, RND, SIN, SQR, TAN}
 
         def __init__(self, column, category, lexeme):
 
