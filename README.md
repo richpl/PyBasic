@@ -208,7 +208,12 @@ Empty array value returned in line 30
 >
 ```
 
-As in all implementations of BASIC, there is no garbage collection!
+As in all implementations of BASIC, there is no garbage collection (not surprising since all variables
+have global scope)!
+
+### Program constants
+
+*TO DO - Implementation of* **READ** *and* **DATA** *statements*.
 
 ### Comments
 
@@ -478,9 +483,11 @@ Num, Str, Num: 22, " hello ", 33
 
 A mismatch between the input value and input variable type will trigger an error.
 
+*TO DO - User input can only be assigned to simple variables, need to extend to array varibles.*
+
 ### Numeric functions
 
-Selected numeric functions are provided, and may be used in any numeric expression. For example,
+Selected numeric functions are provided, and may be used with any numeric expression. For example,
 the square root function, **SQR**, can be applied expressions consisting of both literals and variables:
 
 ```
@@ -495,6 +502,14 @@ Allowable numeric functions are:
 
 * **ABS**(x) - Calculates the absolute value of *x*
 
+* **ATN**(x) - Calculates the arctangent of *x*
+
+* **COS**(x) - Calculates the cosine of *x*, where *x* is an angle in radians
+
+* **EXP**(x) - Calculates the exponential of *x*, *e^x* where *e*=2.718281828
+
+* **LOG**(x) - Calculates the natural logarithm of *x*
+
 * **POW**(x, y) - Calculates *x* to the power *y*
 
 * **RND** - Generates a pseudo random number N, where *0 <= N < 1*. Can be
@@ -508,7 +523,11 @@ reset using the **RANDOMIZE** instruction with an optional seed value: e.g.
 >
 ```
 
+* **SIN**(x) - Calculates the sine of *x*, where *x* is an angle in radians
+
 * **SQR**(x) - Calculates the square root of *x*
+
+* **TAN**(x) - Calculates the tangent of *x*, where *x* is an angle in radians
 
 ## Example programs
 
@@ -532,9 +551,15 @@ as we all would have done in the 1980s!*
 
 **ABS**(*numerical-expression*) - Calculates the absolute value of the result of *numerical-expression*
 
+**ATN**(*numerical-expression*) - Calculates the arctangent value of the result of *numerical-expression*
+
+**COS**(*numerical-expression*) - Calculates the cosine value of the result of *numerical-expression*
+
 **DIM** *array-variable*(*dimensions*) - Defines a new array variable
 
 **EXIT** - Exits the interpreter
+
+**EXP**(*numerical-expression*) - Calculates the exponential value of the result of *numerical-expression*
 
 **FOR** *loop-variable* = *start-value* **TO** *end-value* [**STEP** *increment*] - Bounded loop
 
@@ -551,6 +576,8 @@ as we all would have done in the 1980s!*
 **LIST** - Lists the program
 
 **LOAD** *filename* - Loads a program from disk
+
+**LOG**(*numerical-expression*) - Calculates the natural logarithm value of the result of *numerical-expression*
 
 **NEW** - Clears the program from memory
 
@@ -575,9 +602,13 @@ optional seed (*numeric expression*), the sequence is predictable.
 
 **SAVE** *filename* - Saves a program to disk
 
+**SIN**(*numerical-expression*) - Calculates the sine value of the result of *numerical-expression*
+
 **SQR**(*numerical-expression*) - Calculates the square root of the expression
 
 **STOP** - Terminates a program
+
+**TAN**(*numerical-expression*) - Calculates the tangent value of the result of *numerical-expression*
 
 ## Architecture
 
@@ -620,4 +651,6 @@ control flow changes to the Program object, is used consistently throughout the 
 * Note that variable names must only consist of alphabetic characters, not numbers or
 special characters (e.g. *MYVAR5* and *MY_VAR* are invalid). Alphanumeric variable names that include special
 characters such as underscores are a possible future enhancement.
+* Decimal values less than zero must be expressed with a leading zero (i.e. 0.34 rather than .34)
+* User input values cannot be directly assigned to array variables in an **INPUT** statement
 
