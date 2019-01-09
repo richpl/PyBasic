@@ -483,7 +483,7 @@ Num, Str, Num: 22, " hello ", 33
 
 A mismatch between the input value and input variable type will trigger an error.
 
-*TO DO - User input can only be assigned to simple variables, need to extend to array varibles.*
+*TO DO - User input can only be assigned to simple variables, need to extend to array variables.*
 
 ### Numeric functions
 
