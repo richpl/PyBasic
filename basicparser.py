@@ -5,6 +5,7 @@ from flowsignal import FlowSignal
 import math
 import random
 
+
 """Implements a BASIC array, which may have up
 to three dimensions of fixed size.
 
@@ -12,7 +13,7 @@ to three dimensions of fixed size.
 class BASICArray:
 
     def __init__(self, dimensions):
-        """Initialises te object with the specified
+        """Initialises the object with the specified
         number of dimensions. Maximum number of
         dimensions is three
 
@@ -52,6 +53,9 @@ class BASICParser:
         # Stack on which to store operands
         # when evaluating expressions
         self.__operand_stack = []
+
+        # List to hold contents of DATA statement
+        self.__data_values = []
 
         # These values will be
         # initialised on a per
@@ -163,6 +167,10 @@ class BASICParser:
 
         elif self.__token.category == Token.RANDOMIZE:
             self.__randomizestmt()
+            return None
+
+        elif self.__token.category == Token.DATA:
+            self.__datastmt()
             return None
 
         else:
@@ -432,6 +440,21 @@ class BASICParser:
             except IndexError:
                 # No more input to process
                 pass
+
+    def __datastmt(self):
+        """Parses a DATA statement"""
+
+        self.__advance()  # Advance past DATA token
+
+        # Acquire the comma separated values
+        if not self.__tokenindex >= len(self.__tokenlist):
+            self.__expr()
+            self.__data_values.append(self.__operand_stack.pop())
+
+            while self.__token.category == Token.COMMA:
+                self.__advance()  # Advance past comma
+                self.__expr()
+                self.__data_values.append(self.__operand_stack.pop())
 
     def __expr(self):
         """Parses a numerical expression consisting
