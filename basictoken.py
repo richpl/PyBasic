@@ -71,6 +71,8 @@ class BASICToken:
         LOG             = 53  # Natural logarithm function
         SIN             = 54  # Sine function
         TAN             = 55  # Tangent function
+        DATA            = 56  # DATA keyword
+        READ            = 57  # READ keyword
 
         # Displayable names for each token category
         catnames = ['EOF', 'LET', 'LIST', 'PRINT', 'RUN',
@@ -83,7 +85,7 @@ class BASICToken:
         'UNSIGNEDFLOAT', 'STRING', 'TO', 'NEW', 'EQUAL',
         'COMMA', 'STOP', 'COLON', 'ON', 'POW', 'SQR', 'ABS',
         'DIM', 'RANDOMIZE', 'RND', 'ATN', 'COS', 'EXP',
-        'LOG', 'SIN', 'TAN']
+        'LOG', 'SIN', 'TAN', 'DATA', 'READ']
 
         smalltokens = {'=': ASSIGNOP, '(': LEFTPAREN, ')': RIGHTPAREN,
                        '+': PLUS, '-': MINUS, '*': TIMES, '/': DIVIDE,
@@ -104,7 +106,8 @@ class BASICToken:
                     'SQR': SQR, 'ABS': ABS,
                     'RANDOMIZE': RANDOMIZE, 'RND': RND,
                     'ATN': ATN, 'COS': COS, 'EXP': EXP,
-                    'LOG': LOG, 'SIN': SIN, 'TAN': TAN}
+                    'LOG': LOG, 'SIN': SIN, 'TAN': TAN,
+                    'DATA': DATA, 'READ': READ}
 
         # Functions
         functions = {ABS, ATN, COS, EXP, LOG, POW, RND, SIN, SQR, TAN}
