@@ -213,7 +213,14 @@ have global scope)!
 
 ### Program constants
 
-*TO DO - Implementation of* **READ** *and* **DATA** *statements*.
+Constants may be defined through the use of the **DATA** statement. They may consist of numeric or string values
+and are declared in a comma separated list:
+
+```
+> 10 DATA 56, "Hello", 78
+```
+
+*TO DO - Implementation of* **READ** *statement*.
 
 ### Comments
 
@@ -485,9 +492,9 @@ A mismatch between the input value and input variable type will trigger an error
 
 *TO DO - User input can only be assigned to simple variables, need to extend to array variables.*
 
-### Numeric functions
+### Numerical functions
 
-Selected numeric functions are provided, and may be used with any numeric expression. For example,
+Selected numerical functions are provided, and may be used with any numeric expression. For example,
 the square root function, **SQR**, can be applied expressions consisting of both literals and variables:
 
 ```
@@ -554,6 +561,8 @@ as we all would have done in the 1980s!*
 **ATN**(*numerical-expression*) - Calculates the arctangent value of the result of *numerical-expression*
 
 **COS**(*numerical-expression*) - Calculates the cosine value of the result of *numerical-expression*
+
+**DATA**(*expression-list*) - Defines a list of string or numerical values
 
 **DIM** *array-variable*(*dimensions*) - Defines a new array variable
 
