@@ -193,8 +193,7 @@ result in the second definition (the two dimensional array) overwriting the firs
 Array values may be used within any expression, such as in a **PRINT** statement for string values, or in any numerical
 expression for number values. However, you must be specific about which array element you are referencing, using the
 correct number of in-range indexes. If that particular array value has not yet been assigned, then an error 
-message will be
-printed.
+message will be printed.
 
 ```
 > 10 DIM MYARRAY(2, 2, 2)
@@ -220,7 +219,44 @@ and are declared in a comma separated list:
 > 10 DATA 56, "Hello", 78
 ```
 
-*TO DO - Implementation of* **READ** *statement*.
+These values can then later be assigned to variables using the **READ** statement. Note that the type of the value
+(string or numeric) must match the type of the variable, otherwise an error message will be triggered. Therefore,
+attention should be paid to the relative ordering of constants and variables. Further, 
+there must be enough constants to fill all of the variables defined in the **READ** statement, or else an
+error will be given. This is to ensure that the program is not left in a state where a variable has not been 
+assigned a value, but nevertheless an attempt to use that variable is made later on in the program.
+
+The constants defined in the **DATA** statement may be consumed using several **READ** statements:
+
+```
+> 10 DATA 56, "Hello", 78
+> 20 READ FIRSTNUM, STR$
+> 30 PRINT FIRSTNUM, " ", STR$
+> 40 READ SECONDNUM
+> 50 PRINT SECONDNUM
+> RUN
+56 Hello
+78
+>
+```
+
+The supply of constants may be refreshed by defining more **DATA** statements:
+
+```
+> 10 DATA 20
+> 20 READ NUM
+> 30 PRINT NUM
+> 40 DATA 30
+> 50 READ NUM
+> 60 PRINT NUM
+> RUN
+20
+30
+>
+```
+
+It is a limitation of this BASIC dialect that it is not possible to assign constants directly to array variables
+within a **READ** statement, only simple variables.
 
 ### Comments
 
@@ -490,7 +526,8 @@ Num, Str, Num: 22, " hello ", 33
 
 A mismatch between the input value and input variable type will trigger an error.
 
-*TO DO - User input can only be assigned to simple variables, need to extend to array variables.*
+It is a limitation of this BASIC dialect that it is not possible to assign constants directly to array variables
+within an **INPUT** statement, only simple variables.
 
 ### Numerical functions
 
@@ -554,7 +591,7 @@ reloaded using the* **SAVE** and **LOAD** *commands as described above. Of cours
 this is no more inconvenient than saving a program to cassette tape and reloading it,
 as we all would have done in the 1980s!*
 
-## Grammar
+## Informal grammar definition
 
 **ABS**(*numerical-expression*) - Calculates the absolute value of the result of *numerical-expression*
 
@@ -578,7 +615,7 @@ as we all would have done in the 1980s!*
 
 **IF** *relational-expression* **THEN** *line-number* [**ELSE** *line-number*] - Conditional branch
 
-**INPUT** [*input-prompt*:] *variable-list* - Processes user input presented as a comma separated list
+**INPUT** [*input-prompt*:] *simple-variable-list* - Processes user input presented as a comma separated list
 
 [**LET**] *variable* = *numeric-expression* | *string-expression* - Assigns a value to a simple variable or array variable
 
@@ -600,6 +637,8 @@ as we all would have done in the 1980s!*
 
 **RANDOMIZE** [*numeric-expression*] - Resets random number generator to an unpredictable sequence. With
 optional seed (*numeric expression*), the sequence is predictable. 
+
+**READ** *simple-variable-list* - Reads a set of constants into the list of variables.
 
 **REM** *comment* - Internal program documentation
 
@@ -661,5 +700,7 @@ control flow changes to the Program object, is used consistently throughout the 
 special characters (e.g. *MYVAR5* and *MY_VAR* are invalid). Alphanumeric variable names that include special
 characters such as underscores are a possible future enhancement.
 * Decimal values less than zero must be expressed with a leading zero (i.e. 0.34 rather than .34)
-* User input values cannot be directly assigned to array variables in an **INPUT** statement
+* User input values cannot be directly assigned to array variables in an **INPUT** or **READ** statement
+* Strings representing numbers (e.g. "10") can actually be assigned to numeric variables in **INPUT** and **READ** statements without an
+error, Python will silently convert them to integers.
 
