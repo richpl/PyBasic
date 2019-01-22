@@ -173,6 +173,10 @@ class BASICParser:
             self.__datastmt()
             return None
 
+        elif self.__token.category == Token.READ:
+            self.__readstmt()
+            return None
+
         else:
             # Ignore comments, but raise an error
             # for anything else
@@ -455,6 +459,58 @@ class BASICParser:
                 self.__advance()  # Advance past comma
                 self.__expr()
                 self.__data_values.append(self.__operand_stack.pop())
+
+    def __readstmt(self):
+        """Parses a READ statement."""
+
+        self.__advance()  # Advance past READ token
+
+        # Acquire the comma separated input variables
+        variables = []
+        if not self.__tokenindex >= len(self.__tokenlist):
+            variables.append(self.__token.lexeme)
+            self.__advance()  # Advance past variable
+
+            while self.__token.category == Token.COMMA:
+                self.__advance()  # Advance past comma
+                variables.append(self.__token.lexeme)
+                self.__advance()  # Advance past variable
+
+        # Check that we have enough data values to fill the
+        # variables
+        if len(variables) > len(self.__data_values):
+            raise RuntimeError('Insufficient constants supplied to READ ' +
+                               'in line ' + str(self.__line_number))
+
+        # Gather input from the DATA statement into the variables
+        for variable in variables:
+            left = variable
+
+            try:
+                right = self.__data_values.pop(0)
+
+                if left.endswith('$'):
+                    # Python inserts quotes around input data
+                    if isinstance(right, int):
+                        raise ValueError('Non-string input provided to a string variable ' +
+                                         'in line ' + str(self.__line_number))
+
+                    else:
+                        # Strip the quotes from the stored string
+                        stripped = right.strip()  # May be space before or after quotes
+                        self.__symbol_table[left] = stripped.replace('"', '')
+
+                elif not left.endswith('$'):
+                    try:
+                        self.__symbol_table[left] = int(right)
+
+                    except ValueError:
+                        raise ValueError('String input provided to a numeric variable ' +
+                                         'in line ' + str(self.__line_number))
+
+            except IndexError:
+                # No more input to process
+                pass
 
     def __expr(self):
         """Parses a numerical expression consisting
