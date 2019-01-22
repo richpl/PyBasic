@@ -529,9 +529,9 @@ A mismatch between the input value and input variable type will trigger an error
 It is a limitation of this BASIC dialect that it is not possible to assign constants directly to array variables
 within an **INPUT** statement, only simple variables.
 
-### Numerical functions
+### Numeric functions
 
-Selected numerical functions are provided, and may be used with any numeric expression. For example,
+Selected numeric functions are provided, and may be used with any numeric expression. For example,
 the square root function, **SQR**, can be applied expressions consisting of both literals and variables:
 
 ```
