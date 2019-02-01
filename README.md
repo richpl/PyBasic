@@ -162,9 +162,22 @@ of either strings or numbers, but they cannot be mixed in the same array.
 Note that all keywords and variable names are case insensitive (and will be converted to upper case internally by the lexical analyser).
 String literals will retain their case however. There is no inherent limit on the length of variable names or string literals,
 this will be dictated by the limitations of Python. The range of numeric values is also dependent upon the underlying
-Python implementation. Note that variable names must only consist of alphabetic characters, not numbers or
-special characters (e.g. *MYVAR5* and *MY_VAR* are invalid). Alphanumeric variable names that include special
-characters such as underscores are a possible future enhancement.
+Python implementation.
+
+Note that variable names may only consist of alphanumeric characters and underscores. However, they
+must all begin with an alphabetic character. For example:
+
+* *MY_VAR*
+* *MY_VAR6$*
+* *VAR77(0, 0)*
+
+are all valid variable names, whereas:
+
+* *5_VAR*
+* *_VAR$*
+* *66$* 
+
+are all invalid.
 
 Numeric variables have no suffix, whereas string variables are always suffixed by '$'. Note that 'I' and 'I$' are
 considered to be separate variables. Note that string literals must always be enclosed within double quotes (not single quotes).
@@ -696,9 +709,6 @@ control flow changes to the Program object, is used consistently throughout the 
 
 * It is not possible to renumber a program. This would require considerable extra functionality.
 * Negative values are printed with a space (e.g. '- 5') in program listings because of tokenization. This does not affect functionality.
-* Note that variable names must only consist of alphabetic characters, not numbers or
-special characters (e.g. *MYVAR5* and *MY_VAR* are invalid). Alphanumeric variable names that include special
-characters such as underscores are a possible future enhancement.
 * Decimal values less than zero must be expressed with a leading zero (i.e. 0.34 rather than .34)
 * User input values cannot be directly assigned to array variables in an **INPUT** or **READ** statement
 * Strings representing numbers (e.g. "10") can actually be assigned to numeric variables in **INPUT** and **READ** statements without an
