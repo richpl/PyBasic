@@ -861,14 +861,9 @@ class BASICParser:
         saveval = self.__operand_stack.pop()
 
         # Process the GOSUB part and save the jump value
-        self.__consume(Token.GOSUB)
-        self.__expr()
-        line_number = self.__operand_stack.pop()
-
+        # if the condition is met
         if saveval:
-            return FlowSignal(ftype=FlowSignal.GOSUB,
-                              ftarget=line_number)
-
+            return self.__gosubstmt()
         else:
             return None
 
