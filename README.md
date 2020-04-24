@@ -714,3 +714,6 @@ control flow changes to the Program object, is used consistently throughout the 
 * Strings representing numbers (e.g. "10") can actually be assigned to numeric variables in **INPUT** and **READ** statements without an
 error, Python will silently convert them to integers.
 
+## License
+
+PyBasic is made available under the GNU General Public License, version 3.0 or later (GPL-3.0-or-later).
