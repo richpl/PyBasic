@@ -1001,6 +1001,14 @@ class BASICParser:
                 raise ValueError("Invalid value supplied to EXP in line " +
                                  str(self.__line_number))
 
+        elif category == Token.INT:
+            try:
+                return math.floor(value)
+
+            except ValueError:
+                raise ValueError("Invalid value supplied to INT in line " +
+                                 str(self.__line_number))
+
         elif category == Token.LOG:
             try:
                 return math.log(value)
