@@ -211,10 +211,10 @@ message will be printed.
 ```
 > 10 DIM MYARRAY(2, 2, 2)
 > 20 LET MYARRAY(0, 1, 0) = 56
-> 30 PRINT A(0, 1, 0)
+> 30 PRINT MYARRAY(0, 1, 0)
 > RUN
 56
-> 30 PRINT A(0, 0, 0)
+> 30 PRINT MYARRAY(0, 0, 0)
 > RUN
 Empty array value returned in line 30
 >
