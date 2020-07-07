@@ -88,6 +88,7 @@ class BASICToken:
         TAN             = 55  # Tangent function
         DATA            = 56  # DATA keyword
         READ            = 57  # READ keyword
+        INT             = 58  # INT function
 
         # Displayable names for each token category
         catnames = ['EOF', 'LET', 'LIST', 'PRINT', 'RUN',
@@ -100,7 +101,7 @@ class BASICToken:
         'UNSIGNEDFLOAT', 'STRING', 'TO', 'NEW', 'EQUAL',
         'COMMA', 'STOP', 'COLON', 'ON', 'POW', 'SQR', 'ABS',
         'DIM', 'RANDOMIZE', 'RND', 'ATN', 'COS', 'EXP',
-        'LOG', 'SIN', 'TAN', 'DATA', 'READ']
+        'LOG', 'SIN', 'TAN', 'DATA', 'READ', 'INT']
 
         smalltokens = {'=': ASSIGNOP, '(': LEFTPAREN, ')': RIGHTPAREN,
                        '+': PLUS, '-': MINUS, '*': TIMES, '/': DIVIDE,
@@ -122,10 +123,10 @@ class BASICToken:
                     'RANDOMIZE': RANDOMIZE, 'RND': RND,
                     'ATN': ATN, 'COS': COS, 'EXP': EXP,
                     'LOG': LOG, 'SIN': SIN, 'TAN': TAN,
-                    'DATA': DATA, 'READ': READ}
+                    'DATA': DATA, 'READ': READ, 'INT': INT}
 
         # Functions
-        functions = {ABS, ATN, COS, EXP, LOG, POW, RND, SIN, SQR, TAN}
+        functions = {ABS, ATN, COS, EXP, INT, LOG, POW, RND, SIN, SQR, TAN}
 
         def __init__(self, column, category, lexeme):
 
