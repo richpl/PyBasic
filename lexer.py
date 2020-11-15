@@ -91,6 +91,9 @@ class Lexer:
                         token.lexeme += c  # Append the current char to the lexeme
                         c = self.__get_next_char()
 
+                        if c == '':
+                            raise SyntaxError("Mismatched quotes")
+
                         if c == '"':
                             c = self.__get_next_char()  # Advance past terminating quote
                             break
