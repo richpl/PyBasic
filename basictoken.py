@@ -95,6 +95,10 @@ class BASICToken:
         MID             = 62  # MID$ function
         MODULO          = 63  # MODULO operator
         TERNARY         = 64  # TERNARY functions
+        VAL             = 65  # VAL function
+        LEN             = 66  # LEN function
+        UPPER           = 67  # UPPER function
+        LOWER           = 68  # LOWER function
 
         # Displayable names for each token category
         catnames = ['EOF', 'LET', 'LIST', 'PRINT', 'RUN',
@@ -108,7 +112,8 @@ class BASICToken:
         'COMMA', 'STOP', 'COLON', 'ON', 'POW', 'SQR', 'ABS',
         'DIM', 'RANDOMIZE', 'RND', 'ATN', 'COS', 'EXP',
         'LOG', 'SIN', 'TAN', 'DATA', 'READ', 'INT',
-        'CHR', 'ASC', 'STR', 'MID', 'MODULO', 'TERNARY']
+        'CHR', 'ASC', 'STR', 'MID', 'MODULO', 'TERNARY',
+        'VAL', 'LEN', 'UPPER', 'LOWER']
 
         smalltokens = {'=': ASSIGNOP, '(': LEFTPAREN, ')': RIGHTPAREN,
                        '+': PLUS, '-': MINUS, '*': TIMES, '/': DIVIDE,
@@ -132,12 +137,14 @@ class BASICToken:
                     'LOG': LOG, 'SIN': SIN, 'TAN': TAN,
                     'DATA': DATA, 'READ': READ, 'INT': INT,
                     'CHR$': CHR, 'ASC': ASC, 'STR$': STR,
-                    'MID$':MID, 'MOD': MODULO,
-                    'IF$':TERNARY, 'IFF': TERNARY}
+                    'MID$': MID, 'MOD': MODULO,
+                    'IF$': TERNARY, 'IFF': TERNARY,
+                    'VAL': VAL, 'LEN': LEN,
+                    'UPPER$': UPPER, 'LOWER$': LOWER}
 
         # Functions
         functions = {ABS, ATN, COS, EXP, INT, LOG, POW, RND, SIN, SQR, TAN,
-                     CHR, ASC, MID, TERNARY, STR}
+                     CHR, ASC, MID, TERNARY, STR, VAL, LEN, UPPER, LOWER}
 
         def __init__(self, column, category, lexeme):
 

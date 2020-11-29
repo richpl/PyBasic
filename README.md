@@ -639,10 +639,14 @@ The functions are:
 * **ASC**(x$) - Returns the character code for *x$*. *x$* is expected to be a single character.
 Note that despite the name, this function can return codes outside the ASCII range.
 * **CHR$**(x) - Returns the character specified by character code *x*.
+* **LEN**(x$) - Returns the length of *x$*.
+* **LOWER$**(x$) - Returns a lower-case version of *x$*.
 * **MID$**(x$, y[, z]) - Returns part of *x$* starting at position *y* and ending at *z*. *z* can
 be omitted to get the rest of the string.  If *y* or *z* are negative, the position is counted
 backwards from the end of the string.
 * **STR$**(x) - Returns a string representation of numeric value *x*.
+* **UPPER$**(x$) - Returns an upper-case version of *x$*
+* **VAL**(x$) - Attempts to convert *x$* to a numeric value. If *x$* is not numeric, returns 0.
 
 Examples for **ASC**, **CHR$** and **STR$**
 ```
@@ -677,7 +681,11 @@ as we all would have done in the 1980s!*
 
 **ABS**(*numerical-expression*) - Calculates the absolute value of the result of *numerical-expression*
 
+**ASC**(*string-expression*) - Returns the character code of the result of *string-expression*.
+
 **ATN**(*numerical-expression*) - Calculates the arctangent value of the result of *numerical-expression*
+
+**CHR$**(*numerical-expression*) - Returns the character specified by character code of the result of *numerical-expression*.
 
 **COS**(*numerical-expression*) - Calculates the cosine value of the result of *numerical-expression*
 
@@ -697,7 +705,13 @@ as we all would have done in the 1980s!*
 
 **IF** *relational-expression* **THEN** *line-number* [**ELSE** *line-number*] - Conditional branch
 
+**IFF**(*relational-expression*, *numeric-expression*, *numeric-expression*) - Evaluates *relational-expression* and returns the value of the result of the first *numeric-expression* if true, or the second if false.
+
+**IF$**(*relational-expression*, *string-expression*, *string-expression*) - Evaluates *relational-expression* and returns the value of the result of the first *string-expression* if true, or the second if false.
+
 **INPUT** [*input-prompt*:] *simple-variable-list* - Processes user input presented as a comma separated list
+
+**LEN**(*string-expression*) - Returns the length of the result of *string-expression*
 
 [**LET**] *variable* = *numeric-expression* | *string-expression* - Assigns a value to a simple variable or array variable
 
@@ -705,11 +719,16 @@ as we all would have done in the 1980s!*
 
 **LOAD** *filename* - Loads a program from disk
 
+**LOWER$**(*string-expression*) - Returns a lower-case version of the result of *string-expression*.
+
 **LOG**(*numerical-expression*) - Calculates the natural logarithm value of the result of *numerical-expression*
 
 **NEW** - Clears the program from memory
 
 **NEXT** *loop-variable* - See **FOR** statement
+
+**MID$**(*string-expression*, *start-position*[, *end-position*]) - Takes the result of *string-expression* and returns part of it, starting at position *start-position*, and ending at *end-position*. *end-position* can
+be omitted to get the rest of the string.  If *start-position* or *end-position* are negative, the position is counted backwards from the end of the string.
 
 **ON** *relational-expression* **GOSUB** *line-number* - Conditional subroutine call
 
@@ -718,7 +737,7 @@ as we all would have done in the 1980s!*
 **PRINT** *print-list* - Prints a comma separated list of literals or variables
 
 **RANDOMIZE** [*numeric-expression*] - Resets random number generator to an unpredictable sequence. With
-optional seed (*numeric expression*), the sequence is predictable. 
+optional seed (*numeric expression*), the sequence is predictable.
 
 **READ** *simple-variable-list* - Reads a set of constants into the list of variables.
 
@@ -738,7 +757,13 @@ optional seed (*numeric expression*), the sequence is predictable.
 
 **STOP** - Terminates a program
 
+**STR$**(*numerical-expression*) - Returns a string representation of the result of *numerical-expression*
+
 **TAN**(*numerical-expression*) - Calculates the tangent value of the result of *numerical-expression*
+
+**UPPER$**(*string-expression*) - Returns an upper-case version of the result of *string-expression*
+
+**VAL**(*string-expression*) - Attempts to convert the result of *string-expression* to a numeric value. If it is not numeric, returns 0.
 
 ## Architecture
 

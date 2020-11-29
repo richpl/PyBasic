@@ -1110,6 +1110,39 @@ class BASICParser:
         elif category == Token.STR:
             return str(value)
 
+        elif category == Token.VAL:
+            try:
+                numeric = float(value)
+                if numeric.is_integer():
+                    return int(numeric)
+                return numeric
+
+            # Like other BASIC variants, non-numeric strings return 0
+            except ValueError:
+                return 0
+
+        elif category == Token.LEN:
+            try:
+                return len(value)
+
+            except TypeError:
+                raise TypeError("Invalid type supplied to LEN in line " +
+                                 str(self.__line_number))
+
+        elif category == Token.UPPER:
+            if not isinstance(value, str):
+                raise TypeError("Invalid type supplied to UPPER$ in line " +
+                                 str(self.__line_number))
+
+            return value.upper()
+
+        elif category == Token.LOWER:
+            if not isinstance(value, str):
+                raise TypeError("Invalid type supplied to LOWER$ in line " +
+                                 str(self.__line_number))
+
+            return value.lower()
+
         else:
             raise SyntaxError("Unrecognised function in line " +
                               str(self.__line_number))
