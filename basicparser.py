@@ -1085,9 +1085,6 @@ class BASICParser:
 
         elif category == Token.CHR:
             try:
-                if value < 0 or value > 255:
-                    raise ValueError("Value supplied to CHR$ out of range in line " +
-                                 str(self.__line_number))
                 return chr(value)
 
             except TypeError:
