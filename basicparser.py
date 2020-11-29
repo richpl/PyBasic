@@ -560,7 +560,7 @@ class BASICParser:
                          # minuses
         self.__factor()  # Leaves value of term on top of stack
 
-        while self.__token.category in [Token.TIMES, Token.DIVIDE]:
+        while self.__token.category in [Token.TIMES, Token.DIVIDE, Token.MODULO]:
             savedcategory = self.__token.category
             self.__advance()
             self.__sign = 1  # Initialise sign
@@ -571,8 +571,11 @@ class BASICParser:
             if savedcategory == Token.TIMES:
                 self.__operand_stack.append(leftoperand * rightoperand)
 
-            else:
+            elif savedcategory == Token.DIVIDE:
                 self.__operand_stack.append(leftoperand / rightoperand)
+
+            else:
+                self.__operand_stack.append(leftoperand % rightoperand)
 
     def __factor(self):
         """Evaluates a numerical expression
@@ -954,6 +957,53 @@ class BASICParser:
                 raise ValueError("Invalid value supplied to POW in line " +
                                  str(self.__line_number))
 
+        if category == Token.TERNARY:
+            self.__consume(Token.LEFTPAREN)
+
+            self.__relexpr()
+            condition = self.__operand_stack.pop()
+
+            self.__consume(Token.COMMA)
+
+            self.__expr()
+            whentrue = self.__operand_stack.pop()
+
+            self.__consume(Token.COMMA)
+
+            self.__expr()
+            whenfalse = self.__operand_stack.pop()
+
+            self.__consume(Token.RIGHTPAREN)
+
+            return whentrue if condition else whenfalse
+
+        if category == Token.MID:
+            self.__consume(Token.LEFTPAREN)
+
+            self.__expr()
+            instring = self.__operand_stack.pop()
+
+            self.__consume(Token.COMMA)
+
+            self.__expr()
+            start = self.__operand_stack.pop()
+
+            if self.__token.category == Token.COMMA:
+                self.__advance() # Advance past comma
+                self.__expr()
+                end = self.__operand_stack.pop()
+            else:
+                end = None
+
+            self.__consume(Token.RIGHTPAREN)
+
+            try:
+                return instring[start:end]
+
+            except TypeError:
+                raise TypeError("Invalid type supplied to MID$ in line " +
+                                 str(self.__line_number))
+
         self.__consume(Token.LEFTPAREN)
 
         self.__expr()
@@ -1032,6 +1082,36 @@ class BASICParser:
             except ValueError:
                 raise ValueError("Invalid value supplied to TAN in line " +
                                  str(self.__line_number))
+
+        elif category == Token.CHR:
+            try:
+                if value < 0 or value > 255:
+                    raise ValueError("Value supplied to CHR$ out of range in line " +
+                                 str(self.__line_number))
+                return chr(value)
+
+            except TypeError:
+                raise TypeError("Invalid type supplied to CHR$ in line " +
+                                 str(self.__line_number))
+
+            except ValueError:
+                raise ValueError("Invalid value supplied to CHR$ in line " +
+                                 str(self.__line_number))
+
+        elif category == Token.ASC:
+            try:
+                return ord(value)
+
+            except TypeError:
+                raise TypeError("Invalid type supplied to ASC in line " +
+                                 str(self.__line_number))
+
+            except ValueError:
+                raise ValueError("Invalid value supplied to ASC in line " +
+                                 str(self.__line_number))
+
+        elif category == Token.STR:
+            return str(value)
 
         else:
             raise SyntaxError("Unrecognised function in line " +
