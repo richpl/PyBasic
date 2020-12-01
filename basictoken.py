@@ -89,6 +89,16 @@ class BASICToken:
         DATA            = 56  # DATA keyword
         READ            = 57  # READ keyword
         INT             = 58  # INT function
+        CHR             = 59  # CHR$ function
+        ASC             = 60  # ASC function
+        STR             = 61  # STR$ function
+        MID             = 62  # MID$ function
+        MODULO          = 63  # MODULO operator
+        TERNARY         = 64  # TERNARY functions
+        VAL             = 65  # VAL function
+        LEN             = 66  # LEN function
+        UPPER           = 67  # UPPER function
+        LOWER           = 68  # LOWER function
 
         # Displayable names for each token category
         catnames = ['EOF', 'LET', 'LIST', 'PRINT', 'RUN',
@@ -101,14 +111,16 @@ class BASICToken:
         'UNSIGNEDFLOAT', 'STRING', 'TO', 'NEW', 'EQUAL',
         'COMMA', 'STOP', 'COLON', 'ON', 'POW', 'SQR', 'ABS',
         'DIM', 'RANDOMIZE', 'RND', 'ATN', 'COS', 'EXP',
-        'LOG', 'SIN', 'TAN', 'DATA', 'READ', 'INT']
+        'LOG', 'SIN', 'TAN', 'DATA', 'READ', 'INT',
+        'CHR', 'ASC', 'STR', 'MID', 'MODULO', 'TERNARY',
+        'VAL', 'LEN', 'UPPER', 'LOWER']
 
         smalltokens = {'=': ASSIGNOP, '(': LEFTPAREN, ')': RIGHTPAREN,
                        '+': PLUS, '-': MINUS, '*': TIMES, '/': DIVIDE,
                        '\n': NEWLINE, '<': LESSER,
                        '>': GREATER, '<>': NOTEQUAL,
                        '<=': LESSEQUAL, '>=': GREATEQUAL, ',': COMMA,
-                       ':': COLON}
+                       ':': COLON, '%': MODULO}
 
         # Dictionary of BASIC reserved words
         keywords = {'LET': LET, 'LIST': LIST, 'PRINT': PRINT,
@@ -123,10 +135,16 @@ class BASICToken:
                     'RANDOMIZE': RANDOMIZE, 'RND': RND,
                     'ATN': ATN, 'COS': COS, 'EXP': EXP,
                     'LOG': LOG, 'SIN': SIN, 'TAN': TAN,
-                    'DATA': DATA, 'READ': READ, 'INT': INT}
+                    'DATA': DATA, 'READ': READ, 'INT': INT,
+                    'CHR$': CHR, 'ASC': ASC, 'STR$': STR,
+                    'MID$': MID, 'MOD': MODULO,
+                    'IF$': TERNARY, 'IFF': TERNARY,
+                    'VAL': VAL, 'LEN': LEN,
+                    'UPPER$': UPPER, 'LOWER$': LOWER}
 
         # Functions
-        functions = {ABS, ATN, COS, EXP, INT, LOG, POW, RND, SIN, SQR, TAN}
+        functions = {ABS, ATN, COS, EXP, INT, LOG, POW, RND, SIN, SQR, TAN,
+                     CHR, ASC, MID, TERNARY, STR, VAL, LEN, UPPER, LOWER}
 
         def __init__(self, column, category, lexeme):
 
