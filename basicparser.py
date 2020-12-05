@@ -937,6 +937,46 @@ class BASICParser:
         if category == Token.RND:
             return random.random()
 
+        if category == Token.MAX:
+            self.__consume(Token.LEFTPAREN)
+
+            self.__expr()
+            value_list = [self.__operand_stack.pop()]
+
+            while self.__token.category == Token.COMMA:
+                self.__advance() # Advance past comma
+                self.__expr()
+                value_list.append(self.__operand_stack.pop())
+
+            self.__consume(Token.RIGHTPAREN)
+
+            try:
+                return max(*value_list)
+
+            except TypeError:
+                raise TypeError("Invalid type supplied to MAX in line " +
+                                 str(self.__line_number))
+
+        if category == Token.MIN:
+            self.__consume(Token.LEFTPAREN)
+
+            self.__expr()
+            value_list = [self.__operand_stack.pop()]
+
+            while self.__token.category == Token.COMMA:
+                self.__advance() # Advance past comma
+                self.__expr()
+                value_list.append(self.__operand_stack.pop())
+
+            self.__consume(Token.RIGHTPAREN)
+
+            try:
+                return min(*value_list)
+
+            except TypeError:
+                raise TypeError("Invalid type supplied to MIN in line " +
+                                 str(self.__line_number))
+
         if category == Token.POW:
             self.__consume(Token.LEFTPAREN)
 
@@ -1057,6 +1097,14 @@ class BASICParser:
 
             except ValueError:
                 raise ValueError("Invalid value supplied to INT in line " +
+                                 str(self.__line_number))
+
+        elif category == Token.ROUND:
+            try:
+                return round(value)
+
+            except TypeError:
+                raise TypeError("Invalid type supplied to LEN in line " +
                                  str(self.__line_number))
 
         elif category == Token.LOG:
