@@ -1044,6 +1044,40 @@ class BASICParser:
                 raise TypeError("Invalid type supplied to MID$ in line " +
                                  str(self.__line_number))
 
+        if category == Token.INSTR:
+            self.__consume(Token.LEFTPAREN)
+
+            self.__expr()
+            hackstackstring = self.__operand_stack.pop()
+            if not isinstance(hackstackstring, str):
+                raise TypeError("Invalid type supplied to INSTR in line " +
+                                 str(self.__line_number))
+
+            self.__consume(Token.COMMA)
+
+            self.__expr()
+            needlestring = self.__operand_stack.pop()
+
+            start = end = None
+            if self.__token.category == Token.COMMA:
+                self.__advance() # Advance past comma
+                self.__expr()
+                start = self.__operand_stack.pop()
+
+                if self.__token.category == Token.COMMA:
+                    self.__advance() # Advance past comma
+                    self.__expr()
+                    end = self.__operand_stack.pop()
+
+            self.__consume(Token.RIGHTPAREN)
+
+            try:
+                return hackstackstring.find(needlestring, start, end)
+
+            except TypeError:
+                raise TypeError("Invalid type supplied to INSTR in line " +
+                                 str(self.__line_number))
+
         self.__consume(Token.LEFTPAREN)
 
         self.__expr()
