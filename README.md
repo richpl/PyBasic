@@ -511,7 +511,7 @@ Allowable relational operators are:
 As an alternative to branching, Ternary functions are provided. The same relational operators are used.
 
 * **IFF**(x, y, z) - Evaluates *x* and returns *y* if true, otherwise returns *z*. *y* and *z* are expected to be numeric.
-* **IF$**(x, y, z) - As above, but *y* and *z* are expected to be strings.
+* **IF$**(x, y$, z$) - As above, but *y$* and *z$* are expected to be strings.
 
 ```
 > 10 LET I = 10
