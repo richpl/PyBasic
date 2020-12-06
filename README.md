@@ -187,7 +187,7 @@ are all valid variable names, whereas:
 
 * *5_VAR*
 * *_VAR$*
-* *66$* 
+* *66$*
 
 are all invalid.
 
@@ -209,7 +209,7 @@ for each dimension. Arrays may have a maximum of three dimensions.
 As for simple variables, a string array has its name suffixed by a '$' character, while a numeric array does not carry
 a suffix. An attempt to assign a string value to a numeric array or vice versa will generate an error.
 
-Note that the same variable name cannot be used for both an array and a simple variable. For example, the variables 
+Note that the same variable name cannot be used for both an array and a simple variable. For example, the variables
 *I$* and *I$(10)* should not be used within the same program, the results may be unpredictable. Also, array variables
 with the same name but different *dimensionality* are treated as the same. For example,
 using a **DIM** statement to define *I(5)* and then a second **DIM** statement to define *I(5, 5)* will
@@ -217,7 +217,7 @@ result in the second definition (the two dimensional array) overwriting the firs
 
 Array values may be used within any expression, such as in a **PRINT** statement for string values, or in any numerical
 expression for number values. However, you must be specific about which array element you are referencing, using the
-correct number of in-range indexes. If that particular array value has not yet been assigned, then an error 
+correct number of in-range indexes. If that particular array value has not yet been assigned, then an error
 message will be printed.
 
 ```
@@ -246,9 +246,9 @@ and are declared in a comma separated list:
 
 These values can then later be assigned to variables using the **READ** statement. Note that the type of the value
 (string or numeric) must match the type of the variable, otherwise an error message will be triggered. Therefore,
-attention should be paid to the relative ordering of constants and variables. Further, 
+attention should be paid to the relative ordering of constants and variables. Further,
 there must be enough constants to fill all of the variables defined in the **READ** statement, or else an
-error will be given. This is to ensure that the program is not left in a state where a variable has not been 
+error will be given. This is to ensure that the program is not left in a state where a variable has not been
 assigned a value, but nevertheless an attempt to use that variable is made later on in the program.
 
 The constants defined in the **DATA** statement may be consumed using several **READ** statements:
@@ -303,7 +303,7 @@ The **STOP** statement may be used to cease program execution:
 > 30 PRINT "two"
 > RUN
 one
-> 
+>
 ```
 
 A program will automatically cease execution when it reaches the final statement, so a **STOP** may not be necessary. However
@@ -327,7 +327,7 @@ The **LET** keyword is also optional:
 > 10 I = 10
 ```
 
-Array variables may also have values assigned to them. The indexes can be derived from numeric 
+Array variables may also have values assigned to them. The indexes can be derived from numeric
 expressions:
 
 ```
@@ -617,7 +617,7 @@ Allowable numeric functions are:
 reset using the **RANDOMIZE** instruction with an optional seed value: e.g.
 
 ```
-> 10 RANDOMIZE 100 
+> 10 RANDOMIZE 100
 > 20 PRINT RND
 > RUN
 0.1456692551041303
@@ -689,7 +689,7 @@ calculate the corresponding factorial *N!*.
 * *rock_scissors_paper.bas* - A BASIC implementation of the rock-paper-scissors game.
 
 *Note that you cannot simply load these programs from the text files. They must
-be entered line by line into the interpreter. The program can then be saved and 
+be entered line by line into the interpreter. The program can then be saved and
 reloaded using the* **SAVE** and **LOAD** *commands as described above. Of course,
 this is no more inconvenient than saving a program to cassette tape and reloading it,
 as we all would have done in the 1980s!*
