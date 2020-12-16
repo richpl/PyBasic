@@ -551,19 +551,18 @@ Input a number - 22
 
 Multiple items may be input by supplying a comma separated list. Input variables will be assigned
 to as many input values as supplied at run time. If there are more input values supplied than input
-variables, the excess input values will be ignored. Conversely, if not enough input values are
+variables, excess commas will be left in place. Conversely, if not enough input values are
 supplied, then the excess input variables will not be initialised (and will trigger an error if
 an attempt is made to evaluate those variables later in the program).
 
-Further, numeric input values must be valid numbers (integers or floating point), and must
-be unquoted. String input values must be surrounded by double quotes:
+Further, numeric input values must be valid numbers (integers or floating point).
 
 ```
 > 10 INPUT "Num, Str, Num: ": A, B$, C
 > 20 PRINT A, B$, C
 > RUN
-Num, Str, Num: 22, " hello ", 33
-22 hello 33
+Num, Str, Num: 22, hello!, 33
+22 hello!33
 >
 ```
 

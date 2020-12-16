@@ -419,6 +419,9 @@ class BASICParser:
         # Acquire the comma separated input variables
         variables = []
         if not self.__tokenindex >= len(self.__tokenlist):
+            if self.__token.category != Token.NAME:
+                raise ValueError('Expecting NAME in INPUT statement ' +
+                                 'in line ' + str(self.__line_number))
             variables.append(self.__token.lexeme)
             self.__advance()  # Advance past variable
 
@@ -428,7 +431,7 @@ class BASICParser:
                 self.__advance()  # Advance past variable
 
         # Gather input from the user into the variables
-        inputvals = input(prompt).split(',')
+        inputvals = input(prompt).split(',', (len(variables)-1))
 
         for variable in variables:
             left = variable
@@ -437,16 +440,7 @@ class BASICParser:
                 right = inputvals.pop(0)
 
                 if left.endswith('$'):
-                    # Python inserts quotes around input data
-                    if not right.find('"') == 1 and \
-                       not right.find('"', 2):
-                        raise ValueError('Non-string input provided to a string variable ' +
-                                         'in line ' + str(self.__line_number))
-
-                    else:
-                        # Strip the quotes from the stored string
-                        stripped = right.strip()  # May be space before or after quotes
-                        self.__symbol_table[left] = stripped.replace('"', '')
+                    self.__symbol_table[left] = str(right)
 
                 elif not left.endswith('$'):
                     try:
