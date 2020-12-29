@@ -624,7 +624,7 @@ class BASICParser:
                 BASICarray = self.__symbol_table[arrayname]
                 arrayval = self.__get_array_val(BASICarray, indexvars)
 
-                if arrayval:
+                if arrayval != None:
                     self.__operand_stack.append(self.__sign*arrayval)
 
                 else:
