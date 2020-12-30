@@ -103,6 +103,9 @@ class BASICToken:
         MAX             = 70  # MAX function
         MIN             = 71  # MIN function
         INSTR           = 72  # INSTR function
+        AND             = 73  # AND operator
+        OR              = 74  # OR operator
+        NOT             = 75  # NOT operator
 
         # Displayable names for each token category
         catnames = ['EOF', 'LET', 'LIST', 'PRINT', 'RUN',
@@ -118,14 +121,14 @@ class BASICToken:
         'LOG', 'SIN', 'TAN', 'DATA', 'READ', 'INT',
         'CHR', 'ASC', 'STR', 'MID', 'MODULO', 'TERNARY',
         'VAL', 'LEN', 'UPPER', 'LOWER', 'ROUND',
-        'MAX', 'MIN', 'INSTR']
+        'MAX', 'MIN', 'INSTR', 'AND', 'OR', 'NOT']
 
         smalltokens = {'=': ASSIGNOP, '(': LEFTPAREN, ')': RIGHTPAREN,
                        '+': PLUS, '-': MINUS, '*': TIMES, '/': DIVIDE,
                        '\n': NEWLINE, '<': LESSER,
                        '>': GREATER, '<>': NOTEQUAL,
                        '<=': LESSEQUAL, '>=': GREATEQUAL, ',': COMMA,
-                       ':': COLON, '%': MODULO}
+                       ':': COLON, '%': MODULO, '!=': NOTEQUAL}
 
         # Dictionary of BASIC reserved words
         keywords = {'LET': LET, 'LIST': LIST, 'PRINT': PRINT,
@@ -147,7 +150,8 @@ class BASICToken:
                     'VAL': VAL, 'LEN': LEN,
                     'UPPER$': UPPER, 'LOWER$': LOWER,
                     'ROUND': ROUND, 'MAX': MAX, 'MIN': MIN,
-                    'INSTR': INSTR}
+                    'INSTR': INSTR, 'END': STOP,
+                    'AND': AND, 'OR': OR, 'NOT': NOT}
 
         # Functions
         functions = {ABS, ATN, COS, EXP, INT, LOG, POW, RND, SIN, SQR, TAN,

@@ -210,12 +210,12 @@ class BASICParser:
 
         # Check there are items to print
         if not self.__tokenindex >= len(self.__tokenlist):
-            self.__relexpr()
+            self.__logexpr()
             print(self.__operand_stack.pop(), end='')
 
             while self.__token.category == Token.COMMA:
                 self.__advance()
-                self.__relexpr()
+                self.__logexpr()
                 print(self.__operand_stack.pop(), end='')
 
         # Final newline
@@ -289,7 +289,7 @@ class BASICParser:
         else:
             # We are assigning to a simple variable
             self.__consume(Token.ASSIGNOP)
-            self.__relexpr()
+            self.__logexpr()
 
             # Check that we are using the right variable name format
             right = self.__operand_stack.pop()
@@ -373,7 +373,7 @@ class BASICParser:
         self.__consume(Token.RIGHTPAREN)
         self.__consume(Token.ASSIGNOP)
 
-        self.__relexpr()
+        self.__logexpr()
 
         # Check that we are using the right variable name format
         right = self.__operand_stack.pop()
@@ -412,7 +412,7 @@ class BASICParser:
         prompt = '? '
         if self.__token.category == Token.STRING:
             # Acquire the input prompt
-            self.__relexpr()
+            self.__logexpr()
             prompt = self.__operand_stack.pop()
             self.__consume(Token.COLON)
 
@@ -494,28 +494,25 @@ class BASICParser:
         # Gather input from the DATA statement into the variables
         for variable in variables:
             left = variable
+            right = readlist.pop(0)
 
-            try:
-                right = self.__data_values.pop(0)
+            if left.endswith('$'):
+                # Python inserts quotes around input data
+                if isinstance(right, int):
+                    raise ValueError('Non-string input provided to a string variable ' +
+                                     'in line ' + str(self.__line_number))
 
-                if left.endswith('$'):
-                    # Python inserts quotes around input data
-                    if isinstance(right, int):
-                        raise ValueError('Non-string input provided to a string variable ' +
-                                         'in line ' + str(self.__line_number))
+                else:
+                    self.__symbol_table[left] = right
 
-                    else:
-                        # Strip the quotes from the stored string
-                        stripped = right.strip()  # May be space before or after quotes
-                        self.__symbol_table[left] = stripped.replace('"', '')
+            elif not left.endswith('$'):
+                try:
+                    self.__symbol_table[left] = int(right)
 
-                elif not left.endswith('$'):
-                    try:
-                        self.__symbol_table[left] = int(right)
+                except ValueError:
+                    raise ValueError('String input provided to a numeric variable ' +
+                                     'in line ' + str(self.__line_number))
 
-                    except ValueError:
-                        raise ValueError('String input provided to a numeric variable ' +
-                                         'in line ' + str(self.__line_number))
 
             except IndexError:
                 # No more input to process
@@ -624,7 +621,7 @@ class BASICParser:
                 BASICarray = self.__symbol_table[arrayname]
                 arrayval = self.__get_array_val(BASICarray, indexvars)
 
-                if arrayval:
+                if arrayval != None:
                     self.__operand_stack.append(self.__sign*arrayval)
 
                 else:
@@ -647,7 +644,7 @@ class BASICParser:
             # Save sign because expr() calls term() which resets
             # sign to 1
             savesign = self.__sign
-            self.__expr()  # Value of expr is pushed onto stack
+            self.__logexpr()  # Value of expr is pushed onto stack
 
             if savesign == -1:
                 # Change sign of expression
@@ -723,13 +720,17 @@ class BASICParser:
         """
 
         self.__advance()  # Advance past IF token
-        self.__relexpr()
+        self.__logexpr()
 
         # Save result of expression
         saveval = self.__operand_stack.pop()
 
         # Process the THEN part and save the jump value
         self.__consume(Token.THEN)
+
+        if self.__token.category == Token.GOTO:
+            self.__advance()    # Advance past optional GOTO
+
         self.__expr()
         then_jump = self.__operand_stack.pop()
 
@@ -741,6 +742,10 @@ class BASICParser:
         # See if there is an ELSE part
         if self.__token.category == Token.ELSE:
             self.__advance()
+
+            if self.__token.category == Token.GOTO:
+                self.__advance()    # Advance past optional GOTO
+
             self.__expr()
 
             # Set up and return the flow signal
@@ -867,7 +872,7 @@ class BASICParser:
         """
 
         self.__advance()  # Advance past ON token
-        self.__relexpr()
+        self.__logexpr()
 
         # Save result of expression
         saveval = self.__operand_stack.pop()
@@ -916,6 +921,36 @@ class BASICParser:
 
             elif savecat == Token.GREATEQUAL:
                 self.__operand_stack.append(left >= right)  # Push True or False
+
+    def __logexpr(self):
+        """Parses a logical expression
+        """
+        self.__notexpr()
+
+        while self.__token.category in [Token.OR, Token.AND]:
+            savecat = self.__token.category
+            self.__advance()
+            self.__notexpr()
+
+            right = self.__operand_stack.pop()
+            left = self.__operand_stack.pop()
+
+            if savecat == Token.OR:
+                self.__operand_stack.append(left or right)  # Push True or False
+
+            elif savecat == Token.AND:
+                self.__operand_stack.append(left and right)  # Push True or False
+
+    def __notexpr(self):
+        """Parses a logical not expression
+        """
+        if self.__token.category == Token.NOT:
+            self.__advance()
+            self.__relexpr()
+            right = self.__operand_stack.pop()
+            self.__operand_stack.append(not right)
+        else:
+            self.__relexpr()
 
     def __evaluate_function(self, category):
         """Evaluate the function in the statement
@@ -994,7 +1029,7 @@ class BASICParser:
         if category == Token.TERNARY:
             self.__consume(Token.LEFTPAREN)
 
-            self.__relexpr()
+            self.__logexpr()
             condition = self.__operand_stack.pop()
 
             self.__consume(Token.COMMA)
