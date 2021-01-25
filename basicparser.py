@@ -976,6 +976,29 @@ class BASICParser:
         if category == Token.RND:
             return random.random()
 
+        if category == Token.PI:
+            return math.pi
+
+        if category == Token.RNDINT:
+            self.__consume(Token.LEFTPAREN)
+
+            self.__expr()
+            lo = self.__operand_stack.pop()
+
+            self.__consume(Token.COMMA)
+
+            self.__expr()
+            hi = self.__operand_stack.pop()
+
+            self.__consume(Token.RIGHTPAREN)
+
+            try:
+                return random.randint(lo, hi)
+
+            except ValueError:
+                raise ValueError("Invalid value supplied to RNDINT in line " +
+                                 str(self.__line_number))
+
         if category == Token.MAX:
             self.__consume(Token.LEFTPAREN)
 

@@ -106,6 +106,8 @@ class BASICToken:
         AND             = 73  # AND operator
         OR              = 74  # OR operator
         NOT             = 75  # NOT operator
+        PI              = 76  # PI constant
+        RNDINT          = 77  # RNDINT function
 
         # Displayable names for each token category
         catnames = ['EOF', 'LET', 'LIST', 'PRINT', 'RUN',
@@ -121,7 +123,8 @@ class BASICToken:
         'LOG', 'SIN', 'TAN', 'DATA', 'READ', 'INT',
         'CHR', 'ASC', 'STR', 'MID', 'MODULO', 'TERNARY',
         'VAL', 'LEN', 'UPPER', 'LOWER', 'ROUND',
-        'MAX', 'MIN', 'INSTR', 'AND', 'OR', 'NOT']
+        'MAX', 'MIN', 'INSTR', 'AND', 'OR', 'NOT', 'PI',
+        'RNDINT']
 
         smalltokens = {'=': ASSIGNOP, '(': LEFTPAREN, ')': RIGHTPAREN,
                        '+': PLUS, '-': MINUS, '*': TIMES, '/': DIVIDE,
@@ -151,12 +154,13 @@ class BASICToken:
                     'UPPER$': UPPER, 'LOWER$': LOWER,
                     'ROUND': ROUND, 'MAX': MAX, 'MIN': MIN,
                     'INSTR': INSTR, 'END': STOP,
-                    'AND': AND, 'OR': OR, 'NOT': NOT}
+                    'AND': AND, 'OR': OR, 'NOT': NOT,
+                    'PI': PI, 'RNDINT': RNDINT}
 
         # Functions
         functions = {ABS, ATN, COS, EXP, INT, LOG, POW, RND, SIN, SQR, TAN,
                      CHR, ASC, MID, TERNARY, STR, VAL, LEN, UPPER, LOWER,
-                     ROUND, MAX, MIN, INSTR}
+                     ROUND, MAX, MIN, INSTR, PI, RNDINT}
 
         def __init__(self, column, category, lexeme):
 
