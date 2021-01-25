@@ -519,11 +519,6 @@ class BASICParser:
                     raise ValueError('String input provided to a numeric variable ' +
                                      'in line ' + str(self.__line_number))
 
-
-            except IndexError:
-                # No more input to process
-                pass
-
     def __expr(self):
         """Parses a numerical expression consisting
         of two terms being added or subtracted,
