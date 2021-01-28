@@ -36,20 +36,26 @@ class BASICArray:
         corresponding sizes
 
         """
-        if len(dimensions) == 0:
+        self.dims = min(3,len(dimensions))
+
+        if self.dims == 0:
             raise SyntaxError("Zero dimensional array specified")
 
-        if len(dimensions) == 1:
+        # Check for invalid sizes and ensure int
+        for i in range(self.dims):
+            if dimensions[i] < 0:
+                raise SyntaxError("Negative array size specified")
+            # Allow sizes like 1.0f, but not 1.1f
+            if int(dimensions[i]) != dimensions[i]:
+                raise SyntaxError("Fractional array size specified")
+            dimensions[i] = int(dimensions[i])
+
+        if self.dims == 1:
             self.data = [None for x in range(dimensions[0])]
-            self.dims = 1
-
-        if len(dimensions) == 2:
+        elif self.dims == 2:
             self.data = [[None for x in range(dimensions[1])] for x in range(dimensions[0])]
-            self.dims = 2
-
-        if len(dimensions) > 2:
+        else:
             self.data = [[[None for x in range(dimensions[2])] for x in range(dimensions[1])] for x in range(dimensions[0])]
-            self.dims = 3
 
     def pretty_print(self):
         print(str(self.data))
@@ -513,11 +519,6 @@ class BASICParser:
                     raise ValueError('String input provided to a numeric variable ' +
                                      'in line ' + str(self.__line_number))
 
-
-            except IndexError:
-                # No more input to process
-                pass
-
     def __expr(self):
         """Parses a numerical expression consisting
         of two terms being added or subtracted,
@@ -606,7 +607,11 @@ class BASICParser:
                 # Capture the index variables
                 self.__advance()  # Advance past the array name
 
-                self.__consume(Token.LEFTPAREN)
+                try:
+                    self.__consume(Token.LEFTPAREN)
+                except RuntimeError:
+                    raise RuntimeError('Array used without index in line ' +
+                                     str(self.__line_number))
 
                 indexvars = []
                 if not self.__tokenindex >= len(self.__tokenlist):
@@ -965,6 +970,29 @@ class BASICParser:
         # Process arguments according to function
         if category == Token.RND:
             return random.random()
+
+        if category == Token.PI:
+            return math.pi
+
+        if category == Token.RNDINT:
+            self.__consume(Token.LEFTPAREN)
+
+            self.__expr()
+            lo = self.__operand_stack.pop()
+
+            self.__consume(Token.COMMA)
+
+            self.__expr()
+            hi = self.__operand_stack.pop()
+
+            self.__consume(Token.RIGHTPAREN)
+
+            try:
+                return random.randint(lo, hi)
+
+            except ValueError:
+                raise ValueError("Invalid value supplied to RNDINT in line " +
+                                 str(self.__line_number))
 
         if category == Token.MAX:
             self.__consume(Token.LEFTPAREN)
