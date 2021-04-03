@@ -464,11 +464,13 @@ class BASICParser:
                         except ValueError:
                             valid_input = False
                             print('Non-numeric input provided to a numeric variable - redo from start')
+                            break
 
                 except IndexError:
                     # No more input to process
                     valid_input = False
                     print('Not enough values input - redo from start')
+                    break
 
     def __datastmt(self):
         """Parses a DATA statement"""
