@@ -590,8 +590,7 @@ Input a number - 22
 Multiple items may be input by supplying a comma separated list. Input variables will be assigned
 to as many input values as supplied at run time. If there are more input values supplied than input
 variables, excess commas will be left in place. Conversely, if not enough input values are
-supplied, then the excess input variables will not be initialised (and will trigger an error if
-an attempt is made to evaluate those variables later in the program).
+supplied, an error message will be printed and the user will be asked to re-input the values again.
 
 Further, numeric input values must be valid numbers (integers or floating point).
 
@@ -604,7 +603,8 @@ Num, Str, Num: 22, hello!, 33
 >
 ```
 
-A mismatch between the input value and input variable type will trigger an error.
+A mismatch between the input value and input variable type will trigger an error, and the user will be asked
+to re-input the values again.
 
 It is a limitation of this BASIC dialect that it is not possible to assign constants directly to array variables
 within an **INPUT** statement, only simple variables.
