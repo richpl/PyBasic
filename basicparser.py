@@ -436,32 +436,39 @@ class BASICParser:
                 variables.append(self.__token.lexeme)
                 self.__advance()  # Advance past variable
 
-        # Gather input from the user into the variables
-        inputvals = input(prompt).split(',', (len(variables)-1))
+        valid_input = False
+        while not valid_input:
+            # Gather input from the user into the variables
+            inputvals = input(prompt).split(',', (len(variables)-1))
 
-        for variable in variables:
-            left = variable
+            for variable in variables:
+                left = variable
 
-            try:
-                right = inputvals.pop(0)
+                try:
+                    right = inputvals.pop(0)
 
-                if left.endswith('$'):
-                    self.__symbol_table[left] = str(right)
+                    if left.endswith('$'):
+                        self.__symbol_table[left] = str(right)
+                        valid_input = True
 
-                elif not left.endswith('$'):
-                    try:
-                        if '.' in right:
-                            self.__symbol_table[left] = float(right)
-                        else:
-                            self.__symbol_table[left] = int(right)
+                    elif not left.endswith('$'):
+                        try:
+                            if '.' in right:
+                                self.__symbol_table[left] = float(right)
 
-                    except ValueError:
-                        raise ValueError('Non-numeric input provided to a numeric variable ' +
-                                         'in line ' + str(self.__line_number))
+                            else:
+                                self.__symbol_table[left] = int(right)
 
-            except IndexError:
-                # No more input to process
-                pass
+                            valid_input = True
+
+                        except ValueError:
+                            valid_input = False
+                            print('Non-numeric input provided to a numeric variable - redo from start')
+
+                except IndexError:
+                    # No more input to process
+                    valid_input = False
+                    print('Not enough values input - redo from start')
 
     def __datastmt(self):
         """Parses a DATA statement"""
@@ -503,7 +510,7 @@ class BASICParser:
         # Gather input from the DATA statement into the variables
         for variable in variables:
             left = variable
-            right = readlist.pop(0)
+            right = self.__data_values.pop(0)
 
             if left.endswith('$'):
                 # Python inserts quotes around input data
@@ -516,10 +523,15 @@ class BASICParser:
 
             elif not left.endswith('$'):
                 try:
-                    if '.' in right:
-                        self.__symbol_table[left] = float(right)
-                    else:
-                        self.__symbol_table[left] = int(right)
+                    #if '.' in right:
+                    #    self.__symbol_table[left] = float(right)
+                    #else:
+                    #    self.__symbol_table[left] = int(right)
+
+                    numeric = float(right)
+                    if numeric.is_integer():
+                        numeric = int(numeric)
+                    self.__symbol_table[left] = numeric
 
                 except ValueError:
                     raise ValueError('Non-numeric input provided to a numeric variable ' +
