@@ -24,7 +24,7 @@ line number.
 from basictoken import BASICToken as Token
 from basicparser import BASICParser
 from flowsignal import FlowSignal
-import pickle
+from lexer import Lexer
 
 
 class Program:
@@ -62,24 +62,52 @@ class Program:
     def save(self, file):
         """Save the program
 
-        :param file: The name and path of the save file
+        :param file: The name and path of the save file, .bas is
+                     appended
 
         """
         try:
-            with open(file, 'wb') as outfile:
-                pickle.dump(self.__program, outfile)
-                outfile.close()
+            with open(file + ".bas", "w") as outfile:
+                line_numbers = self.line_numbers()
 
+                for line_number in line_numbers:
+                    outfile.write(str(line_number) + " ")
+
+                    statement = self.__program[line_number]
+                    for i in range(len(statement)):
+                        token = statement[i]
+                        # Add in quotes for strings
+                        if token.category == Token.STRING:
+                            outfile.write('"' + token.lexeme + '"')
+
+                        else:
+                            outfile.write(token.lexeme)
+
+                        if i + 1 < len(statement):
+                            outfile.write(" ")
+
+                    outfile.write("\n")
+                outfile.close()
         except OSError:
             raise OSError("Could not save to file")
 
     def load(self, file):
         """Load the program
 
-        :param file: The name and path of the file to be loaded"""
+        :param file: The name and path of the file to be loaded, .bas is
+                     appended
+
+        """
+
+        # New out the program
+        self.delete()
         try:
-            with open(file, 'rb') as infile:
-                self.__program = pickle.load(infile)
+            lexer = Lexer()
+            with open(file + ".bas", "r") as infile:
+                for line in infile:
+                    line = line.replace("\r", "").replace("\n", "").strip()
+                    tokenlist = lexer.tokenize(line)
+                    self.add_stmt(tokenlist)
                 infile.close()
 
         except OSError:
