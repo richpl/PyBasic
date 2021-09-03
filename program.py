@@ -41,23 +41,28 @@ class Program:
         # and loop returns
         self.__return_stack = []
 
-    def list(self):
-        """Lists the program"""
+    def __str__(self):
+
+        program_text = ""
         line_numbers = self.line_numbers()
 
         for line_number in line_numbers:
-            print(line_number, end=' ')
+            program_text += str(line_number) + " "
 
             statement = self.__program[line_number]
             for token in statement:
                 # Add in quotes for strings
                 if token.category == Token.STRING:
-                    print('"' + token.lexeme + '"', end=' ')
+                    program_text += '"' + token.lexeme + '" '
 
                 else:
-                    print(token.lexeme, end=' ')
+                    program_text += token.lexeme + " "
+            program_text += "\n"
+        return program_text
 
-            print(flush=True)
+    def list(self):
+        """Lists the program"""
+        print(str(self), end="")
 
     def save(self, file):
         """Save the program
@@ -68,26 +73,7 @@ class Program:
         """
         try:
             with open(file + ".bas", "w") as outfile:
-                line_numbers = self.line_numbers()
-
-                for line_number in line_numbers:
-                    outfile.write(str(line_number) + " ")
-
-                    statement = self.__program[line_number]
-                    for i in range(len(statement)):
-                        token = statement[i]
-                        # Add in quotes for strings
-                        if token.category == Token.STRING:
-                            outfile.write('"' + token.lexeme + '"')
-
-                        else:
-                            outfile.write(token.lexeme)
-
-                        if i + 1 < len(statement):
-                            outfile.write(" ")
-
-                    outfile.write("\n")
-                outfile.close()
+                outfile.write(str(self))
         except OSError:
             raise OSError("Could not save to file")
 
@@ -108,7 +94,6 @@ class Program:
                     line = line.replace("\r", "").replace("\n", "").strip()
                     tokenlist = lexer.tokenize(line)
                     self.add_stmt(tokenlist)
-                infile.close()
 
         except OSError:
             raise OSError("Could not read file")
