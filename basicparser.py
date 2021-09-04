@@ -85,7 +85,8 @@ class BASICParser:
         self.__tokenindex = None
 
         # Set to keep track of extant loop variables
-        self. __loop_vars = set()
+        self.__loop_vars = set()
+        self.last_flowsignal = None
 
     def parse(self, tokenlist, line_number):
         """Must be initialised with the list of
@@ -836,12 +837,19 @@ class BASICParser:
 
         # Now determine the status of the loop
 
-        # If the loop variable is not in the set of extant
-        # variables, this is the first time we have entered the loop
         # Note that we cannot use the presence of the loop variable in
         # the symbol table for this test, as the same variable may already
         # have been instantiated elsewhere in the program
-        if loop_variable not in self.__loop_vars:
+        #
+        # Need to initialize the loop variable anytime the for
+        # statement is reached from a statement other than an active NEXT.
+
+        from_next = False
+        if self.last_flowsignal:
+            if self.last_flowsignal.ftype == FlowSignal.LOOP_REPEAT:
+                from_next = True
+
+        if not from_next:
             self.__symbol_table[loop_variable] = start_val
 
             # Also add loop variable to set of extant loop
@@ -865,10 +873,8 @@ class BASICParser:
 
         if stop:
             # Loop must terminate, so remove loop vriable from set of
-            # extant loop variables and remove loop variable from
-            # symbol table
+            # extant loop variables
             self.__loop_vars.remove(loop_variable)
-            del self.__symbol_table[loop_variable]
             return FlowSignal(ftype=FlowSignal.LOOP_SKIP,
                               ftarget=loop_variable)
         else:
@@ -1321,4 +1327,3 @@ class BASICParser:
 
         else:
             random.seed()
-
