@@ -41,21 +41,22 @@ class Program:
         # and loop returns
         self.__return_stack = []
 
-    def list(self):
+    def list(self, strt_line, end_line):
         """Lists the program"""
         line_numbers = self.line_numbers()
 
         for line_number in line_numbers:
-            print(line_number, end=' ')
+            if (int(line_number) >= strt_line and int(line_number) <= end_line) or strt_line == -1:
+                print(line_number, end=' ')
 
-            statement = self.__program[line_number]
-            for token in statement:
-                # Add in quotes for strings
-                if token.category == Token.STRING:
-                    print('"' + token.lexeme + '"', end=' ')
+                statement = self.__program[line_number]
+                for token in statement:
+                    # Add in quotes for strings
+                    if token.category == Token.STRING:
+                        print('"' + token.lexeme + '"', end=' ')
 
-                else:
-                    print(token.lexeme, end=' ')
+                    else:
+                        print(token.lexeme, end=' ')
 
             print(flush=True)
 

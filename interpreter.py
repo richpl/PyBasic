@@ -87,7 +87,14 @@ def main():
 
                 # List the program
                 elif tokenlist[0].category == Token.LIST:
-                    program.list()
+                    if len(tokenlist) == 2:
+                        program.list(int(tokenlist[1].lexeme),int(tokenlist[1].lexeme))
+                    elif len(tokenlist) == 3:
+                        program.list(int(tokenlist[1].lexeme),int(tokenlist[2].lexeme))
+                    elif len(tokenlist) == 4:
+                        program.list(int(tokenlist[1].lexeme),int(tokenlist[3].lexeme))
+                    else:
+                        program.list(-1,-1)
 
                 # Save the program to disk
                 elif tokenlist[0].category == Token.SAVE:
