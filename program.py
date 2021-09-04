@@ -58,7 +58,7 @@ class Program:
                     else:
                         print(token.lexeme, end=' ')
 
-            print(flush=True)
+                print(flush=True)
 
     def save(self, file):
         """Save the program
