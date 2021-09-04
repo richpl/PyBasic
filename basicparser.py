@@ -50,12 +50,23 @@ class BASICArray:
                 raise SyntaxError("Fractional array size specified")
             dimensions[i] = int(dimensions[i])
 
+        # MSBASIC: Initialize to Zero
+        # MSBASIC: Overdim by one, as some dialects are 1 based and expect
+        #          to use the last item at index = size
         if self.dims == 1:
-            self.data = [None for x in range(dimensions[0])]
+            self.data = [0 for x in range(dimensions[0] + 1)]
         elif self.dims == 2:
-            self.data = [[None for x in range(dimensions[1])] for x in range(dimensions[0])]
+            self.data = [
+                [0 for x in range(dimensions[1] + 1)] for x in range(dimensions[0] + 1)
+            ]
         else:
-            self.data = [[[None for x in range(dimensions[2])] for x in range(dimensions[1])] for x in range(dimensions[0])]
+            self.data = [
+                [
+                    [0 for x in range(dimensions[2] + 1)]
+                    for x in range(dimensions[1] + 1)
+                ]
+                for x in range(dimensions[0] + 1)
+            ]
 
     def pretty_print(self):
         print(str(self.data))
@@ -100,15 +111,27 @@ class BASICParser:
         how to branch if necessary, None otherwise
 
         """
-        self.__tokenlist = tokenlist
-        self.__tokenindex = 0
-
         # Remember the line number to aid error reporting
         self.__line_number = line_number
+        self.__tokenlist = []
+        for token in tokenlist:
+            if token.category == token.COLON:
+                self.__tokenindex = 0
 
+                # Assign the first token
+                self.__token = self.__tokenlist[self.__tokenindex]
+                flow = self.__stmt()
+                if flow:
+                    return flow
+
+                self.__tokenlist = []
+            else:
+                self.__tokenlist.append(token)
+
+
+        self.__tokenindex = 0
         # Assign the first token
         self.__token = self.__tokenlist[self.__tokenindex]
-
         return self.__stmt()
 
     def __advance(self):
@@ -219,7 +242,11 @@ class BASICParser:
             self.__logexpr()
             print(self.__operand_stack.pop(), end='')
 
-            while self.__token.category == Token.COMMA:
+            while self.__token.category == Token.SEMICOLON:
+                if self.__tokenindex == len(self.__tokenlist) - 1:
+                    # If a semicolon ends this line, don't print
+                    # a newline.. a-la ms-basic
+                    return
                 self.__advance()
                 self.__logexpr()
                 print(self.__operand_stack.pop(), end='')
@@ -318,32 +345,44 @@ class BASICParser:
         """
         self.__advance()  # Advance past DIM keyword
 
-        # Extract the array name, append a suffix so
-        # that we can distinguish from simple variables
-        # in the symbol table
-        name = self.__token.lexeme + '_array'
-        self.__advance()  # Advance past array name
+        # MSBASIC: allow dims of multiple arrays delimited by commas
+        while True:
+            # Extract the array name, append a suffix so
+            # that we can distinguish from simple variables
+            # in the symbol table
+            name = self.__token.lexeme + "_array"
+            self.__advance()  # Advance past array name
 
-        self.__consume(Token.LEFTPAREN)
+            self.__consume(Token.LEFTPAREN)
 
-        # Extract the dimensions
-        dimensions = []
-        if not self.__tokenindex >= len(self.__tokenlist):
-            self.__expr()
-            dimensions.append(self.__operand_stack.pop())
-
-            while self.__token.category == Token.COMMA:
-                self.__advance()  # Advance past comma
+            # Extract the dimensions
+            dimensions = []
+            if not self.__tokenindex >= len(self.__tokenlist):
                 self.__expr()
                 dimensions.append(self.__operand_stack.pop())
 
-        self.__consume(Token.RIGHTPAREN)
+                while self.__token.category == Token.COMMA:
+                    self.__advance()  # Advance past comma
+                    self.__expr()
+                    dimensions.append(self.__operand_stack.pop())
 
-        if len(dimensions) > 3:
-            raise SyntaxError("Maximum number of array dimensions is three " +
-                              "in line " + str(self.__line_number))
+            self.__consume(Token.RIGHTPAREN)
 
-        self.__symbol_table[name] = BASICArray(dimensions)
+            if len(dimensions) > 3:
+                raise SyntaxError(
+                    "Maximum number of array dimensions is three "
+                    + "in line "
+                    + str(self.__line_number)
+                )
+
+            self.__symbol_table[name] = BASICArray(dimensions)
+
+            if self.__tokenindex == len(self.__tokenlist):
+                # We have parsed the last token here...
+                return
+            else:
+                self.__consume(Token.COMMA)
+
 
     def __arrayassignmentstmt(self, name):
         """Parses an assignment to an array variable
@@ -420,7 +459,7 @@ class BASICParser:
             # Acquire the input prompt
             self.__logexpr()
             prompt = self.__operand_stack.pop()
-            self.__consume(Token.COLON)
+            self.__consume(Token.SEMICOLON)
 
         # Acquire the comma separated input variables
         variables = []
@@ -616,12 +655,21 @@ class BASICParser:
             self.__operand_stack.append(self.__token.lexeme)
             self.__advance()
 
-        elif self.__token.category == Token.NAME and \
-             self.__token.category not in Token.functions:
+        elif (
+            self.__token.category == Token.NAME
+            and self.__token.category not in Token.functions
+        ):
             # Check if this is a simple or array variable
-            if (self.__token.lexeme + '_array') in self.__symbol_table:
+            # MSBASIC Allows simple and complex variables to have the
+            # same id.  This is probably a bad idea, but it's used in
+            # some old example programs.  So check if next token is parens
+            if (
+                (self.__token.lexeme + "_array") in self.__symbol_table
+                and self.__tokenindex < len(self.__tokenlist) - 1
+                and self.__tokenlist[self.__tokenindex + 1].category == Token.LEFTPAREN
+            ):
                 # Capture the current lexeme
-                arrayname = self.__token.lexeme + '_array'
+                arrayname = self.__token.lexeme + "_array"
 
                 # Array must be processed
                 # Capture the index variables
@@ -629,29 +677,31 @@ class BASICParser:
 
                 try:
                     self.__consume(Token.LEFTPAREN)
-                except RuntimeError:
-                    raise RuntimeError('Array used without index in line ' +
-                                     str(self.__line_number))
-
-                indexvars = []
-                if not self.__tokenindex >= len(self.__tokenlist):
-                    self.__expr()
-                    indexvars.append(self.__operand_stack.pop())
-
-                    while self.__token.category == Token.COMMA:
-                        self.__advance()  # Advance past comma
+                    indexvars = []
+                    if not self.__tokenindex >= len(self.__tokenlist):
                         self.__expr()
                         indexvars.append(self.__operand_stack.pop())
 
-                BASICarray = self.__symbol_table[arrayname]
-                arrayval = self.__get_array_val(BASICarray, indexvars)
+                        while self.__token.category == Token.COMMA:
+                            self.__advance()  # Advance past comma
+                            self.__expr()
+                            indexvars.append(self.__operand_stack.pop())
 
-                if arrayval != None:
-                    self.__operand_stack.append(self.__sign*arrayval)
+                    BASICarray = self.__symbol_table[arrayname]
+                    arrayval = self.__get_array_val(BASICarray, indexvars)
 
-                else:
-                    raise IndexError('Empty array value returned in line ' +
-                                     str(self.__line_number))
+                    if arrayval != None:
+                        self.__operand_stack.append(self.__sign * arrayval)
+
+                    else:
+                        raise IndexError(
+                            "Empty array value returned in line "
+                            + str(self.__line_number)
+                        )
+                except RuntimeError:
+                    raise RuntimeError(
+                        "Array used without index in line " + str(self.__line_number)
+                    )
 
             elif self.__token.lexeme in self.__symbol_table:
                 # Simple variable must be processed
@@ -682,7 +732,8 @@ class BASICParser:
 
         else:
             raise RuntimeError('Expecting factor in numeric expression' +
-                               ' in line ' + str(self.__line_number))
+                               ' in line ' + str(self.__line_number) +
+                               self.__token.lexeme)
 
     def __get_array_val(self, BASICarray, indexvars):
         """Extracts the value from the given BASICArray at the specified indexes
@@ -989,6 +1040,19 @@ class BASICParser:
 
         # Process arguments according to function
         if category == Token.RND:
+            self.__consume(Token.LEFTPAREN)
+
+            self.__expr()
+            arg = self.__operand_stack.pop()
+
+            self.__consume(Token.RIGHTPAREN)
+            # MSBASIC basic reseeds with negative values
+            # as arg to RND... not sure if it returned anything
+            # Zero returns the last value again (not implemented)
+            # Any positive value returns random fload btw 0 and 1
+            if arg < 0:
+                random.seed(arg)
+
             return random.random()
 
         if category == Token.PI:
@@ -1094,6 +1158,46 @@ class BASICParser:
 
             return whentrue if condition else whenfalse
 
+        if category == Token.LEFT:
+            self.__consume(Token.LEFTPAREN)
+
+            self.__expr()
+            instring = self.__operand_stack.pop()
+
+            self.__consume(Token.COMMA)
+
+            self.__expr()
+            chars = self.__operand_stack.pop()
+
+            self.__consume(Token.RIGHTPAREN)
+
+            try:
+                return instring[:chars]
+
+            except TypeError:
+                raise TypeError("Invalid type supplied to LEFT$ in line " +
+                                 str(self.__line_number))
+
+        if category == Token.RIGHT:
+            self.__consume(Token.LEFTPAREN)
+
+            self.__expr()
+            instring = self.__operand_stack.pop()
+
+            self.__consume(Token.COMMA)
+
+            self.__expr()
+            chars = self.__operand_stack.pop()
+
+            self.__consume(Token.RIGHTPAREN)
+
+            try:
+                return instring[-chars:]
+
+            except TypeError:
+                raise TypeError("Invalid type supplied to RIGHT$ in line " +
+                                 str(self.__line_number))
+
         if category == Token.MID:
             self.__consume(Token.LEFTPAREN)
 
@@ -1103,19 +1207,23 @@ class BASICParser:
             self.__consume(Token.COMMA)
 
             self.__expr()
-            start = self.__operand_stack.pop()
+            # Older basic dialets were always 1 based
+            start = self.__operand_stack.pop() - 1
 
             if self.__token.category == Token.COMMA:
                 self.__advance() # Advance past comma
                 self.__expr()
-                end = self.__operand_stack.pop()
+                chars = self.__operand_stack.pop()
             else:
-                end = None
+                chars = None
 
             self.__consume(Token.RIGHTPAREN)
 
             try:
-                return instring[start:end]
+                if chars:
+                    return instring[start:start+chars]
+                else:
+                    return instring[start:]
 
             except TypeError:
                 raise TypeError("Invalid type supplied to MID$ in line " +
@@ -1139,12 +1247,13 @@ class BASICParser:
             if self.__token.category == Token.COMMA:
                 self.__advance() # Advance past comma
                 self.__expr()
-                start = self.__operand_stack.pop()
+                # Older basic dialets were always 1 based
+                start = self.__operand_stack.pop() -1
 
                 if self.__token.category == Token.COMMA:
                     self.__advance() # Advance past comma
                     self.__expr()
-                    end = self.__operand_stack.pop()
+                    end = self.__operand_stack.pop() -1
 
             self.__consume(Token.RIGHTPAREN)
 
@@ -1301,6 +1410,14 @@ class BASICParser:
                                  str(self.__line_number))
 
             return value.lower()
+
+        elif category == Token.TAB:
+            # Return a string of value spaces
+            if not isinstance(value, int):
+                raise TypeError("Invalid type supplied to TAB in line " +
+                                 str(self.__line_number))
+
+            return " " * value
 
         else:
             raise SyntaxError("Unrecognised function in line " +
