@@ -85,7 +85,6 @@ class BASICParser:
         self.__tokenindex = None
 
         # Set to keep track of extant loop variables
-        self.__loop_vars = set()
         self.last_flowsignal = None
 
     def parse(self, tokenlist, line_number):
@@ -852,10 +851,6 @@ class BASICParser:
         if not from_next:
             self.__symbol_table[loop_variable] = start_val
 
-            # Also add loop variable to set of extant loop
-            # variables
-            self.__loop_vars.add(loop_variable)
-
         else:
             # We need to modify the loop variable
             # according to the STEP value
@@ -872,9 +867,7 @@ class BASICParser:
             stop = True
 
         if stop:
-            # Loop must terminate, so remove loop vriable from set of
-            # extant loop variables
-            self.__loop_vars.remove(loop_variable)
+            # Loop must terminate
             return FlowSignal(ftype=FlowSignal.LOOP_SKIP,
                               ftarget=loop_variable)
         else:
