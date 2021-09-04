@@ -856,7 +856,6 @@ class BASICParser:
         # of the loop
 
         from_next = False
-        #print(self.last_flowsignal)
         if self.last_flowsignal:
             if self.last_flowsignal.ftype == FlowSignal.LOOP_REPEAT:
                 from_next = True
