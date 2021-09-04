@@ -56,6 +56,9 @@ class Lexer:
         # Establish a list of tokens to be
         # derived from the statement
         tokenlist = []
+        firstToken = False
+        firstNumber = True
+        commentStmt = False
 
         # Process every character until we
         # reach the end of the statement string
@@ -70,9 +73,22 @@ class Lexer:
             # incremented
             token = Token(self.__column - 1, None, '')
 
+            # Remark Statments - process rest of statement without checks
+            if commentStmt:
+                token.category = Token.REM
+                firstToken = False
+
+                while True:
+                    token.lexeme += c  # Append the current char to the lexeme
+                    c = self.__get_next_char()
+
+                    if c == '':
+                        break
+
             # Process strings
-            if c == '"':
+            elif c == '"':
                 token.category = Token.STRING
+                firstToken = False
 
                 # Consume all of the characters
                 # until we reach the terminating
@@ -102,6 +118,9 @@ class Lexer:
             elif c.isdigit():
                 token.category = Token.UNSIGNEDINT
                 found_point = False
+                if firstNumber:
+                    firstToken = True
+                firstNumber = False
 
                 # Consume all of the digits, including any decimal point
                 while True:
@@ -143,11 +162,17 @@ class Lexer:
                 if token.lexeme in Token.keywords:
                     token.category = Token.keywords[token.lexeme]
 
+                    if firstToken and token.lexeme == "REM":
+                        commentStmt = True
+                    firstToken = False
+
                 else:
                     token.category = Token.NAME
+                    firstToken = False
 
             # Process operator symbols
             elif c in Token.smalltokens:
+                firstToken = False
                 save = c
                 c = self.__get_next_char()  # c might be '' (end of stmt)
                 twochar = save + c
@@ -163,7 +188,7 @@ class Lexer:
                     token.lexeme = save
 
             # We do not recognise this token
-            else:
+            elif c != '':
                 raise SyntaxError('Syntax error')
 
             # Append the new token to the list
