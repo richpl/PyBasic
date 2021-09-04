@@ -71,8 +71,10 @@ class Program:
                      appended
 
         """
+        if not file.lower().endswith(".bas"):
+            file += ".bas"
         try:
-            with open(file + ".bas", "w") as outfile:
+            with open(file, "w") as outfile:
                 outfile.write(str(self))
         except OSError:
             raise OSError("Could not save to file")
@@ -87,9 +89,11 @@ class Program:
 
         # New out the program
         self.delete()
+        if not file.lower().endswith(".bas"):
+            file += ".bas"
         try:
             lexer = Lexer()
-            with open(file + ".bas", "r") as infile:
+            with open(file, "r") as infile:
                 for line in infile:
                     line = line.replace("\r", "").replace("\n", "").strip()
                     tokenlist = lexer.tokenize(line)
