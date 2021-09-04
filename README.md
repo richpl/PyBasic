@@ -1,6 +1,3 @@
-## This repository is being used for pull requests back to https://github.com/richpl/PyBasic
-For the Microcontroller version of PyBasic see: https://github.com/RetiredWizard/PyDOS/tree/main/PyBasic or https://github.com/brickbots/PicoBasic
-
 # A BASIC Interpreter - Program like it's 1979!
 
 ## Introduction
