@@ -160,6 +160,8 @@ class Program:
             # has line number has been reached
             while True:
                 flowsignal = self.__execute(self.get_next_line_number())
+                self.__parser.last_flowsignal = flowsignal
+                #print ("in program:",self.__parser.last_flowsignal)
 
                 if flowsignal:
                     if flowsignal.ftype == FlowSignal.SIMPLE_JUMP:

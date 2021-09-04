@@ -85,7 +85,8 @@ class BASICParser:
         self.__tokenindex = None
 
         # Set to keep track of extant loop variables
-        self. __loop_vars = set()
+        self.__loop_vars = set()
+        self.last_flowsignal = None
 
     def parse(self, tokenlist, line_number):
         """Must be initialised with the list of
@@ -841,7 +842,26 @@ class BASICParser:
         # Note that we cannot use the presence of the loop variable in
         # the symbol table for this test, as the same variable may already
         # have been instantiated elsewhere in the program
-        if loop_variable not in self.__loop_vars:
+        #
+        # The above logic doesn't work if the loop is terminated by a
+        # goto outside the extent of the loop and then the loop is
+        # initiated again through normal program flow, in this case the
+        # loop variable will not initalize but pick up where it was
+        # when the previous loop was exited. A better option would be to
+        # initialize the loop variable anytime the for statement is reached
+        # from a statement other than an active next statement.
+        #
+        # There is still a problem when loops are exited abnormally since
+        # the loop variable is not cleaned up properly upon the termination
+        # of the loop
+
+        from_next = False
+        #print(self.last_flowsignal)
+        if self.last_flowsignal:
+            if self.last_flowsignal.ftype == FlowSignal.LOOP_REPEAT:
+                from_next = True
+
+        if loop_variable not in self.__loop_vars or not from_next:
             self.__symbol_table[loop_variable] = start_val
 
             # Also add loop variable to set of extant loop
@@ -1321,4 +1341,3 @@ class BASICParser:
 
         else:
             random.seed()
-
