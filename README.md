@@ -92,7 +92,7 @@ When loading or saving, the .bas extension is assumed if not provided.  If you a
 ```
 > LOAD regression
 ```
-Will load REGRESSION.bas from the current working directory.
+Will load regression.bas from the current working directory.
 
 Individual program statements may be deleted by entering their line number only:
 
