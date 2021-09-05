@@ -24,7 +24,7 @@ line number.
 from basictoken import BASICToken as Token
 from basicparser import BASICParser
 from flowsignal import FlowSignal
-import pickle
+from lexer import Lexer
 
 
 class Program:
@@ -41,46 +41,63 @@ class Program:
         # and loop returns
         self.__return_stack = []
 
-    def list(self):
-        """Lists the program"""
+    def __str__(self):
+
+        program_text = ""
         line_numbers = self.line_numbers()
 
         for line_number in line_numbers:
-            print(line_number, end=' ')
+            program_text += str(line_number) + " "
 
             statement = self.__program[line_number]
             for token in statement:
                 # Add in quotes for strings
                 if token.category == Token.STRING:
-                    print('"' + token.lexeme + '"', end=' ')
+                    program_text += '"' + token.lexeme + '" '
 
                 else:
-                    print(token.lexeme, end=' ')
+                    program_text += token.lexeme + " "
+            program_text += "\n"
+        return program_text
 
-            print(flush=True)
+    def list(self):
+        """Lists the program"""
+        print(str(self), end="")
 
     def save(self, file):
         """Save the program
 
-        :param file: The name and path of the save file
+        :param file: The name and path of the save file, .bas is
+                     appended
 
         """
+        if not file.lower().endswith(".bas"):
+            file += ".bas"
         try:
-            with open(file, 'wb') as outfile:
-                pickle.dump(self.__program, outfile)
-                outfile.close()
-
+            with open(file, "w") as outfile:
+                outfile.write(str(self))
         except OSError:
             raise OSError("Could not save to file")
 
     def load(self, file):
         """Load the program
 
-        :param file: The name and path of the file to be loaded"""
+        :param file: The name and path of the file to be loaded, .bas is
+                     appended
+
+        """
+
+        # New out the program
+        self.delete()
+        if not file.lower().endswith(".bas"):
+            file += ".bas"
         try:
-            with open(file, 'rb') as infile:
-                self.__program = pickle.load(infile)
-                infile.close()
+            lexer = Lexer()
+            with open(file, "r") as infile:
+                for line in infile:
+                    line = line.replace("\r", "").replace("\n", "").strip()
+                    tokenlist = lexer.tokenize(line)
+                    self.add_stmt(tokenlist)
 
         except OSError:
             raise OSError("Could not read file")

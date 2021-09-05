@@ -19,6 +19,7 @@ from basictoken import BASICToken as Token
 from flowsignal import FlowSignal
 import math
 import random
+from time import monotonic
 
 
 """Implements a BASIC array, which may have up
@@ -1319,4 +1320,4 @@ class BASICParser:
             random.seed(seed)
 
         else:
-            random.seed()
+            random.seed(int(monotonic()))

@@ -132,7 +132,7 @@ class Lexer:
 
                     # Break if not a letter or a dollar symbol
                     # (the latter is used for string variable names)
-                    if not (c.isalnum() or c == '_' or c == '$'):
+                    if not ((c.isalpha() or c.isdigit()) or c == '_' or c == '$'):
                         break
 
                 # Normalise keywords and names to upper case
