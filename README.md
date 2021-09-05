@@ -72,7 +72,7 @@ A program is executed using the **RUN** command:
 >
 ```
 
-A program may be saved to disk using the **SAVE** command. Not that the full path must be specified within double quotes:
+A program may be saved to disk using the **SAVE** command. Note that the full path must be specified within double quotes:
 
 ```
 > SAVE "C:\path\to\my\file"
@@ -80,10 +80,7 @@ Program written to file
 >
 ```
 
-Saving is achieved by pickling the Python object that represents the BASIC program, i.e. the saved file is *not* a textual copy of
-the program statements.
-
-The program may be re-loaded (i.e. unpickled) from disk using the **LOAD** command, again specifying the full path using double quotes:
+The program may be re-loaded from disk using the **LOAD** command, again specifying the full path using double quotes:
 
 ```
 > LOAD "C:\path\to\my\file"
@@ -91,8 +88,11 @@ Program read from file
 >
 ```
 
-Since loading is performed by unpickling the program object from a file, only BASIC programs *previously saved
-by the interpreter* may be loaded.
+When loading or saving, the .bas extension is assumed if not provided.  If you are loading a simple name (alpha/numbers only) and in the working dir, quotes can be omitted:
+```
+> LOAD regression
+```
+Will load regression.bas from the current working directory.
 
 Individual program statements may be deleted by entering their line number only:
 
