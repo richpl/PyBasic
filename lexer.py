@@ -148,9 +148,6 @@ class Lexer:
 
                 # Remark Statments - process rest of statement without checks
                 if token.lexeme == "REM":
-                    token.lexeme += c
-                    c = self.__get_next_char()
-
                     while c!= '':
                         token.lexeme += c  # Append the current char to the lexeme
                         c = self.__get_next_char()
