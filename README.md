@@ -732,12 +732,6 @@ calculate the corresponding factorial *N!*.
 
 * *rock_scissors_paper.bas* - A BASIC implementation of the rock-paper-scissors game.
 
-*Note that you cannot simply load these programs from the text files. They must
-be entered line by line into the interpreter. The program can then be saved and
-reloaded using the* **SAVE** and **LOAD** *commands as described above. Of course,
-this is no more inconvenient than saving a program to cassette tape and reloading it,
-as we all would have done in the 1980s!*
-
 ## Informal grammar definition
 
 **ABS**(*numerical-expression*) - Calculates the absolute value of the result of *numerical-expression*
