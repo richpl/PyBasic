@@ -47,22 +47,36 @@ class Program:
         line_numbers = self.line_numbers()
 
         for line_number in line_numbers:
-            program_text += str(line_number) + " "
+            program_text += self.str_statement(line_number)
 
-            statement = self.__program[line_number]
-            for token in statement:
-                # Add in quotes for strings
-                if token.category == Token.STRING:
-                    program_text += '"' + token.lexeme + '" '
-
-                else:
-                    program_text += token.lexeme + " "
-            program_text += "\n"
         return program_text
 
-    def list(self):
+    def str_statement(self, line_number):
+        line_text = str(line_number) + " "
+
+        statement = self.__program[line_number]
+        for token in statement:
+            # Add in quotes for strings
+            if token.category == Token.STRING:
+                line_text += '"' + token.lexeme + '" '
+
+            else:
+                line_text += token.lexeme + " "
+        line_text += "\n"
+        return line_text
+
+    def list(self, start_line=None, end_line=None):
         """Lists the program"""
-        print(str(self), end="")
+        line_numbers = self.line_numbers()
+        if not start_line:
+            start_line = int(line_numbers[0])
+
+        if not end_line:
+            end_line = int(line_numbers[-1])
+
+        for line_number in line_numbers:
+            if int(line_number) >= start_line and int(line_number) <= end_line:
+                print(self.str_statement(line_number), end="")
 
     def save(self, file):
         """Save the program
