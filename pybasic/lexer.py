@@ -34,7 +34,7 @@ Column: 12 Category: UNSIGNEDFLOAT Lexeme: 3.45
 Column: 12 Category: STRING Lexeme: HELLO
 """
 
-from basictoken import BASICToken as Token
+from .basictoken import BASICToken as Token
 
 
 class Lexer:

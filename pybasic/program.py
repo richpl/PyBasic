@@ -21,10 +21,10 @@ line number.
 
 """
 
-from basictoken import BASICToken as Token
-from basicparser import BASICParser
-from flowsignal import FlowSignal
-from lexer import Lexer
+from .basictoken import BASICToken as Token
+from .basicparser import BASICParser
+from .flowsignal import FlowSignal
+from .lexer import Lexer
 
 
 class BASICData:
