@@ -21,10 +21,10 @@
 210 PRINT "Should not print this line"
 220 PRINT "*** Testing subroutine behaviour ***"
 230 PRINT "Calling subroutine"
-240 GOSUB 540
+240 GOSUB 630
 250 PRINT "Exited subroutine"
 260 PRINT "Now testing nested subroutines"
-270 GOSUB 600
+270 GOSUB 660
 280 PRINT "*** Testing loops ***"
 290 PRINT "This loop should count to 5 in increments of 1:"
 300 FOR I = 1 TO 5
@@ -49,15 +49,24 @@
 490 NEXT I
 500 PRINT "This should print 555"
 510 PRINT A(0, 0), A(1, 1), A(2, 2)
-520 PRINT "*** Finished ***"
-530 STOP
-540 REM A SUBROUTINE TEST
-550 PRINT "Executing the subroutine"
-560 RETURN
-600 REM AN OUTER SUBROUTINE
-610 GOSUB 700
-620 PRINT "This should be printed second"
-630 RETURN
+520 PRINT "*** Testing file i/o ***"
+530 OPEN "REGRESSION.TXT" FOR OUTPUT AS #1
+540 PRINT #1,"0123456789Hello World!"
+550 CLOSE #1
+560 OPEN "REGRESSION.TXT" FOR INPUT AS #2
+570 PRINT "The next line should say 'Hello World!'"
+580 FSEEK #2,10
+590 INPUT #2,A$
+600 PRINT A$
+610 PRINT "*** Finished ***"
+620 STOP
+630 REM A SUBROUTINE TEST
+640 PRINT "Executing the subroutine"
+650 RETURN
+660 REM AN OUTER SUBROUTINE
+670 GOSUB 700
+680 PRINT "This should be printed second"
+690 RETURN
 700 REM A NESTED SUBROUTINE
 710 PRINT "This should be printed first"
 720 RETURN
