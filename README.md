@@ -67,11 +67,16 @@ Programs may be listed using the **LIST** command:
 The list command can take arguments to refine the line selection listed
 
 `LIST 50` Lists only line 50
+
 `LIST 50-100` Lists lines 50 through 100 inclusive
+
 `LIST 50 100` Also Lists lines 50 through 100 inclusive, almost any delimiter
 works here
+
 `LIST -100` Lists from the start of the program through line 100 inclusive
+
 `LIST 50-` Lists from line 50 to the end of the program
+
 
 A program is executed using the **RUN** command:
 
