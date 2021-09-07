@@ -21,10 +21,10 @@
 210 PRINT "Should not print this line"
 220 PRINT "*** Testing subroutine behaviour ***"
 230 PRINT "Calling subroutine"
-240 GOSUB 630
+240 GOSUB 1630
 250 PRINT "Exited subroutine"
 260 PRINT "Now testing nested subroutines"
-270 GOSUB 660
+270 GOSUB 1660
 280 PRINT "*** Testing loops ***"
 290 PRINT "This loop should count to 5 in increments of 1:"
 300 FOR I = 1 TO 5
@@ -58,15 +58,27 @@
 580 FSEEK #2,10
 590 INPUT #2,A$
 600 PRINT A$
-610 PRINT "*** Finished ***"
-620 STOP
-630 REM A SUBROUTINE TEST
-640 PRINT "Executing the subroutine"
-650 RETURN
-660 REM AN OUTER SUBROUTINE
-670 GOSUB 700
-680 PRINT "This should be printed second"
-690 RETURN
-700 REM A NESTED SUBROUTINE
-710 PRINT "This should be printed first"
-720 RETURN
+610 REM THESE TESTS WILL ONLY WORK AFTER PULL REQUEST #30 IS MERGED
+620 N = 0
+630 I = 7
+640 PRINT "This loop should count to 5 in increments of 1 twice:"
+650 FOR I = 1 TO 10
+660 PRINT I
+670 IF I = 5 THEN GOTO 690
+680 NEXT I
+690 N = N + 1
+700 IF N < 2 THEN GOTO 650
+809 rem ***** Unremark the following line after PR #30 has been merged *****
+810 rem PRINT "The loop variable I should be equal to 5, I=",I
+1610 PRINT "*** Finished ***"
+1620 STOP
+1630 REM A SUBROUTINE TEST
+1640 PRINT "Executing the subroutine"
+1650 RETURN
+1660 REM AN OUTER SUBROUTINE
+1670 GOSUB 1700
+1680 PRINT "This should be printed second"
+1690 RETURN
+1700 REM A NESTED SUBROUTINE
+1710 PRINT "This should be printed first"
+1720 RETURN
