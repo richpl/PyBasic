@@ -30,6 +30,7 @@ class BASICData:
 
         if line_number not in self.__data:
             self.__data.append(line_number)
+            self.__data.sort()
 
     def readData(self,read_line_number,pgmStatements):
 
@@ -38,8 +39,6 @@ class BASICData:
                                'in line ' + str(read_line_number))
 
         data_values = []
-
-        self.__data.sort()
 
         if self.__next_data == 0:
             self.__next_data = self.__data[0]
@@ -78,9 +77,6 @@ class BASICData:
             if restoreLineNo == 0:
                 self.__next_data = restoreLineNo
             else:
-
-                self.__data.sort()
-
                 indexln = self.__data.index(restoreLineNo)
 
                 if indexln == 0:
