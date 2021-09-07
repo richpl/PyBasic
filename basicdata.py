@@ -16,7 +16,7 @@ class BASICData:
 
     def delData(self,line_number):
         if line_number in self.__data:
-            pop(__data.index(line_number))
+            self.__data.pop(self.__data.index(line_number))
 
     def addData(self,line_number):
         """
@@ -89,4 +89,4 @@ class BASICData:
                     self.__next_data = self.__data[indexln-1]
         else:
             raise RuntimeError('Attempt to RESTORE but no DATA ' +
-                               'statement at line ' + str(lineno))
+                               'statement at line ' + str(restoreLineNo))

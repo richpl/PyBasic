@@ -3,7 +3,7 @@
 30 PRINT A$ 
 40 DATA 1 , 2 , 3 
 50 DATA 4 , 5 , 6 
-55 DATA 1.2 , 3 , "alpha" 
+55 DATA 1.5 , 2 , "test" 
 60 FOR I = 1 TO 3 
 70 READ J , K 
 80 PRINT J , K 
@@ -22,3 +22,6 @@
 210 READ I , J , K , L 
 220 PRINT "the next line should print 1234:" 
 230 PRINT I , J , K , L 
+240 READ I , J , K , L 
+245 PRINT "The next line should print 561.52" 
+250 PRINT I , J , K , L 
