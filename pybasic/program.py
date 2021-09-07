@@ -1,5 +1,3 @@
-#! /usr/bin/python
-
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 # This program is free software: you can redistribute it and/or modify
@@ -138,7 +136,7 @@ class BASICData:
 
 class Program:
 
-    def __init__(self):
+    def __init__(self, terminal):
         # Dictionary to represent program
         # statements, keyed by line number
         self.__program = {}
@@ -149,6 +147,7 @@ class Program:
         # Initialise return stack for subroutine returns
         # and loop returns
         self.__return_stack = []
+        self.__terminal = terminal
 
         # Setup DATA object
         self.__data = BASICData()
@@ -178,19 +177,6 @@ class Program:
                 line_text += token.lexeme + " "
         line_text += "\n"
         return line_text
-
-    def list(self, start_line=None, end_line=None):
-        """Lists the program"""
-        line_numbers = self.line_numbers()
-        if not start_line:
-            start_line = int(line_numbers[0])
-
-        if not end_line:
-            end_line = int(line_numbers[-1])
-
-        for line_number in line_numbers:
-            if int(line_number) >= start_line and int(line_number) <= end_line:
-                print(self.str_statement(line_number), end="")
 
     def save(self, file):
         """Save the program
@@ -292,7 +278,7 @@ class Program:
     def execute(self):
         """Execute the program"""
 
-        self.__parser = BASICParser(self.__data)
+        self.__parser = BASICParser(self.__data, self.__terminal)
         self.__data.restore(0) # reset data pointer
 
         line_numbers = self.line_numbers()

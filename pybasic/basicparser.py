@@ -1,5 +1,3 @@
-#! /usr/bin/python
-
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 # This program is free software: you can redistribute it and/or modify
@@ -78,7 +76,7 @@ statement when supplied.
 """
 class BASICParser:
 
-    def __init__(self, basicdata):
+    def __init__(self, basicdata, terminal):
         # Symbol table to hold variable names mapped
         # to values
         self.__symbol_table = {}
@@ -104,6 +102,9 @@ class BASICParser:
 
         #file handle list
         self.__file_handles = {}
+
+        # Store the terminal object
+        self.__terminal = terminal
 
     def parse(self, tokenlist, line_number):
         """Must be initialised with the list of
@@ -283,7 +284,7 @@ class BASICParser:
             if fileIO:
                 self.__file_handles[filenum].write('%s' %(self.__operand_stack.pop()))
             else:
-                print(self.__operand_stack.pop(), end='')
+                self.__terminal.write(self.__operand_stack.pop())
 
             while self.__token.category == Token.SEMICOLON:
                 if self.__tokenindex == len(self.__tokenlist) - 1:
@@ -295,13 +296,13 @@ class BASICParser:
                 if fileIO:
                     self.__file_handles[filenum].write('%s' %(self.__operand_stack.pop()))
                 else:
-                    print(self.__operand_stack.pop(), end='')
+                    self.__terminal.write(self.__operand_stack.pop())
 
         # Final newline
         if fileIO:
             self.__file_handles[filenum].write("\n")
         else:
-            print()
+            self.__terminal.enter()
 
     def __letstmt(self):
         """Parses a LET statement,
@@ -672,7 +673,8 @@ class BASICParser:
                 inputvals = ((self.__file_handles[filenum].readline().replace("\n","")).replace("\r","")).split(',', (len(variables)-1))
                 valid_input = True
             else:
-                inputvals = input(prompt).split(',', (len(variables)-1))
+                self.__terminal.write(prompt)
+                inputvals = self.__terminal.input().split(',', (len(variables)-1))
 
             for variable in variables:
                 left = variable
@@ -697,14 +699,14 @@ class BASICParser:
                         except ValueError:
                             if not fileIO:
                                 valid_input = False
-                            print('Non-numeric input provided to a numeric variable - redo from start')
+                            self.__terminal.print('Non-numeric input provided to a numeric variable - redo from start')
                             break
 
                 except IndexError:
                     # No more input to process
                     if not fileIO:
                         valid_input = False
-                    print('Not enough values input - redo from start')
+                    self.__terminal.print('Not enough values input - redo from start')
                     break
 
     def __restorestmt(self):

@@ -1,5 +1,3 @@
-#! /usr/bin/python
-
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 # This program is free software: you can redistribute it and/or modify
@@ -188,6 +186,9 @@ class BASICToken:
             self.category = category  # Category of the token
             self.lexeme = lexeme      # Token in string form
 
+        def __str__(self):
+            return self.lexeme
+
         def pretty_print(self):
             """Pretty prints the token
 
@@ -196,5 +197,3 @@ class BASICToken:
                   'Category:', self.catnames[self.category],
                   'Lexeme:', self.lexeme)
 
-        def print_lexeme(self):
-            print(self.lexeme, end=' ')
