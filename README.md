@@ -22,7 +22,7 @@ the offending statement.
 The interpreter can be invoked as follows:
 
 ```
-$ python interpreter.py
+$ python example.py
 ```
 
 ## Operators
@@ -879,6 +879,8 @@ the result of a jump defined in the statement just parsed (GOTO, conditional bra
 a subroutine call, or program termination. This paradigm of using the parser to simply parse individual statements, the Program
 object to make control flow decisions and to track execution, and a signalling mechanism to allow the parser to signal
 control flow changes to the Program object, is used consistently throughout the implementation.
+
+* term.py - Implements a terminal for character based input/output.  This object is passed to other classes for use.  The simpleterm example uses normal python input/output but more sophisticated options are available with screen positioning and other features.
 
 ## Open issues
 

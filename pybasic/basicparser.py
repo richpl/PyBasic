@@ -1,5 +1,3 @@
-#! /usr/bin/python
-
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 # This program is free software: you can redistribute it and/or modify
@@ -67,7 +65,7 @@ statement when supplied.
 """
 class BASICParser:
 
-    def __init__(self):
+    def __init__(self, terminal):
         # Symbol table to hold variable names mapped
         # to values
         self.__symbol_table = {}
@@ -87,6 +85,9 @@ class BASICParser:
 
         # Set to keep track of extant loop variables
         self. __loop_vars = set()
+
+        # Store the terminal object
+        self.__terminal = terminal
 
     def parse(self, tokenlist, line_number):
         """Must be initialised with the list of
@@ -218,15 +219,15 @@ class BASICParser:
         # Check there are items to print
         if not self.__tokenindex >= len(self.__tokenlist):
             self.__logexpr()
-            print(self.__operand_stack.pop(), end='')
+            self.__terminal.write(self.__operand_stack.pop())
 
             while self.__token.category == Token.COMMA:
                 self.__advance()
                 self.__logexpr()
-                print(self.__operand_stack.pop(), end='')
+                self.__terminal.write(self.__operand_stack.pop())
 
         # Final newline
-        print()
+        self.__terminal.enter()
 
     def __letstmt(self):
         """Parses a LET statement,
@@ -440,7 +441,8 @@ class BASICParser:
         valid_input = False
         while not valid_input:
             # Gather input from the user into the variables
-            inputvals = input(prompt).split(',', (len(variables)-1))
+            self.__terminal.write(prompt)
+            inputvals = self.__terminal.input().split(',', (len(variables)-1))
 
             for variable in variables:
                 left = variable
@@ -464,13 +466,13 @@ class BASICParser:
 
                         except ValueError:
                             valid_input = False
-                            print('Non-numeric input provided to a numeric variable - redo from start')
+                            self.__terminal.print('Non-numeric input provided to a numeric variable - redo from start')
                             break
 
                 except IndexError:
                     # No more input to process
                     valid_input = False
-                    print('Not enough values input - redo from start')
+                    self.__terminal.print('Not enough values input - redo from start')
                     break
 
     def __datastmt(self):
