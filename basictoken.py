@@ -108,6 +108,7 @@ class BASICToken:
         NOT             = 75  # NOT operator
         PI              = 76  # PI constant
         RNDINT          = 77  # RNDINT function
+        RESTORE         = 82  # RESTORE keyword
 
         # Displayable names for each token category
         catnames = ['EOF', 'LET', 'LIST', 'PRINT', 'RUN',
@@ -124,7 +125,7 @@ class BASICToken:
         'CHR', 'ASC', 'STR', 'MID', 'MODULO', 'TERNARY',
         'VAL', 'LEN', 'UPPER', 'LOWER', 'ROUND',
         'MAX', 'MIN', 'INSTR', 'AND', 'OR', 'NOT', 'PI',
-        'RNDINT']
+        'RNDINT', 'RESTORE']
 
         smalltokens = {'=': ASSIGNOP, '(': LEFTPAREN, ')': RIGHTPAREN,
                        '+': PLUS, '-': MINUS, '*': TIMES, '/': DIVIDE,
@@ -155,7 +156,7 @@ class BASICToken:
                     'ROUND': ROUND, 'MAX': MAX, 'MIN': MIN,
                     'INSTR': INSTR, 'END': STOP,
                     'AND': AND, 'OR': OR, 'NOT': NOT,
-                    'PI': PI, 'RNDINT': RNDINT}
+                    'PI': PI, 'RNDINT': RNDINT, 'RESTORE': RESTORE}
 
         # Functions
         functions = {ABS, ATN, COS, EXP, INT, LOG, POW, RND, SIN, SQR, TAN,
@@ -178,4 +179,3 @@ class BASICToken:
 
         def print_lexeme(self):
             print(self.lexeme, end=' ')
-

@@ -26,6 +26,7 @@ again.
 from basictoken import BASICToken as Token
 from lexer import Lexer
 from program import Program
+from basicdata import BASICData
 from sys import stderr
 
 
@@ -34,7 +35,7 @@ def main():
     banner = (
         """
         PPPP   Y   Y  BBBB    AAA    SSSS    I     CCC
-        P   P   Y Y   B   B  A   A  S        I    C   
+        P   P   Y Y   B   B  A   A  S        I    C
         P   P   Y Y   B   B  A   A  S        I    C
         PPPP     Y    BBBB   AAAAA  SSSS     I    C
         P        Y    B   B  A   A      S    I    C
@@ -46,6 +47,7 @@ def main():
 
     lexer = Lexer()
     program = Program()
+    datastmts = BASICData()
 
     # Continuously accept user input and act on it until
     # the user enters 'EXIT'
@@ -53,7 +55,8 @@ def main():
 
         stmt = input('> ')
 
-        try:
+        #try:
+        if True:
             tokenlist = lexer.tokenize(stmt)
 
             # Execute commands directly, otherwise
@@ -70,20 +73,21 @@ def main():
                 # a line number
                 elif tokenlist[0].category == Token.UNSIGNEDINT\
                      and len(tokenlist) > 1:
-                    program.add_stmt(tokenlist)
+                    program.add_stmt(tokenlist,datastmts)
 
                 # Delete a statement from the program
                 elif tokenlist[0].category == Token.UNSIGNEDINT \
                         and len(tokenlist) == 1:
-                    program.delete_statement(int(tokenlist[0].lexeme))
+                    program.delete_statement(int(tokenlist[0].lexeme),datastmts)
 
                 # Execute the program
                 elif tokenlist[0].category == Token.RUN:
-                    try:
-                        program.execute()
+                    #try:
+                    if True:
+                        program.execute(datastmts)
 
-                    except KeyboardInterrupt:
-                        print("Program terminated")
+                    #except KeyboardInterrupt:
+                        #print("Program terminated")
 
                 # List the program
                 elif tokenlist[0].category == Token.LIST:
@@ -96,12 +100,12 @@ def main():
 
                 # Load the program from disk
                 elif tokenlist[0].category == Token.LOAD:
-                    program.load(tokenlist[1].lexeme)
+                    program.load(tokenlist[1].lexeme,datastmts)
                     print("Program read from file")
 
                 # Delete the program from memory
                 elif tokenlist[0].category == Token.NEW:
-                    program.delete()
+                    program.delete(datastmts)
 
                 # Unrecognised input
                 else:
@@ -112,8 +116,8 @@ def main():
 
         # Trap all exceptions so that interpreter
         # keeps running
-        except Exception as e:
-            print(e, file=stderr, flush=True)
+        #except Exception as e:
+            #print(e, file=stderr, flush=True)
 
 
 if __name__ == "__main__":

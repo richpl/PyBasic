@@ -88,7 +88,7 @@ class BASICParser:
         # Set to keep track of extant loop variables
         self. __loop_vars = set()
 
-    def parse(self, tokenlist, line_number):
+    def parse(self, tokenlist, line_number, datastmts, pgmStatements):
         """Must be initialised with the list of
         BTokens to be processed. These tokens
         represent a BASIC statement without
@@ -110,7 +110,7 @@ class BASICParser:
         # Assign the first token
         self.__token = self.__tokenlist[self.__tokenindex]
 
-        return self.__stmt()
+        return self.__stmt(datastmts,pgmStatements)
 
     def __advance(self):
         """Advances to the next token
@@ -134,7 +134,7 @@ class BASICParser:
             raise RuntimeError('Expecting ' + Token.catnames[expected_category] +
                                ' in line ' + str(self.__line_number))
 
-    def __stmt(self):
+    def __stmt(self,datastmts,pgmStatements):
         """Parses a program statement
 
         :return: The FlowSignal to indicate to the program
@@ -146,15 +146,16 @@ class BASICParser:
             return self.__compoundstmt()
 
         else:
-            return self.__simplestmt()
+            return self.__simplestmt(datastmts,pgmStatements)
 
-    def __simplestmt(self):
+    def __simplestmt(self,datastmts,pgmStatements):
         """Parses a non-compound program statement
 
         :return: The FlowSignal to indicate to the program
         how to branch if necessary, None otherwise
 
         """
+
         if self.__token.category == Token.NAME:
             self.__assignmentstmt()
             return None
@@ -196,7 +197,11 @@ class BASICParser:
             return None
 
         elif self.__token.category == Token.READ:
-            self.__readstmt()
+            self.__readstmt(datastmts,pgmStatements)
+            return None
+
+        elif self.__token.category == Token.RESTORE:
+            self.__restorestmt(datastmts)
             return None
 
         else:
@@ -473,22 +478,32 @@ class BASICParser:
                     print('Not enough values input - redo from start')
                     break
 
+    def __restorestmt(self,datastmts):
+
+        self.__advance() # Advance past RESTORE token
+
+        # Acquire the line number
+        self.__expr()
+
+        self.__data_values.clear()
+        datastmts.restore(self.__operand_stack.pop())
+
     def __datastmt(self):
         """Parses a DATA statement"""
 
-        self.__advance()  # Advance past DATA token
+        #self.__advance()  # Advance past DATA token
 
         # Acquire the comma separated values
-        if not self.__tokenindex >= len(self.__tokenlist):
-            self.__expr()
-            self.__data_values.append(self.__operand_stack.pop())
+        #if not self.__tokenindex >= len(self.__tokenlist):
+            #self.__expr()
+            #self.__data_values.append(self.__operand_stack.pop())
 
-            while self.__token.category == Token.COMMA:
-                self.__advance()  # Advance past comma
-                self.__expr()
-                self.__data_values.append(self.__operand_stack.pop())
+            #while self.__token.category == Token.COMMA:
+                #self.__advance()  # Advance past comma
+                #self.__expr()
+                #self.__data_values.append(self.__operand_stack.pop())
 
-    def __readstmt(self):
+    def __readstmt(self,datastmts,pgmStatements):
         """Parses a READ statement."""
 
         self.__advance()  # Advance past READ token
@@ -504,14 +519,12 @@ class BASICParser:
                 variables.append(self.__token.lexeme)
                 self.__advance()  # Advance past variable
 
-        # Check that we have enough data values to fill the
-        # variables
-        if len(variables) > len(self.__data_values):
-            raise RuntimeError('Insufficient constants supplied to READ ' +
-                               'in line ' + str(self.__line_number))
-
         # Gather input from the DATA statement into the variables
         for variable in variables:
+
+            if len(self.__data_values) < 1:
+                self.__data_values = datastmts.readData(self.__line_number,pgmStatements)
+
             left = variable
             right = self.__data_values.pop(0)
 
@@ -1322,4 +1335,3 @@ class BASICParser:
 
         else:
             random.seed(int(monotonic()))
-
