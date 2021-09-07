@@ -55,8 +55,7 @@ def main():
 
         stmt = input('> ')
 
-        #try:
-        if True:
+        try:
             tokenlist = lexer.tokenize(stmt)
 
             # Execute commands directly, otherwise
@@ -82,12 +81,11 @@ def main():
 
                 # Execute the program
                 elif tokenlist[0].category == Token.RUN:
-                    #try:
-                    if True:
+                    try:
                         program.execute(datastmts)
 
-                    #except KeyboardInterrupt:
-                        #print("Program terminated")
+                    except KeyboardInterrupt:
+                        print("Program terminated")
 
                 # List the program
                 elif tokenlist[0].category == Token.LIST:
@@ -116,8 +114,8 @@ def main():
 
         # Trap all exceptions so that interpreter
         # keeps running
-        #except Exception as e:
-            #print(e, file=stderr, flush=True)
+        except Exception as e:
+            print(e, file=stderr, flush=True)
 
 
 if __name__ == "__main__":

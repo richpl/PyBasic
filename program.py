@@ -154,12 +154,11 @@ class Program:
 
         statement = self.__program[line_number]
 
-        #try:
-        if True:
+        try:
             return self.__parser.parse(statement, line_number, datastmts, self.__program)
 
-        #except RuntimeError as err:
-            #raise RuntimeError(str(err))
+        except RuntimeError as err:
+            raise RuntimeError(str(err))
 
     def execute(self,datastmts):
         """Execute the program"""
