@@ -88,7 +88,7 @@ class BASICParser:
         # Set to keep track of extant loop variables
         self. __loop_vars = set()
 
-    def parse(self, tokenlist, line_number, datastmts, pgmStatements):
+    def parse(self, tokenlist, line_number, datastmts):
         """Must be initialised with the list of
         BTokens to be processed. These tokens
         represent a BASIC statement without
@@ -110,7 +110,7 @@ class BASICParser:
         # Assign the first token
         self.__token = self.__tokenlist[self.__tokenindex]
 
-        return self.__stmt(datastmts,pgmStatements)
+        return self.__stmt(datastmts)
 
     def __advance(self):
         """Advances to the next token
@@ -134,7 +134,7 @@ class BASICParser:
             raise RuntimeError('Expecting ' + Token.catnames[expected_category] +
                                ' in line ' + str(self.__line_number))
 
-    def __stmt(self,datastmts,pgmStatements):
+    def __stmt(self,datastmts):
         """Parses a program statement
 
         :return: The FlowSignal to indicate to the program
@@ -146,9 +146,9 @@ class BASICParser:
             return self.__compoundstmt()
 
         else:
-            return self.__simplestmt(datastmts,pgmStatements)
+            return self.__simplestmt(datastmts)
 
-    def __simplestmt(self,datastmts,pgmStatements):
+    def __simplestmt(self,datastmts):
         """Parses a non-compound program statement
 
         :return: The FlowSignal to indicate to the program
@@ -197,7 +197,7 @@ class BASICParser:
             return None
 
         elif self.__token.category == Token.READ:
-            self.__readstmt(datastmts,pgmStatements)
+            self.__readstmt(datastmts)
             return None
 
         elif self.__token.category == Token.RESTORE:
@@ -503,7 +503,7 @@ class BASICParser:
                 #self.__expr()
                 #self.__data_values.append(self.__operand_stack.pop())
 
-    def __readstmt(self,datastmts,pgmStatements):
+    def __readstmt(self,datastmts):
         """Parses a READ statement."""
 
         self.__advance()  # Advance past READ token
@@ -523,7 +523,7 @@ class BASICParser:
         for variable in variables:
 
             if len(self.__data_values) < 1:
-                self.__data_values = datastmts.readData(self.__line_number,pgmStatements)
+                self.__data_values = datastmts.readData(self.__line_number)
 
             left = variable
             right = self.__data_values.pop(0)

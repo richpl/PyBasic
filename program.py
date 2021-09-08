@@ -54,6 +54,8 @@ class Program:
             program_text += str(line_number) + " "
 
             statement = self.__program[line_number]
+            if statement[0].category == Token.DATA:
+                statement = self.__data.getTokens(line_number)
             for token in statement:
                 # Add in quotes for strings
                 if token.category == Token.STRING:
@@ -120,9 +122,11 @@ class Program:
         """
         try:
             line_number = int(tokenlist[0].lexeme)
-            self.__program[line_number] = tokenlist[1:]
             if tokenlist[1].lexeme == "DATA":
-                self.__data.addData(line_number)
+                self.__data.addData(line_number,tokenlist[1:])
+                self.__program[line_number] = [tokenlist[1],]
+            else:
+                self.__program[line_number] = tokenlist[1:]
 
         except TypeError as err:
             raise TypeError("Invalid line number: " +
@@ -158,7 +162,7 @@ class Program:
         statement = self.__program[line_number]
 
         try:
-            return self.__parser.parse(statement, line_number, self.__data, self.__program)
+            return self.__parser.parse(statement, line_number, self.__data)
 
         except RuntimeError as err:
             raise RuntimeError(str(err))
