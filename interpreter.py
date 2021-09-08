@@ -26,7 +26,6 @@ again.
 from basictoken import BASICToken as Token
 from lexer import Lexer
 from program import Program
-from basicdata import BASICData
 from sys import stderr
 
 
@@ -47,7 +46,6 @@ def main():
 
     lexer = Lexer()
     program = Program()
-    datastmts = BASICData()
 
     # Continuously accept user input and act on it until
     # the user enters 'EXIT'
@@ -72,17 +70,17 @@ def main():
                 # a line number
                 elif tokenlist[0].category == Token.UNSIGNEDINT\
                      and len(tokenlist) > 1:
-                    program.add_stmt(tokenlist,datastmts)
+                    program.add_stmt(tokenlist)
 
                 # Delete a statement from the program
                 elif tokenlist[0].category == Token.UNSIGNEDINT \
                         and len(tokenlist) == 1:
-                    program.delete_statement(int(tokenlist[0].lexeme),datastmts)
+                    program.delete_statement(int(tokenlist[0].lexeme))
 
                 # Execute the program
                 elif tokenlist[0].category == Token.RUN:
                     try:
-                        program.execute(datastmts)
+                        program.execute()
 
                     except KeyboardInterrupt:
                         print("Program terminated")
@@ -98,12 +96,12 @@ def main():
 
                 # Load the program from disk
                 elif tokenlist[0].category == Token.LOAD:
-                    program.load(tokenlist[1].lexeme,datastmts)
+                    program.load(tokenlist[1].lexeme)
                     print("Program read from file")
 
                 # Delete the program from memory
                 elif tokenlist[0].category == Token.NEW:
-                    program.delete(datastmts)
+                    program.delete()
 
                 # Unrecognised input
                 else:

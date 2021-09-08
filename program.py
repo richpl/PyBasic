@@ -42,6 +42,9 @@ class Program:
         # and loop returns
         self.__return_stack = []
 
+        # Setup DATA object
+        self.__data = BASICData()
+
     def __str__(self):
 
         program_text = ""
@@ -80,7 +83,7 @@ class Program:
         except OSError:
             raise OSError("Could not save to file")
 
-    def load(self, file, datastmts):
+    def load(self, file):
         """Load the program
 
         :param file: The name and path of the file to be loaded, .bas is
@@ -89,7 +92,7 @@ class Program:
         """
 
         # New out the program
-        self.delete(datastmts)
+        self.delete()
         if not file.lower().endswith(".bas"):
             file += ".bas"
         try:
@@ -98,12 +101,12 @@ class Program:
                 for line in infile:
                     line = line.replace("\r", "").replace("\n", "").strip()
                     tokenlist = lexer.tokenize(line)
-                    self.add_stmt(tokenlist,datastmts)
+                    self.add_stmt(tokenlist)
 
         except OSError:
             raise OSError("Could not read file")
 
-    def add_stmt(self, tokenlist, datastmts):
+    def add_stmt(self, tokenlist):
         """
         Adds the supplied token list
         to the program. The first token should
@@ -119,7 +122,7 @@ class Program:
             line_number = int(tokenlist[0].lexeme)
             self.__program[line_number] = tokenlist[1:]
             if tokenlist[1].lexeme == "DATA":
-                datastmts.addData(line_number)
+                self.__data.addData(line_number)
 
         except TypeError as err:
             raise TypeError("Invalid line number: " +
@@ -138,7 +141,7 @@ class Program:
 
         return line_numbers
 
-    def __execute(self, line_number, datastmts):
+    def __execute(self, line_number):
         """Execute the statement with the
         specified line number
 
@@ -155,17 +158,17 @@ class Program:
         statement = self.__program[line_number]
 
         try:
-            return self.__parser.parse(statement, line_number, datastmts, self.__program)
+            return self.__parser.parse(statement, line_number, self.__data, self.__program)
 
         except RuntimeError as err:
             raise RuntimeError(str(err))
 
-    def execute(self,datastmts):
+    def execute(self):
         """Execute the program"""
 
         self.__parser = BASICParser()
 
-        datastmts.restore(0) # reset data pointer
+        self.__data.restore(0) # reset data pointer
 
         line_numbers = self.line_numbers()
 
@@ -181,7 +184,7 @@ class Program:
             # Run through the program until the
             # has line number has been reached
             while True:
-                flowsignal = self.__execute(self.get_next_line_number(),datastmts)
+                flowsignal = self.__execute(self.get_next_line_number())
 
                 if flowsignal:
                     if flowsignal.ftype == FlowSignal.SIMPLE_JUMP:
@@ -310,19 +313,19 @@ class Program:
         else:
             raise RuntimeError("No statements to execute")
 
-    def delete(self,datastmts):
+    def delete(self):
         """Deletes the program by emptying the dictionary"""
         self.__program.clear()
-        datastmts.delete()
+        self.__data.delete()
 
-    def delete_statement(self, line_number, datastmts):
+    def delete_statement(self, line_number):
         """Deletes a statement from the program with
         the specified line number, if it exists
 
         :param line_number: The line number to be deleted
 
         """
-        datastmts.delData(line_number)
+        self.__data.delData(line_number)
         try:
             del self.__program[line_number]
 
