@@ -88,6 +88,9 @@ class BASICParser:
         # Set to keep track of extant loop variables
         self.last_flowsignal = None
 
+        #file handle list
+        self.__file_handles = {}
+
     def parse(self, tokenlist, line_number):
         """Must be initialised with the list of
         BTokens to be processed. These tokens
