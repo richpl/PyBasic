@@ -86,7 +86,7 @@ class BASICParser:
         self.__tokenindex = None
 
         # Set to keep track of extant loop variables
-        self.last_flowsignal = None
+        self. __loop_vars = set()
 
         #file handle list
         self.__file_handles = {}
@@ -1031,20 +1031,17 @@ class BASICParser:
 
         # Now determine the status of the loop
 
+        # If the loop variable is not in the set of extant
+        # variables, this is the first time we have entered the loop
         # Note that we cannot use the presence of the loop variable in
         # the symbol table for this test, as the same variable may already
         # have been instantiated elsewhere in the program
-        #
-        # Need to initialize the loop variable anytime the for
-        # statement is reached from a statement other than an active NEXT.
-
-        from_next = False
-        if self.last_flowsignal:
-            if self.last_flowsignal.ftype == FlowSignal.LOOP_REPEAT:
-                from_next = True
-
-        if not from_next:
+        if loop_variable not in self.__loop_vars:
             self.__symbol_table[loop_variable] = start_val
+
+            # Also add loop variable to set of extant loop
+            # variables
+            self.__loop_vars.add(loop_variable)
 
         else:
             # We need to modify the loop variable
@@ -1062,7 +1059,11 @@ class BASICParser:
             stop = True
 
         if stop:
-            # Loop must terminate
+            # Loop must terminate, so remove loop vriable from set of
+            # extant loop variables and remove loop variable from
+            # symbol table
+            self.__loop_vars.remove(loop_variable)
+            del self.__symbol_table[loop_variable]
             return FlowSignal(ftype=FlowSignal.LOOP_SKIP,
                               ftarget=loop_variable)
         else:
@@ -1091,36 +1092,17 @@ class BASICParser:
         """
 
         self.__advance()  # Advance past ON token
-        self.__expr()
+        self.__logexpr()
 
         # Save result of expression
         saveval = self.__operand_stack.pop()
 
-        if self.__token.category == Token.GOTO:
-            self.__consume(Token.GOTO)
-            branchtype = 1
+        # Process the GOSUB part and save the jump value
+        # if the condition is met
+        if saveval:
+            return self.__gosubstmt()
         else:
-            self.__consume(Token.GOSUB)
-            branchtype = 2
-
-        branch_values = []
-        # Acquire the comma separated values
-        if not self.__tokenindex >= len(self.__tokenlist):
-            self.__expr()
-            branch_values.append(self.__operand_stack.pop())
-
-            while self.__token.category == Token.COMMA:
-                self.__advance()  # Advance past comma
-                self.__expr()
-                branch_values.append(self.__operand_stack.pop())
-
-        if saveval < 1 or saveval > len(branch_values) or len(branch_values) == 0:
             return None
-        elif branchtype == 1:
-            return FlowSignal(ftarget=branch_values[saveval-1])
-        else:
-            return FlowSignal(ftarget=branch_values[saveval-1],
-                              ftype=FlowSignal.GOSUB)
 
     def __relexpr(self):
         """Parses a relational expression
