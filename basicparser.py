@@ -468,15 +468,14 @@ class BASICParser:
         # Process the FOR keyword
         self.__consume(Token.FOR)
 
-        if self.__token.category != Token.INPUT and self.__token.lexeme != 'OUTPUT' and self.__token.lexeme != 'APPEND':
-            raise SyntaxError('Invalid Open access mode in line ' + str(self.__line_number))
-
-        if self.__token.lexeme == "INPUT":
+        if self.__token.category == Token.INPUT:
             accessMode = "r"
-        elif self.__token.lexeme == "APPEND":
+        elif self.__token.category == Token.APPEND:
             accessMode = "r+"
-        else:
+        elif self.__token.category == Token.OUTPUT:
             accessMode = "w+"
+        else:
+            raise SyntaxError('Invalid Open access mode in line ' + str(self.__line_number))
 
         self.__advance() # Advance past acess type
 

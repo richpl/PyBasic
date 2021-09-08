@@ -112,6 +112,8 @@ class BASICToken:
         HASH            = 79  # "#"
         CLOSE           = 80  # CLOSE keyword
         FSEEK           = 81  # FSEEK keyword
+        APPEND          = 83  # APPEND keyword
+        OUTPUT          = 84  # OUTPUT keyword
 
         # Displayable names for each token category
         catnames = ['EOF', 'LET', 'LIST', 'PRINT', 'RUN',
@@ -128,7 +130,8 @@ class BASICToken:
         'CHR', 'ASC', 'STR', 'MID', 'MODULO', 'TERNARY',
         'VAL', 'LEN', 'UPPER', 'LOWER', 'ROUND',
         'MAX', 'MIN', 'INSTR', 'AND', 'OR', 'NOT', 'PI',
-        'RNDINT', 'OPEN', 'HASH', 'CLOSE', 'FSEEK']
+        'RNDINT', 'OPEN', 'HASH', 'CLOSE', 'FSEEK', 'APPEND',
+        'OUTPUT']
 
         smalltokens = {'=': ASSIGNOP, '(': LEFTPAREN, ')': RIGHTPAREN,
                        '+': PLUS, '-': MINUS, '*': TIMES, '/': DIVIDE,
@@ -160,7 +163,8 @@ class BASICToken:
                     'INSTR': INSTR, 'END': STOP,
                     'AND': AND, 'OR': OR, 'NOT': NOT,
                     'PI': PI, 'RNDINT': RNDINT, 'OPEN': OPEN,
-                    'CLOSE': CLOSE, 'FSEEK': FSEEK}
+                    'CLOSE': CLOSE, 'FSEEK': FSEEK,
+                    'APPEND': APPEND, 'OUTPUT':OUTPUT}
 
         # Functions
         functions = {ABS, ATN, COS, EXP, INT, LOG, POW, RND, SIN, SQR, TAN,
