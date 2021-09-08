@@ -791,7 +791,7 @@ be omitted to get the rest of the string.  If *start-position* or *end-position*
 
 **MIN**(*expression-list*) - Returns the lowest value in *expression-list*
 
-**ON** *expression* **GOSUB** *line-number* - Conditional subroutine call
+**ON** *expression* **GOSUB|GOTO** *line-number1,line-number2,...* - Conditional subroutine call|branch - Program flow will be transferred either through a **GOSUB** subroutine call or a **GOTO** branch to the line number in the list of line numbers corresponding to the ordinal value of the evaluated *expr*. The first line number corresponds with an *expr* value of 1.  *expr* must evaluate to an integer value.
 
 **PI** - Returns the value of pi
 

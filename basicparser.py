@@ -898,17 +898,36 @@ class BASICParser:
         """
 
         self.__advance()  # Advance past ON token
-        self.__logexpr()
+        self.__expr()
 
         # Save result of expression
         saveval = self.__operand_stack.pop()
 
-        # Process the GOSUB part and save the jump value
-        # if the condition is met
-        if saveval:
-            return self.__gosubstmt()
+        if self.__token.category == Token.GOTO:
+            self.__consume(Token.GOTO)
+            branchtype = 1
         else:
+            self.__consume(Token.GOSUB)
+            branchtype = 2
+
+        branch_values = []
+        # Acquire the comma separated values
+        if not self.__tokenindex >= len(self.__tokenlist):
+            self.__expr()
+            branch_values.append(self.__operand_stack.pop())
+
+            while self.__token.category == Token.COMMA:
+                self.__advance()  # Advance past comma
+                self.__expr()
+                branch_values.append(self.__operand_stack.pop())
+
+        if saveval < 1 or saveval > len(branch_values) or len(branch_values) == 0:
             return None
+        elif branchtype == 1:
+            return FlowSignal(ftarget=branch_values[saveval-1])
+        else:
+            return FlowSignal(ftarget=branch_values[saveval-1],
+                              ftype=FlowSignal.GOSUB)
 
     def __relexpr(self):
         """Parses a relational expression
@@ -1322,4 +1341,3 @@ class BASICParser:
 
         else:
             random.seed(int(monotonic()))
-
