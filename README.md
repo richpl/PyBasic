@@ -671,10 +671,10 @@ When a file is opened using the syntax **OPEN** "*filename*" **FOR INPUT|OUTPUT|
 file number (*#filenum*) is assigned to the file which if specfied as the first argument of an **INPUT** or **PRINT**
 statment will direct the input or output to the file. 
 
-If there is an error opening a file and the optional **ELSE** option has been specified with a line number, program control
+If there is an error opening a file and the optional **ELSE** option has been specified, program control
 will be branched to that line number, if the **ELSE** has not been provided an error message will be displayed.
 
-If a file is opened for **OUTPUT" which does not exist, the file will be created, if the file does exist, it's contents will
+If a file is opened for **OUTPUT** which does not exist, the file will be created, if the file does exist, it's contents will
 be erased and any new **PRINT** output will replace it. If a file is opened for **APPEND** an error will occur if the file
 doesn't exist (or the **ELSE** branch will occur if specified) and if it does, any **PRINT** statments will add to the end
 of the file.
@@ -907,6 +907,8 @@ optional seed (*numeric expression*), the sequence is predictable.
 **REM** *comment* - Internal program documentation
 
 **RETURN** - Return from a subroutine
+
+**RESTORE** *#filenum*,*filepos* - positions the input file position such that the next **INPUT** *#filenum* will read starting at file position *filepos* 
 
 **RND** - Generates a pseudo random number N, where 0 <= N < 1
 
