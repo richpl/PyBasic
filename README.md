@@ -535,7 +535,7 @@ J is TWO
 >
 ```
 
-It is also possible to use **ON GOSUB** to perform a conditional subroutine call (see Ternary Functions below).
+The **IFF** statement (see Ternary Functions below) can be used with **ON GOSUB** to perform a conditional subroutine call.
 
 ```
 > 10 LET I = 10
