@@ -261,9 +261,9 @@ and are declared in a comma separated list:
 These values can then later be assigned to variables using the **READ** statement. Note that the type of the value
 (string or numeric) must match the type of the variable, otherwise an error message will be triggered. Therefore,
 attention should be paid to the relative ordering of constants and variables. Once the constants on a **DATA**
-statement are used to by a **READ** statement, the next variable on the **READ** statement or subsequent **READ**
-statements will move to the **DATA** statement with the next higher line number, if there are no more **DATA**
-statements before the end of the program an error will be given. This is to ensure that the program is not left
+statement are used by a **READ** statement, the next **READ**
+statement will move to the **DATA** statement with the next higher line number, if there are no more **DATA**
+statements before the end of the program an error will be displayed. This is to ensure that the program is not left
 in a state where a variable has not been assigned a value, but nevertheless an attempt to use that variable is
 made later on in the program.
 
