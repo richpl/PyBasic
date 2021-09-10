@@ -370,7 +370,7 @@ of dimensions, and attempts to assign to an array using an out of range index, w
 
 ### Printing to standard output
 
-The **PRINT** statement is used to print to the screen or to a file (see File I/O below):
+The **PRINT** statement is used to print to the screen (or to a file, see File I/O below):
 
 ```
 > 10 PRINT 2 * 4
@@ -618,7 +618,7 @@ I is greater than J
 
 ### User input
 
-The **INPUT** statement is used to solicit input from the user or read input from a file (see File I/O below):
+The **INPUT** statement is used to solicit input from the user (or read input from a file, see File I/O below):
 
 ```
 > 10 INPUT A
@@ -663,7 +663,7 @@ to re-input the values again.
 It is a limitation of this BASIC dialect that it is not possible to assign constants directly to array variables
 within an **INPUT** statement, only simple variables.
 
-### File I/O
+### File Input/Output
 
 Data can be read from or written to files using the **OPEN**, **FSEEK**, **INPUT**, **PRINT** and **CLOSE** statments.
 
