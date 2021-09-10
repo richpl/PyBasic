@@ -667,15 +667,15 @@ within an **INPUT** statement, only simple variables.
 Data can be read from or written to files using the **OPEN**, **FSEEK**, **INPUT**, **PRINT** and **CLOSE** statments.
 
 When a file is opened using the syntax **OPEN** "*filename*" **FOR INPUT|OUTPUT|APPEND AS** *#filenum* [**ELSE** *linenum*] a
-file number (*#filenum*) is assigned to the file which if specfied as the first argument of an **INPUT** or **PRINT**
-statment will direct the input or output to the file. 
+file number (*#filenum*) is assigned to the file, which if specfied as the first argument of an **INPUT** or **PRINT**
+statment, will direct the input or output to the file. 
 
 If there is an error opening a file and the optional **ELSE** option has been specified, program control
-will be branched to that line number, if the **ELSE** has not been provided an error message will be displayed.
+will branch to the specified line number, if the **ELSE** has not been provided an error message will be displayed.
 
-If a file is opened for **OUTPUT** which does not exist, the file will be created, if the file does exist, it's contents will
+If a file is opened for **OUTPUT** which does not exist, the file will be created, if the file does exist, its contents will
 be erased and any new **PRINT** output will replace it. If a file is opened for **APPEND** an error will occur if the file
-doesn't exist (or the **ELSE** branch will occur if specified) and if it does, any **PRINT** statments will add to the end
+doesn't exist (or the **ELSE** branch will occur if specified). If the file does exist, any **PRINT** statments will add to the end
 of the file.
 
 If an input prompt is specfied on an **INPUT** statement being used for file I/O (i.e. *#filenum* is specified) an error
