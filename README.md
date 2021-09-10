@@ -686,7 +686,7 @@ The **FSEEK** *#filenum*,*filepos* statement will position the file pointer for 
 
 The **CLOSE** *#filenum* statment will close the file.
 
-...
+```
 > 10 OPEN "FILE.TXT" FOR OUTPUT AS #1
 > 20 PRINT #1,"0123456789Hello World!"
 > 30 CLOSE #1
@@ -697,7 +697,7 @@ The **CLOSE** *#filenum* statment will close the file.
 > RUN
 Hello World!
 >
-...
+```
 
 
 ### Numeric functions
