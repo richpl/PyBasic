@@ -540,9 +540,8 @@ It is also possible to use **ON GOSUB** to perform a conditional subroutine call
 ```
 > 10 LET I = 10
 > 20 LET J = 5
-> 30 K = IFF (I > J, 1, 0)
-> 40 ON K GOSUB 100
-> 50 STOP
+> 30 ON IFF (I > J, 1, 0) GOSUB 100
+> 40 STOP
 > 100 REM THE SUBROUTINE
 > 110 PRINT "I is greater than J"
 > 120 RETURN
