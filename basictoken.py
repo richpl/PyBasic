@@ -144,7 +144,7 @@ class BASICToken:
                        '\n': NEWLINE, '<': LESSER,
                        '>': GREATER, '<>': NOTEQUAL,
                        '<=': LESSEQUAL, '>=': GREATEQUAL, ',': COMMA,
-                       ':': COLON, '%': MODULO, '!=': NOTEQUAL, '#': HASH}
+                       ':': COLON, '%': MODULO, '!=': NOTEQUAL, '#': HASH,
                        ';': SEMICOLON}
 
 

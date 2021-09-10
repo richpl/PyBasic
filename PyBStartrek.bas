@@ -55,9 +55,9 @@
 963 dim N(4)
 965 DIM G(9,9)
 966 DIM Z(9,9)
-970 T=INT(RND*20+20)*100
+970 T=INT(RND(1)*20+20)*100
 971 T0=T
-972 T9=25+INT(RND*10)
+972 T9=25+INT(RND(1)*10)
 973 D0=0
 974 E=3000
 975 E0=E
@@ -72,10 +72,10 @@
 990 rem DEF FND(D)=SQR((K(I,1)-S1)^2+(K(I,2)-S2)^2)
 1000 rem DEF FNR(R)=INT(RND(R)*7.98+1.01)
 1010 REM initialize enterprise's position
-1020 Q1=INT(RND*7.98+1.01)
-1021 Q2=INT(RND*7.98+1.01)
-1022 S1=INT(RND*7.98+1.01)
-1023 S2=INT(RND*7.98+1.01)
+1020 Q1=INT(RND(1)*7.98+1.01)
+1021 Q2=INT(RND(1)*7.98+1.01)
+1022 S1=INT(RND(1)*7.98+1.01)
+1023 S2=INT(RND(1)*7.98+1.01)
 1030 FOR I=1 TO 9
 1031 C(I,1)=0
 1032 C(I,2)=0
@@ -103,7 +103,7 @@
 1101 FOR J=1 TO 8
 1102 K3=0
 1103 Z(I,J)=0
-1104 R1=RND
+1104 R1=RND(1)
 1110 IF R1<=0.9799999 THEN goto 1120
 1111 K3=3
 1112 K9=K9+3
@@ -116,10 +116,10 @@
 1131 K3=1
 1132 K9=K9+1
 1140 B3=0
-1141 IF RND<=0.96 THEN goto 1150
+1141 IF RND(1)<=0.96 THEN goto 1150
 1142 B3=1
 1143 B9=B9+1
-1150 G(I,J)=K3*100+B3*10+INT(RND*7.98+1.01)
+1150 G(I,J)=K3*100+B3*10+INT(RND(1)*7.98+1.01)
 1151 NEXT J
 1152 NEXT I
 1153 IF K9<=T9 THEN goto 1160
@@ -130,8 +130,8 @@
 1172 K9=K9+1
 1180 B9=1
 1181 G(Q1,Q2)=G(Q1,Q2)+10
-1182 Q1=INT(RND*7.98+1.01)
-1183 Q2=INT(RND*7.98+1.01)
+1182 Q1=INT(RND(1)*7.98+1.01)
+1183 Q2=INT(RND(1)*7.98+1.01)
 1190 K7=K9
 1191 IF B9=1 THEN 1200
 1192 X$="s"
@@ -142,9 +142,9 @@
 1230 PRINT"    on stardate ",T0+T9,". This gives you ",T9," days.  there",X0$
 1240 PRINT"  ",B9," starbase",X$," in the galaxy for resupplying your ship"
 1250 rem PRINT PRINT  "hit any key except return when ready to accept command"
-1260 rem I=RND IF INP(1)=13 THEN 1260
+1260 rem I=RND(1) IF INP(1)=13 THEN 1260
 1261 PRINT
-1262 input "hit return when ready to accept command":i$
+1262 input "hit return when ready to accept command";i$
 1270 REM here any time new quadrant entered
 1280 Z4=Q1
 1281 Z5=Q2
@@ -152,16 +152,16 @@
 1283 B3=0
 1284 S3=0
 1285 G5=0
-1286 D4=0.5*RND
+1286 D4=0.5*RND(1)
 1287 Z(Q1,Q2)=G(Q1,Q2)
 1290 IF Q1<1 OR Q1>8 OR Q2<1 OR Q2>8 THEN 1410
 1300 GOSUB 5040
 1301 PRINT
 1302 IF T0 <>T THEN 1330
 1310 PRINT"Your mission begins with your starship located"
-1320 PRINT"in the galactic quadrant, '",G2$,"'."
+1320 PRINT"in the galactic quadrant, '";G2$;"'."
 1321 GOTO 1340
-1330 PRINT"Now entering ",G2$," quadrant. . ."
+1330 PRINT"Now entering ";G2$;" quadrant. . ."
 1340 PRINT
 1341 K3=INT(G(Q1,Q2)*0.01)
 1342 B3=INT(G(Q1,Q2)*0.1)-10*K3
@@ -198,7 +198,7 @@
 1460 GOSUB 4830
 1461 K(I,1)=R1
 1462 K(I,2)=R2
-1463 K(I,3)=S9*(0.5+RND)
+1463 K(I,3)=S9*(0.5+RND(1))
 1464 NEXT I
 1470 IF B3<1 THEN 1500
 1480 GOSUB 4800
@@ -224,7 +224,7 @@
 1551 PRINT"You have insufficient maneuvering energy, and shield control"
 1561 PRINT"is presently incapable of cross-circuiting to engine room!!"
 1571 GOTO 3480
-1580 INPUT"command ":A$
+1580 INPUT"command ";A$
 1590 FOR I=1 TO 9
 1591 IF mid$(A$,0,3)<> MID$(A1$,3*I-3,3*I) THEN 1610
 1600 ON I GOTO 1720,1510,2440,2530,2750,3090,3180,3980,3510
@@ -242,7 +242,7 @@
 1702 PRINT
 1703 GOTO 1520
 1710 REM course control begins here
-1720 INPUT"Course (1-9) ":C2$
+1720 INPUT"Course (1-9) ";C2$
 1721 C1=VAL(C2$)
 1723 IF C1<>9 THEN 1730
 1724 C1=1
@@ -252,22 +252,22 @@
 1750 X$="8"
 1751 IF D(1)>=0 THEN 1760
 1752 X$="0.2"
-1760 PRINT"Warp factor(0-",X$,") "
+1760 PRINT"Warp factor(0-";X$;") "
 1761 INPUT C2$
 1762 W1=VAL(C2$)
 1763 IF D(1)<0 AND W1>0.2 THEN 1810
 1770 IF W1>0 AND W1<8 THEN 1820
 1780 IF W1=0 THEN 1520
-1790 PRINT"   Chief Engineer Scott reports 'The engines won't take warp ",W1,"!"
+1790 PRINT"   Chief Engineer Scott reports 'The engines won't take warp ";W1;"!"
 1801 GOTO 1520
 1810 PRINT"Warp engines are damaged.  Maximum speed = warp 0.2"
 1811 GOTO 1520
 1820 N1=INT(W1*8+0.5)
 1821 IF E-N1>=0 THEN 1900
 1830 PRINT"Engineering reports   'Insufficient energy available"
-1840 PRINT"                       for maneuvering at warp ",W1,"!'"
+1840 PRINT"                       for maneuvering at warp ";W1;"!'"
 1850 IF S<N1-E OR D(7)<0 THEN 1520
-1860 PRINT"Deflector control room acknowledges ",S," units of energy"
+1860 PRINT"Deflector control room acknowledges ";S;" units of energy"
 1870 PRINT"                         presently deployed to shields."
 1880 GOTO 1520
 1890 REM klingons move/fire on moving starship . . .
@@ -298,28 +298,28 @@
 1970 IF D1=1 THEN 1980
 1971 D1=1
 1972 PRINT"DAMAGE CONTROL REPORT:   "
-1980 PRINT " "*8
+1980 PRINT TAB(8)
 1981 R1=I
 1982 GOSUB 4890
-1983 PRINT G2$," Repair completed."
+1983 PRINT G2$;" Repair completed."
 1990 NEXT I
-1991 IF RND>0.2 THEN 2070
-2000 R1=INT(RND*7.98+1.01)
-2001 IF RND>=0.6 THEN 2040
+1991 IF RND(1)>0.2 THEN 2070
+2000 R1=INT(RND(1)*7.98+1.01)
+2001 IF RND(1)>=0.6 THEN 2040
 2010 IF K3=0 THEN 2070
-2020 D(R1)=D(R1)-(RND*5+1)
+2020 D(R1)=D(R1)-(RND(1)*5+1)
 2021 PRINT"DAMAGE CONTROL REPORT:   "
 2030 GOSUB 4890
-2031 PRINT G2$," damaged"
+2031 PRINT G2$;" damaged"
 2032 PRINT
 2033 GOTO 2070
-2040 D(R1)=min(0,D(R1)+RND*3+1)
+2040 D(R1)=min(0,D(R1)+RND(1)*3+1)
 2041 PRINT"DAMAGE CONTROL REPORT:   "
 2050 GOSUB 4890
-2051 PRINT G2$," State of repair improved"
+2051 PRINT G2$;" State of repair improved"
 2052 PRINT
 2060 REM begin moving starship
-2070 A$="   " 
+2070 A$="   "
 2071 Z1=INT(S1)
 2072 Z2=INT(S2)
 2073 GOSUB 4830
@@ -339,7 +339,7 @@
 2111 IF MID$(Q$,S8,S8+2)="  " THEN 2140
 2120 S1=INT(S1-X1)
 2121 S2=INT(S2-X2)
-2122 PRINT"Warp engines shut down at sector ",S1,",",S2," due to bad navigation."
+2122 PRINT"Warp engines shut down at sector ";S1;",";S2;" due to bad navigation."
 2131 GOTO 2150
 2140 NEXT I
 2141 S1=INT(S1)
@@ -391,7 +391,7 @@
 2310 PRINT"  'Permission to attempt crossing of galactic perimeter"
 2320 PRINT"  is hereby *DENIED*.  Shut down your engines.'"
 2330 PRINT"Chief Engineer Scott reports 'Warp engines shut down"
-2340 PRINT"  at sector ",S1,",",S2," of quadrant ",Q1,",",Q2".'"
+2340 PRINT"  at sector ";S1;",";S2;" of quadrant ";Q1;",";Q2".'"
 2350 IF T>T0 THEN 3480
 2360 IF 8*Q1+Q2=8*Q4+Q5 THEN 2150
 2370 T=T+1
@@ -411,7 +411,7 @@
 2440 IF D(3)>=0 THEN 2450
 2441 PRINT"Long Range Sensors are inoperable"
 2442 GOTO 1520
-2450 PRINT"Long Range Scan for quadrant ",Q1,",",Q2
+2450 PRINT"Long Range Scan for quadrant ";Q1;",";Q2
 2460 PRINT "-"*19
 2461 LINE$ = ""
 2470 FOR I=Q1-1 TO Q1+1
@@ -450,14 +450,14 @@
 2570 IF D(8)>=0 THEN 2580
 2571 PRINT"Computer failure hampers accuracy"
 2580 PRINT"Phasers locked on target "
-2590 PRINT"Energy available = ",E," units"
-2600 INPUT"Numbers of units to fire ":X
+2590 PRINT"Energy available = ";E;" units"
+2600 INPUT"Numbers of units to fire ";X
 2601 IF X<=0 THEN 1520
 2610 IF E-X<0 THEN 2590
 2620 E=E-X
 2621 GOSUB 5420
 2622 IF D(7)<0 THEN 2630
-2623 X=X*RND
+2623 X=X*RND(1)
 2624 rem print "Energy * Rnd: ",x
 2630 H1=INT(X/K3)
 2631 FOR I=1 TO 3
@@ -469,15 +469,15 @@
 2646 H = H1 / H
 2647 H = INT(H * (rnd+2))
 2648 IF H>0.15*K(I,3) THEN 2660
-2650 PRINT"Sensors show no damage to enemy at ",K(I,1),",",K(I,2)
+2650 PRINT"Sensors show no damage to enemy at ";K(I,1);",";K(I,2)
 2651 GOTO 2730
 2660 K(I,3)=K(I,3)-H
-2661 PRINT H,"Unit hit on Klingon at sector ",K(I,1),","
+2661 PRINT H,"Unit hit on Klingon at sector ";K(I,1);","
 2670 PRINT K(I,2)
 2671 IF K(I,3)> 0 THEN GOTO 2700
 2680 PRINT "**** KLINGON DESTROYED ****"
 2690 GOTO 2710
-2700 PRINT"   (Sensors show ",K(I,3)," units remaining)"
+2700 PRINT"   (Sensors show ";K(I,3);" units remaining)"
 2701 GOTO 2730
 2710 K3=K3-1
 2711 K9=K9-1
@@ -499,7 +499,7 @@
 2760 IF D(5)>=0 THEN 2770
 2761 PRINT"Photon tubes are not operational"
 2762 GOTO 1520
-2770 INPUT"Photon torpedo course (1-9) ":C2$
+2770 INPUT"Photon torpedo course (1-9) ";C2$
 2771 C1=VAL(C2$)
 2772 IF C1<>9 THEN 2780
 2773 C1=1
@@ -521,7 +521,7 @@
 2842 X3=INT(X+0.5)
 2843 Y3=INT(Y+0.5)
 2850 IF X3<1 OR X3>8 OR Y3<1 OR Y3>8 THEN 3070
-2860 PRINT"              ",X3,",",Y3
+2860 PRINT"              ";X3;",";Y3
 2861 A$="   "
 2862 Z1=X
 2863 Z2=Y
@@ -547,7 +547,7 @@
 2942 Z2=Y
 2943 GOSUB 4990
 2944 IF Z3=0 THEN 2960
-2950 PRINT"Star at ",X3,",",Y3," absorbed torpedo energy."
+2950 PRINT"Star at ";X3;",";Y3;" absorbed torpedo energy."
 2951 GOSUB 3350
 2952 GOTO 1520
 2960 A$="("+chr$(174)+")"
@@ -555,7 +555,7 @@
 2962 Z2=Y
 2963 GOSUB 4990
 2964 IF Z3<>0 THEN 2970
-2965 PRINT "Torpedo absorbed by unknown object at ",x3,",",y3
+2965 PRINT "Torpedo absorbed by unknown object at ";x3;",";y3
 2966 goto 1520
 2970 PRINT"*** STARBASE DESTROYED ***"
 2980 B3=B3-1 
@@ -582,8 +582,8 @@
 3090 IF D(7)>=0 THEN 3100
 3091 PRINT"Shield control inoperable"
 3092 GOTO 1520
-3100 PRINT"Energy available = ",E+S 
-3101 INPUT "Number of units to shields? ":X
+3100 PRINT"Energy available = ";E+S
+3101 INPUT "Number of units to shields? ";X
 3110 IF X>=0 and S<>X THEN 3120
 3111 PRINT"<shields unchanged>"
 3112 GOTO 1520
@@ -594,7 +594,7 @@
 3150 E=E+S-X
 3151 S=X
 3152 PRINT "Deflector Control Room report"
-3160 PRINT"  'Shields now at ",INT(S)," units per your command.'"
+3160 PRINT"  'Shields now at ";INT(S);" units per your command.'"
 3161 GOTO 1520
 3170 REM damage control
 3180 IF D(6)>=0 THEN 3290
@@ -611,8 +611,8 @@
 3222 IF D3<1 THEN 3230
 3223 D3=0.9
 3230 PRINT"Technicians standing by to effect repairs to your ship:"
-3240 PRINT"estimated time to repair: ",0.01*INT(100*D3)," stardates"
-3250 INPUT"Will you authorize the repair order (Y/N)? ":A$
+3240 PRINT"estimated time to repair: ";0.01*INT(100*D3);" stardates"
+3250 INPUT"Will you authorize the repair order (Y/N)? ";A$
 3260 IF A$<>"y" AND A$<> "Y" THEN 1520
 3270 FOR I=1 TO 8
 3271 IF D(I)>=0 THEN 3280
@@ -640,37 +640,37 @@
 3371 IF K(I,3)<=0 THEN 3460
 3380 ksq1 = (K(I,1)-S1)*(K(I,1)-S1)
 3381 ksq2 = (K(I,2)-S2)*(K(I,2)-S2)
-3382 H=( K(I,3) / SQR(  ksq1 + ksq2 ) )*(2+RND)
+3382 H=( K(I,3) / SQR(  ksq1 + ksq2 ) )*(2+RND(1))
 3383 h = int(h)
 3384 S=S-H
-3385 K(I,3)=K(I,3)/(3+RND)
+3385 K(I,3)=K(I,3)/(3+RND(1))
 3390 PRINT "ENTERPRISE HIT!"
 3400 GOSUB 5480
-3401 PRINT H," Unit hit on ENTERPRISE from sector ",K(I,1),",",K(I,2)
+3401 PRINT H," Unit hit on ENTERPRISE from sector ";K(I,1);",";K(I,2)
 3410 IF S<=0 THEN 3490
-3420 PRINT"      <shields down to ",S," units>"
+3420 PRINT"      <shields down to ";S;" units>"
 3421 IF H<20 THEN 3460
-3430 IF RND>0.6 OR H/S<=0.02 THEN 3460
-3440 R1=INT(RND*7.98+1.01)
-3441 D(R1)=D(R1)-H/S-0.5*RND
+3430 IF RND(1)>0.6 OR H/S<=0.02 THEN 3460
+3440 R1=INT(RND(1)*7.98+1.01)
+3441 D(R1)=D(R1)-H/S-0.5*RND(1)
 3442 GOSUB 4890
-3450 PRINT"Damage control reports  '",G2$," damaged by the hit'"
+3450 PRINT"Damage control reports  '";G2$;" damaged by the hit'"
 3460 NEXT I
 3461 RETURN
 3470 REM end of game
-3480 PRINT"It is stardate",T
+3480 PRINT"It is stardate";T
 3481 GOTO 3510
 3490 PRINT
 3491 PRINT"the ENTERPRISE has been destroyed.  The Federation will be conquered"
 3501 GOTO 3480
-3510 PRINT"There were ",K9," Klingon battle cruisers left at"
+3510 PRINT"There were ";K9;" Klingon battle cruisers left at"
 3520 PRINT"the end of your mission"
 3530 PRINT
 3531 PRINT
 3532 IF B9=0 THEN 3670
 3540 PRINT"The Federation is in need of a new starship commander"
 3550 PRINT"for a similar mission -- if there is a volunteer,"
-3560 INPUT"let him or her step forward and enter 'AYE' ":X$
+3560 INPUT"let him or her step forward and enter 'AYE' ";X$
 3561 IF X$="AYE" THEN 520
 3570 rem KEY 1,"LIST "
 3580 rem KEY 2,"RUN"+CHR$(13)
@@ -687,7 +687,7 @@
 3690 PRINT"menacing the Federation has been destroyed."
 3691 PRINT
 3700 cc1 = k7/(t-t0)
-3701 PRINT"Your efficiency rating is ",1000*cc1*cc1
+3701 PRINT"Your efficiency rating is ";1000*cc1*cc1
 3703 GOTO 3530
 3710 REM short range sensor scan & startup subroutine
 3720 A$="("+chr$(174)+")"
@@ -729,7 +729,7 @@
 3851 REM PRINT "  . "
 3852 LINE$ = LINE$ + "  . "
 3853 GOTO 3862
-3860 REM PRINT " ",MID$(Q$,J,J+3)
+3860 REM PRINT " ";MID$(Q$,J,J+3)
 3861 LINE$ = LINE$ + " " + MID$(Q$,J,J+3)
 3862 NEXT J
 3870 ON I GOTO 3880,3900,3910,3920,3930,3940,3950,3960
@@ -737,28 +737,28 @@
 3881 LINE$ = LINE$ + "        Stardate           "
 3890 TT= T*10 
 3891  TT=INT(TT)*0.1
-3892 PRINT LINE$,TT
+3892 PRINT LINE$;TT
 3894 GOTO 3970
-3900 PRINT LINE$ + "        Condition          ",C$
+3900 PRINT LINE$ + "        Condition          ";C$
 3901 GOTO 3970
-3910 PRINT LINE$+"        Quadrant           ",Q1,",",Q2
+3910 PRINT LINE$+"        Quadrant           ";Q1;",";Q2
 3911 GOTO 3970
-3920 PRINT LINE$+"        Sector             ",S1,",",S2
+3920 PRINT LINE$+"        Sector             ";S1;",";S2
 3921 GOTO 3970
-3930 PRINT LINE$+"        Photon torpedoes   ",INT(P)
+3930 PRINT LINE$+"        Photon torpedoes   ";INT(P)
 3931 GOTO 3970
-3940 PRINT LINE$+"        Total energy       ",INT(E+S)
+3940 PRINT LINE$+"        Total energy       ";INT(E+S)
 3941 GOTO 3970
-3950 PRINT LINE$+"        Shields            ",INT(S)
+3950 PRINT LINE$+"        Shields            ";INT(S)
 3951 GOTO 3970
-3960 PRINT LINE$+"        Klingons remaining ",INT(K9)
+3960 PRINT LINE$+"        Klingons remaining ";INT(K9)
 3970 LINE$ = ""
 3971 NEXT I
 3972 PRINT "-"*33
 3973 RETURN
 3980 REM library computer code
 3990 CM1$="GALSTATORBASDIRREG"
-4000 IF D(8)>=0 THEN 4010 
+4000 IF D(8)>=0 THEN 4010
 4001 PRINT"Computer Disabled"
 4002 GOTO 1520
 4010 rem KEY 1, "GAL RCD"+CHR$(13)
@@ -769,7 +769,7 @@
 4060 rem KEY 6, "REG MAP"+CHR$(13)
 4070 rem KEY 7,CHR$(13):KEY 8,CHR$(13):KEY 9,CHR$(13):KEY 10,CHR$(13)
 4074 gosub 4130
-4080 INPUT"Computer active and awaiting command ":CM$
+4080 INPUT"Computer active and awaiting command ";CM$
 4081 H8=1
 4090 FOR K1= 1 TO 6
 4100 IF mid$(CM$,0,3)<>MID$(CM1$,3*K1-3,3*K1) THEN 4120
@@ -804,14 +804,14 @@
 4250 GOSUB 840
 4260 PRINT
 4261 PRINT"            "
-4270 PRINT "Computer record of galaxy for quadrant ",Q1,",",Q2
+4270 PRINT "Computer record of galaxy for quadrant ";Q1;",";Q2
 4280 PRINT
 4290 PRINT"       1     2     3     4     5     6    7      8"
 4300 O1$="     ----- ----- ----- ----- ----- ----- ----- -----"
 4310 PRINT O1$
 4312 LINE$ = ""
 4313 FOR I=1 TO 8
-4314 REM PRINT I,"  "
+4314 REM PRINT I;"  "
 4315 LINE$ = LINE$ + STR$(I)+ "  "
 4316 IF H8=0 THEN 4350
 4320 FOR J=1 TO 8
@@ -848,13 +848,13 @@
 4402 X$=""
 4403 IF K9<=1 THEN 4410
 4404 X$="s"
-4410 PRINT"Klingon",X$," left: ",K9
-4420 PRINT"Mission must be completed in ",0.1*INT((T0+T9-T)*10)," stardates"
+4410 PRINT"Klingon";X$;" left: ";K9
+4420 PRINT"Mission must be completed in ";0.1*INT((T0+T9-T)*10);" stardates"
 4430 X$="s"
 4431 IF B9>=2 THEN 4440
 4432 X$=""
 4433 IF B9<1 THEN 4460
-4440 PRINT"The federation is maintaining ",B9," starbase",X$," in the galaxy"
+4440 PRINT"The federation is maintaining ";B9;" starbase";X$;" in the galaxy"
 4450 GOTO 3180
 4460 PRINT"Your stupidity has left you on your own in"
 4470 PRINT"    the galaxy -- you have no starbases left!"
@@ -865,7 +865,7 @@
 4500 X$=""
 4501 IF K3<=1 THEN 4510
 4502 X$="s"
-4510 PRINT"From ENTERPRISE to Klingon battle cruiser",X$
+4510 PRINT"From ENTERPRISE to Klingon battle cruiser";X$
 4520 H8=0
 4521 FOR I=1 TO 3
 4522 IF K(I,3)<=0 THEN 4740
@@ -876,10 +876,10 @@
 4542 GOTO 4590
 4550 GOSUB 840
 4551 PRINT"Direction/Distance Calculator:"
-4560 PRINT"You are at quadrant ",Q1,",",Q2," sector ",S1,",",S2
+4560 PRINT"You are at quadrant ";Q1;",";Q2;" sector ";S1;",";S2
 4570 PRINT"Please enter "
-4571 INPUT" initial coordinates (x,y) ":C1,A
-4580 INPUT" Final coordinates (x,y) ":W1,X
+4571 INPUT" initial coordinates (x,y) ";C1,A
+4580 INPUT" Final coordinates (x,y) ";W1,X
 4590 X=X-A
 4591 A=C1-W1
 4592 aa=abs(a)
@@ -931,8 +931,8 @@
 4780 PRINT"quadrant.'"
 4781 GOTO 1520
 4790 REM find empty place in quadrant (for things)
-4800 R1=INT(RND*7.98+1.01)
-4801 R2=INT(RND*7.98+1.01)
+4800 R1=INT(RND(1)*7.98+1.01)
+4801 R2=INT(RND(1)*7.98+1.01)
 4802 A$="   "
 4803 Z1=R1
 4804 Z2=R2
