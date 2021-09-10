@@ -78,7 +78,7 @@ statement when supplied.
 """
 class BASICParser:
 
-    def __init__(self):
+    def __init__(self, basicdata):
         # Symbol table to hold variable names mapped
         # to values
         self.__symbol_table = {}
@@ -87,7 +87,9 @@ class BASICParser:
         # when evaluating expressions
         self.__operand_stack = []
 
-        # List to hold contents of DATA statement
+        # BasicDATA structure containing program DATA Statements
+        self.__data = basicdata
+        # List to hold values read from DATA statements
         self.__data_values = []
 
         # These values will be
@@ -96,8 +98,12 @@ class BASICParser:
         self.__tokenlist = []
         self.__tokenindex = None
 
-        # Set to keep track of extant loop variables
-        self. __loop_vars = set()
+        # Previous flowsignal used to determine initializion of
+        # loop variable
+        self.last_flowsignal = None
+
+        #file handle list
+        self.__file_handles = {}
 
     def parse(self, tokenlist, line_number):
         """Must be initialised with the list of
@@ -222,6 +228,21 @@ class BASICParser:
             self.__readstmt()
             return None
 
+        elif self.__token.category == Token.RESTORE:
+            self.__restorestmt()
+            return None
+
+        elif self.__token.category == Token.OPEN:
+            return self.__openstmt()
+
+        elif self.__token.category == Token.CLOSE:
+            self.__closestmt()
+            return None
+
+        elif self.__token.category == Token.FSEEK:
+            self.__fseekstmt()
+            return None
+
         else:
             # Ignore comments, but raise an error
             # for anything else
@@ -238,10 +259,31 @@ class BASICParser:
         """
         self.__advance()   # Advance past PRINT token
 
+        fileIO = False
+        if self.__token.category == Token.HASH:
+            fileIO = True
+
+            # Process the # keyword
+            self.__consume(Token.HASH)
+
+            # Acquire the file number
+            self.__expr()
+            filenum = self.__operand_stack.pop()
+
+            if self.__file_handles.get(filenum) == None:
+                raise RuntimeError("PRINT: file #"+str(filenum)+" not opened in line " + str(self.__line_number))
+
+            # Process the comma
+            if self.__tokenindex < len(self.__tokenlist) and self.__token.category != Token.COLON:
+                self.__consume(Token.COMMA)
+
         # Check there are items to print
         if not self.__tokenindex >= len(self.__tokenlist):
             self.__logexpr()
-            print(self.__operand_stack.pop(), end='')
+            if fileIO:
+                self.__file_handles[filenum].write('%s' %(self.__operand_stack.pop()))
+            else:
+                print(self.__operand_stack.pop(), end='')
 
             while self.__token.category == Token.SEMICOLON:
                 if self.__tokenindex == len(self.__tokenlist) - 1:
@@ -250,10 +292,16 @@ class BASICParser:
                     return
                 self.__advance()
                 self.__logexpr()
-                print(self.__operand_stack.pop(), end='')
+                if fileIO:
+                    self.__file_handles[filenum].write('%s' %(self.__operand_stack.pop()))
+                else:
+                    print(self.__operand_stack.pop(), end='')
 
         # Final newline
-        print()
+        if fileIO:
+            self.__file_handles[filenum].write("\n")
+        else:
+            print()
 
     def __letstmt(self):
         """Parses a LET statement,
@@ -302,6 +350,10 @@ class BASICParser:
         """Parses a STOP statement"""
 
         self.__advance()  # Advance past STOP token
+
+        for handles in self.__file_handles:
+            self.__file_handles[handles].close()
+        self.__file_handles.clear()
 
         return FlowSignal(ftype=FlowSignal.STOP)
 
@@ -447,6 +499,122 @@ class BASICParser:
             raise IndexError('Array index out of range in line ' +
                              str(self.__line_number))
 
+    def __openstmt(self):
+        """Parses an open statement, opens the indicated file and
+        places the file handle into handle table
+        """
+
+        self.__advance() # Advance past OPEN token
+
+        # Acquire the filename
+        self.__logexpr()
+        filename = self.__operand_stack.pop()
+
+        # Process the FOR keyword
+        self.__consume(Token.FOR)
+
+        if self.__token.category == Token.INPUT:
+            accessMode = "r"
+        elif self.__token.category == Token.APPEND:
+            accessMode = "r+"
+        elif self.__token.category == Token.OUTPUT:
+            accessMode = "w+"
+        else:
+            raise SyntaxError('Invalid Open access mode in line ' + str(self.__line_number))
+
+        self.__advance() # Advance past acess type
+
+        if self.__token.lexeme != "AS":
+            raise SyntaxError('Expecting AS in line ' + str(self.__line_number))
+
+        self.__advance() # Advance past AS keyword
+
+        # Process the # keyword
+        self.__consume(Token.HASH)
+
+        # Acquire the file number
+        self.__expr()
+        filenum = self.__operand_stack.pop()
+
+        branchOnError = False
+        if self.__token.category == Token.ELSE:
+            branchOnError = True
+            self.__advance() # Advance past ELSE
+
+            if self.__token.category == Token.GOTO:
+                self.__advance()    # Advance past optional GOTO
+
+            self.__expr()
+
+        if self.__file_handles.get(filenum) != None:
+            if branchOnError:
+                return FlowSignal(ftarget=self.__operand_stack.pop())
+            else:
+                raise RuntimeError("File #",filenum," already opened in line " + str(self.__line_number))
+
+        try:
+            self.__file_handles[filenum] = open(filename,accessMode)
+
+        except:
+            if branchOnError:
+                return FlowSignal(ftarget=self.__operand_stack.pop())
+            else:
+                raise RuntimeError('File '+filename+' could not be opened in line ' + str(self.__line_number))
+
+        if accessMode == "r+":
+            self.__file_handles[filenum].seek(0)
+            filelen = 0
+            for lines in self.__file_handles[filenum]:
+                filelen += (len(lines)+(0 if implementation.name.upper() == 'MICROPYTHON' else 1))
+
+            self.__file_handles[filenum].seek(filelen)
+
+        return None
+
+    def __closestmt(self):
+        """Parses a close, closes the file and removes
+        the file handle from the handle table
+        """
+
+        self.__advance() # Advance past CLOSE token
+
+        # Process the # keyword
+        self.__consume(Token.HASH)
+
+        # Acquire the file number
+        self.__expr()
+        filenum = self.__operand_stack.pop()
+
+        if self.__file_handles.get(filenum) == None:
+            raise RuntimeError("CLOSE: file #"+str(filenum)+" not opened in line " + str(self.__line_number))
+
+        self.__file_handles[filenum].close()
+        self.__file_handles.pop(filenum)
+
+    def __fseekstmt(self):
+        """Parses an fseek statement, seeks the indicated file position
+        """
+
+        self.__advance() # Advance past FSEEK token
+
+        # Process the # keyword
+        self.__consume(Token.HASH)
+
+        # Acquire the file number
+        self.__expr()
+        filenum = self.__operand_stack.pop()
+
+        if self.__file_handles.get(filenum) == None:
+            raise RuntimeError("FSEEK: file #"+str(filenum)+" not opened in line " + str(self.__line_number))
+
+        # Process the comma
+        self.__consume(Token.COMMA)
+
+        # Acquire the file position
+        self.__expr()
+
+        self.__file_handles[filenum].seek(self.__operand_stack.pop())
+
     def __inputstmt(self):
         """Parses an input statement, extracts the input
         from the user and places the values into the
@@ -455,8 +623,29 @@ class BASICParser:
         """
         self.__advance()  # Advance past INPUT token
 
+        fileIO = False
+        if self.__token.category == Token.HASH:
+            fileIO = True
+
+            # Process the # keyword
+            self.__consume(Token.HASH)
+
+            # Acquire the file number
+            self.__expr()
+            filenum = self.__operand_stack.pop()
+
+            if self.__file_handles.get(filenum) == None:
+                raise RuntimeError("INPUT: file #"+str(filenum)+" not opened in line " + str(self.__line_number))
+
+            # Process the comma
+            self.__consume(Token.COMMA)
+
         prompt = '? '
         if self.__token.category == Token.STRING:
+            if fileIO:
+                raise SyntaxError('Input prompt specified for file I/O ' +
+                                'in line ' + str(self.__line_number))
+
             # Acquire the input prompt
             self.__logexpr()
             prompt = self.__operand_stack.pop()
@@ -479,7 +668,11 @@ class BASICParser:
         valid_input = False
         while not valid_input:
             # Gather input from the user into the variables
-            inputvals = input(prompt).split(',', (len(variables)-1))
+            if fileIO:
+                inputvals = ((self.__file_handles[filenum].readline().replace("\n","")).replace("\r","")).split(',', (len(variables)-1))
+                valid_input = True
+            else:
+                inputvals = input(prompt).split(',', (len(variables)-1))
 
             for variable in variables:
                 left = variable
@@ -502,30 +695,30 @@ class BASICParser:
                             valid_input = True
 
                         except ValueError:
-                            valid_input = False
+                            if not fileIO:
+                                valid_input = False
                             print('Non-numeric input provided to a numeric variable - redo from start')
                             break
 
                 except IndexError:
                     # No more input to process
-                    valid_input = False
+                    if not fileIO:
+                        valid_input = False
                     print('Not enough values input - redo from start')
                     break
 
+    def __restorestmt(self):
+
+        self.__advance() # Advance past RESTORE token
+
+        # Acquire the line number
+        self.__expr()
+
+        self.__data_values.clear()
+        self.__data.restore(self.__operand_stack.pop())
+
     def __datastmt(self):
         """Parses a DATA statement"""
-
-        self.__advance()  # Advance past DATA token
-
-        # Acquire the comma separated values
-        if not self.__tokenindex >= len(self.__tokenlist):
-            self.__expr()
-            self.__data_values.append(self.__operand_stack.pop())
-
-            while self.__token.category == Token.COMMA:
-                self.__advance()  # Advance past comma
-                self.__expr()
-                self.__data_values.append(self.__operand_stack.pop())
 
     def __readstmt(self):
         """Parses a READ statement."""
@@ -543,14 +736,12 @@ class BASICParser:
                 variables.append(self.__token.lexeme)
                 self.__advance()  # Advance past variable
 
-        # Check that we have enough data values to fill the
-        # variables
-        if len(variables) > len(self.__data_values):
-            raise RuntimeError('Insufficient constants supplied to READ ' +
-                               'in line ' + str(self.__line_number))
-
         # Gather input from the DATA statement into the variables
         for variable in variables:
+
+            if len(self.__data_values) < 1:
+                self.__data_values = self.__data.readData(self.__line_number)
+
             left = variable
             right = self.__data_values.pop(0)
 
@@ -565,11 +756,6 @@ class BASICParser:
 
             elif not left.endswith('$'):
                 try:
-                    #if '.' in right:
-                    #    self.__symbol_table[left] = float(right)
-                    #else:
-                    #    self.__symbol_table[left] = int(right)
-
                     numeric = float(right)
                     if numeric.is_integer():
                         numeric = int(numeric)
@@ -888,17 +1074,20 @@ class BASICParser:
 
         # Now determine the status of the loop
 
-        # If the loop variable is not in the set of extant
-        # variables, this is the first time we have entered the loop
         # Note that we cannot use the presence of the loop variable in
         # the symbol table for this test, as the same variable may already
         # have been instantiated elsewhere in the program
-        if loop_variable not in self.__loop_vars:
-            self.__symbol_table[loop_variable] = start_val
+        #
+        # Need to initialize the loop variable anytime the for
+        # statement is reached from a statement other than an active NEXT.
 
-            # Also add loop variable to set of extant loop
-            # variables
-            self.__loop_vars.add(loop_variable)
+        from_next = False
+        if self.last_flowsignal:
+            if self.last_flowsignal.ftype == FlowSignal.LOOP_REPEAT:
+                from_next = True
+
+        if not from_next:
+            self.__symbol_table[loop_variable] = start_val
 
         else:
             # We need to modify the loop variable
@@ -916,11 +1105,7 @@ class BASICParser:
             stop = True
 
         if stop:
-            # Loop must terminate, so remove loop vriable from set of
-            # extant loop variables and remove loop variable from
-            # symbol table
-            self.__loop_vars.remove(loop_variable)
-            del self.__symbol_table[loop_variable]
+            # Loop must terminate
             return FlowSignal(ftype=FlowSignal.LOOP_SKIP,
                               ftarget=loop_variable)
         else:
@@ -949,17 +1134,36 @@ class BASICParser:
         """
 
         self.__advance()  # Advance past ON token
-        self.__logexpr()
+        self.__expr()
 
         # Save result of expression
         saveval = self.__operand_stack.pop()
 
-        # Process the GOSUB part and save the jump value
-        # if the condition is met
-        if saveval:
-            return self.__gosubstmt()
+        if self.__token.category == Token.GOTO:
+            self.__consume(Token.GOTO)
+            branchtype = 1
         else:
+            self.__consume(Token.GOSUB)
+            branchtype = 2
+
+        branch_values = []
+        # Acquire the comma separated values
+        if not self.__tokenindex >= len(self.__tokenlist):
+            self.__expr()
+            branch_values.append(self.__operand_stack.pop())
+
+            while self.__token.category == Token.COMMA:
+                self.__advance()  # Advance past comma
+                self.__expr()
+                branch_values.append(self.__operand_stack.pop())
+
+        if saveval < 1 or saveval > len(branch_values) or len(branch_values) == 0:
             return None
+        elif branchtype == 1:
+            return FlowSignal(ftarget=branch_values[saveval-1])
+        else:
+            return FlowSignal(ftarget=branch_values[saveval-1],
+                              ftype=FlowSignal.GOSUB)
 
     def __relexpr(self):
         """Parses a relational expression
@@ -1439,4 +1643,3 @@ class BASICParser:
 
         else:
             random.seed(int(monotonic()))
-

@@ -64,6 +64,20 @@ Programs may be listed using the **LIST** command:
 >
 ```
 
+The list command can take arguments to refine the line selection listed
+
+`LIST 50` Lists only line 50
+
+`LIST 50-100` Lists lines 50 through 100 inclusive
+
+`LIST 50 100` Also Lists lines 50 through 100 inclusive, almost any delimiter
+works here
+
+`LIST -100` Lists from the start of the program through line 100 inclusive
+
+`LIST 50-` Lists from line 50 to the end of the program
+
+
 A program is executed using the **RUN** command:
 
 ```
@@ -514,6 +528,8 @@ I is greater than J
 >
 ```
 
+It is also possible to use **ON-GOTO** to perform a conditional jump.
+
 Allowable relational operators are:
 
 * '=' (equal, note that in BASIC the same operator is used for assignment)
@@ -750,11 +766,7 @@ calculate the corresponding factorial *N!*.
 
 * *rock_scissors_paper.bas* - A BASIC implementation of the rock-paper-scissors game.
 
-*Note that you cannot simply load these programs from the text files. They must
-be entered line by line into the interpreter. The program can then be saved and
-reloaded using the* **SAVE** and **LOAD** *commands as described above. Of course,
-this is no more inconvenient than saving a program to cassette tape and reloading it,
-as we all would have done in the 1980s!*
+* *PyBStartrek.bas* - A port of the 1971 Star Trek text based strategy game.
 
 ## Informal grammar definition
 
@@ -815,7 +827,7 @@ be omitted to get the rest of the string.  If *start-position* or *end-position*
 
 **MIN**(*expression-list*) - Returns the lowest value in *expression-list*
 
-**ON** *expression* **GOSUB** *line-number* - Conditional subroutine call
+**ON** *expression* **GOSUB|GOTO** *line-number1,line-number2,...* - Conditional subroutine call|branch - Program flow will be transferred either through a **GOSUB** subroutine call or a **GOTO** branch to the line number in the list of line numbers corresponding to the ordinal value of the evaluated *expr*. The first line number corresponds with an *expr* value of 1.  *expr* must evaluate to an integer value.
 
 **PI** - Returns the value of pi
 

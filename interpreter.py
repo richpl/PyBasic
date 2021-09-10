@@ -34,7 +34,7 @@ def main():
     banner = (
         """
         PPPP   Y   Y  BBBB    AAA    SSSS    I     CCC
-        P   P   Y Y   B   B  A   A  S        I    C   
+        P   P   Y Y   B   B  A   A  S        I    C
         P   P   Y Y   B   B  A   A  S        I    C
         PPPP     Y    BBBB   AAAAA  SSSS     I    C
         P        Y    B   B  A   A      S    I    C
@@ -87,7 +87,23 @@ def main():
 
                 # List the program
                 elif tokenlist[0].category == Token.LIST:
-                    program.list()
+                     if len(tokenlist) == 2:
+                         program.list(int(tokenlist[1].lexeme),int(tokenlist[1].lexeme))
+                     elif len(tokenlist) == 3:
+                         # if we have 3 tokens, it might be LIST x y for a range
+                         # or LIST -y or list x- for a start to y, or x to end
+                         if tokenlist[1].lexeme == "-":
+                             program.list(None, int(tokenlist[2].lexeme))
+                         elif tokenlist[2].lexeme == "-":
+                             program.list(int(tokenlist[1].lexeme), None)
+                         else:
+                             program.list(int(tokenlist[1].lexeme),int(tokenlist[2].lexeme))
+                     elif len(tokenlist) == 4:
+                         # if we have 4, assume LIST x-y or some other
+                         # delimiter for a range
+                         program.list(int(tokenlist[1].lexeme),int(tokenlist[3].lexeme))
+                     else:
+                         program.list()
 
                 # Save the program to disk
                 elif tokenlist[0].category == Token.SAVE:

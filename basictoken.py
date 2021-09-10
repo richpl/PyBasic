@@ -108,10 +108,17 @@ class BASICToken:
         NOT             = 75  # NOT operator
         PI              = 76  # PI constant
         RNDINT          = 77  # RNDINT function
-        TAB             = 80  # TAB function
-        SEMICOLON       = 81  # SEMICOLON
-        LEFT            = 82  # LEFT$ function
-        RIGHT           = 83  # RIGHT$ function
+        OPEN            = 78  # OPEN keyword
+        HASH            = 79  # "#"
+        CLOSE           = 80  # CLOSE keyword
+        FSEEK           = 81  # FSEEK keyword
+        RESTORE         = 82  # RESTORE keyword
+        APPEND          = 83  # APPEND keyword
+        OUTPUT          = 84  # OUTPUT keyword
+        TAB             = 85  # TAB function
+        SEMICOLON       = 86  # SEMICOLON
+        LEFT            = 87  # LEFT$ function
+        RIGHT           = 88  # RIGHT$ function
 
         # Displayable names for each token category
         catnames = ['EOF', 'LET', 'LIST', 'PRINT', 'RUN',
@@ -128,15 +135,18 @@ class BASICToken:
         'CHR', 'ASC', 'STR', 'MID', 'MODULO', 'TERNARY',
         'VAL', 'LEN', 'UPPER', 'LOWER', 'ROUND',
         'MAX', 'MIN', 'INSTR', 'AND', 'OR', 'NOT', 'PI',
-        'RNDINT', 'TAB', 'SEMICOLON', 'LEFT', 'RIGHT']
+        'RNDINT', 'OPEN', 'HASH', 'CLOSE', 'FSEEK', 'APPEND',
+        'OUTPUT', 'RESTORE', 'RNDINT', 'TAB', 'SEMICOLON',
+        'LEFT', 'RIGHT']
 
         smalltokens = {'=': ASSIGNOP, '(': LEFTPAREN, ')': RIGHTPAREN,
                        '+': PLUS, '-': MINUS, '*': TIMES, '/': DIVIDE,
                        '\n': NEWLINE, '<': LESSER,
                        '>': GREATER, '<>': NOTEQUAL,
                        '<=': LESSEQUAL, '>=': GREATEQUAL, ',': COMMA,
-                       ':': COLON, '%': MODULO, '!=': NOTEQUAL,
+                       ':': COLON, '%': MODULO, '!=': NOTEQUAL, '#': HASH}
                        ';': SEMICOLON}
+
 
         # Dictionary of BASIC reserved words
         keywords = {'LET': LET, 'LIST': LIST, 'PRINT': PRINT,
@@ -160,8 +170,12 @@ class BASICToken:
                     'ROUND': ROUND, 'MAX': MAX, 'MIN': MIN,
                     'INSTR': INSTR, 'END': STOP,
                     'AND': AND, 'OR': OR, 'NOT': NOT,
-                    'PI': PI, 'RNDINT': RNDINT, 'TAB': TAB,
+                    'PI': PI, 'RNDINT': RNDINT, 'OPEN': OPEN,
+                    'CLOSE': CLOSE, 'FSEEK': FSEEK,
+                    'APPEND': APPEND, 'OUTPUT':OUTPUT,
+                    'RESTORE': RESTORE, 'TAB': TAB,
                     'LEFT$': LEFT, 'RIGHT$': RIGHT}
+
 
         # Functions
         functions = {ABS, ATN, COS, EXP, INT, LOG, POW, RND, SIN, SQR, TAN,
@@ -184,4 +198,3 @@ class BASICToken:
 
         def print_lexeme(self):
             print(self.lexeme, end=' ')
-
