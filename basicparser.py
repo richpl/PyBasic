@@ -526,7 +526,7 @@ class BASICParser:
             self.__file_handles[filenum].seek(0)
             filelen = 0
             for lines in self.__file_handles[filenum]:
-                filelen += (len(lines)+(0 if implementation.name.upper() == 'MICROPYTHON' else 1))
+                filelen += len(lines)+1
 
             self.__file_handles[filenum].seek(filelen)
 
