@@ -834,9 +834,9 @@ calculate the corresponding factorial *N!*.
 
 **CHR$**(*numerical-expression*) - Returns the character specified by character code of the result of *numerical-expression*.
 
-**COS**(*numerical-expression*) - Calculates the cosine value of the result of *numerical-expression*
-
 **CLOSE** *#filenum* - Closes an open file
+
+**COS**(*numerical-expression*) - Calculates the cosine value of the result of *numerical-expression*
 
 **DATA**(*expression-list*) - Defines a list of string or numerical values
 
