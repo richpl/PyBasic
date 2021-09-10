@@ -173,7 +173,7 @@ class Interpreter:
 
                     # Unrecognised input
                     else:
-                        self.__terminal.print("Unrecognised input", file=stderr)
+                        self.__terminal.print("Unrecognised input")
                         for token in tokenlist:
                             self.__terminal.print(str(token))
 
