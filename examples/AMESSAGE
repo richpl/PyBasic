@@ -527,17 +527,6 @@ You are near a large pit beside a large stalactite in the maze.
 The stalactite is about 30 feet long, allowing you to descend
 it. However, due to the smoothness of the stalactite you will
 probably be unable to climb back up again.
-#299
-The threatening little dwarf pulls out a sharp, nasty knife but
-suddenly freezes.
-
-The burly troll notices the little dwarf and appears to become very angry.
-
-The little dwarf frantically looks from side to side, the burly troll
-takes a sudden step towards the little dwarf.
-
-The little dwarf makes an odd squeal, steps back and trips on an outcropping,
-falling with a soft *thud* before scrambling out of sight in a cloud of dust. 
 #300
 Dead end.
 #301
@@ -572,6 +561,7 @@ There are some useful commands that you should know about:
 Other helpful functions include:
 * multiple commands on one input line, ie:
 "Go south, get car, keys, Start car." (example only)
+** oops, the PyBasic version doesn't support multiple commands :(
 --------------------------------------------------------------
 "Adventure" is a version of the game created by Willy Crowther and
 Dan Woods at M.I.T.

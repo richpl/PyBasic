@@ -9,7 +9,7 @@
 18 rem ADVENTURE WAS PORTED TO THE MACINTOSH PLUS BY THE ELIZABETH AND DAVID HUNTER
 19 rem IN MARCH 1998 AND THEN TO PYBASIC FOR THE RASPBERRY RP2040 IN JUNE 2021
 20 rem PRINT "Adventure 3.2 on ";date$;" at ";time$
-21 PRINT "Adventure 3.2 for PyBASIC"
+21 PRINT "Adventure 3.2"
 22 open "AMESSAGE" for INPUT as #3:open "AMOVING" for INPUT as #4
 23 open "ADESCRIP" for INPUT as #1:open "AITEMS" for INPUT as #2
 44 rem dirs is an array of possible room directions, it replaces file AMOVING
@@ -18,15 +18,16 @@
 47 dim fraindx(10)
 50 dim s(99)
 51 dim v(100)
-52 dim k(200)
+52 dim k(2)
 53 dim o(15)
+54 string$ = "100 N 101 NE 102 E 103 SE 104 S 105 SW 106 W 107 NW 108 U 109 D 110 PLUGH 111 XYZZY 112 PLOVER 113 CROSS 114 CLIMB 115 JUMP 116 FILL 117 EMPTY 117 POUR 118 LOOK 118 L 119 LIGHT 119 ON 120 EXTINGUISH 120 OFF 121 IN 121 ENTER 122 LEAVE 122 OUT 123 INVENTORY 123 I 124 GET 124 CATCH 124 TAKE 125 DROP 125 DUMP 047 ALL 047 EVERYTHING 126 THROW 127 ATTACK 127 KILL 128 FEED 129 WATER 130 LOCK 131 UNLOCK 132 FREE 132 RELEASE 133 WAVE 134 OPEN 135 CLOSE 136 OIL 137 EAT 138 DRINK 139 FEE FIE FOE FOO 140 SHORT 141 LONG 142 BRIEF 143 QUIT 143 STOP 143 END 144 SCORE 145 SAVE 146 LOAD 147 READ 147 EXAMINE 148 YES 148 Y 149 BUG 001 GOLD 001 NUGGET 002 BARS 002 SILVER 003 JEWELRY 004 COINS 005 DIAMONDS 006 MING 006 VASE 007 PEARL 008 EGGS 008 NEST 009 TRIDENT 010 EMERALD 011 PLATINUM 011 PYRAMID 012 CHAIN 013 SPICES 014 PERSIAN 014 RUG 015 TREASURE 015 CHEST 016 WATER 017 OIL 018 LAMP 018 LANTERN 019 KEYS 020 FOOD 021 BOTTLE 022 CAGE 023 ROD 023 WAND 024 CLAM 025 MAGAZINE 026 BEAR 027 AXE 028 VELVET 028 PILLOW 029 SHARDS 030 OYSTER 031 BIRD 032 TROLL 033 DRAGON 034 SNAKE 035 DWARF 036 ROCK 036 BOULDER 037 STAIRS 038 STEPS 039 HOUSE 039 BUILDING 040 GRATE 041 STREAM 042 ROOM 043 BRIDGE 044 PIT 045 VOLCANO 046 ROAD 100 NORTH 101 NORTHEAST 102 EAST 103 SOUTHEAST 104 SOUTH 105 SOUTHWEST 106 WEST 107 NORTHWEST 108 UP 109 DOWN "
 70 PRINT:PRINT "Initializing.";
 110 rem initialize
 130 rem total rooms, items,and keywords
 150 l1 = int(RND(1)*4)+1 : l2 = l1
-160 g = 0 : b0 = 1 : sn = 1 : d1 = 1 : d2 = 0 : t = 1 : b1 = 0 : b2 = 0 : p1 = 0: dead = 0
+160 g = 0 : b0 = 1 : sn = 1 : d1 = 1 : d2 = 0 : t = 1 : b1 = 0 : b2 = 0 : p1 = 0: dead = 0: lastc$=""
 161 l = 0 : c = 0 : d3 = 0 : b3 = 0 : d0 = 2 : t1 = 100 : t2 = 35 : t3 = 149 : r0 = 0 : c0 = 0: c$=""
-162 KC = 1.02
+162 KC = 1.03
 170 for ii = 1 to 99
 171  s(ii) = 0 : v(ii) = 0
 172 next ii
@@ -78,78 +79,41 @@
 375 if dead = 1 then 9540
 380 gosub 7800
 390 rem INPUT LOOP --- MULTIPLE COMMAANDS, REMOVE JUNK CHARACTERS
-400 if len(c$) > 0 then 500
+400 rem if len(c$) > 0 then 500
 410 INPUT ">";c$:c$=upper$(c$)
 420 if c$ = "" then 410
-425 PRINT:PRINT
-430 c$ = upper$(c$)
-449 rem    65-90 = A-Z               48-57 = 0-9         46 = . 44 = ,   
+425 PRINT:PRINT:NKEY=0
+431 if c$ <> lastc$ then 433
+432 c$ = "":goto 900
+433 numkeys=1:lastc$ = c$:a$=""
+449 rem    65-90 = A-Z               48-57 = 0-9         46 = .    
 450 for x = 1 to len(c$)
 460 z5 = asc(mid$(c$,x,1))
-470 if (z5 > 64 and z5 < 91) or (z5 > 47 and z5 < 58) or z5 = 44 then 480 else 471
+470 if (z5 > 64 and z5 < 91) or (z5 > 47 and z5 < 58) or z5 = 46 then 480 else 471
 471 c$ = mid$(c$,1,x-1)+" "+mid$(c$,x+1)
 480 next x
-490 if mid$(c$,len(c$),1) = "," then 500
-491 c$ = c$+","
-500 z4 = instr(c$,",")
-510 a$ = upper$(mid$(c$,1,z4-1)) : c$ = mid$(c$,z4+1)
-550 a$ = " "+a$+" "
-560 rem search a$ for keywords,puut kwd code into k(x)
-570 rem items
-580 data 1,"GOLD",1,"NUGGET",2,"BARS",2,"SILVER",3,"JEWELRY",4,"COINS"
-590 data 5,"DIAMONDS",6,"MING",6,"VASE",7,"PEARL",8,"EGGS",8,"NEST"
-600 data 9,"TRIDENT",10,"EMERALD",11,"PLATINUM",11,"PYRAMID",12,"CHAIN"
-610 data 13,"SPICES",14,"PERSIAN",14,"RUG",15,"TREASURE",15,"CHEST"
-620 data 16,"WATER",17,"OIL",18,"LAMP",18,"LANTERN",19,"KEYS",20,"FOOD",21,"BOTTLE"
-630 data 22,"CAGE",23,"ROD",23,"WAND",24,"CLAM",25,"MAGAZINE",26,"BEAR"
-640 data 27,"AXE",28,"VELVET",28,"PILLOW",29,"SHARDS",30,"OYSTER"
-650 data 31,"BIRD",32,"TROLL",33,"DRAGON",34,"SNAKE",35,"DWARF"
-660 data 36,"ROCK",36,"BOULDER",37,"STAIRS",38,"STEPS",39,"HOUSE",39,"BUILDING"
-665 data 40,"GRATE",41,"STREAM",42,"ROOM",43,"BRIDGE",44,"PIT",45,"VOLCANO"
-667 data 46,"ROAD",47,"ALL",47,"EVERYTHING"
-670 rem DIRECTIONS
-680 data 100,"N",100,"NORTH",101,"NE",101,"NORTHEAST",102,"E",102,"EAST"
-682 data 103,"SE",103,"SOUTHEAST",104,"S",104,"SOUTH",105,"SW",105,"SOUTHWEST"
-684 data 106,"W",106,"WEST",107,"NW",107,"NORTHWEST",108,"U",108,"UP",109,"D",109,"DOWN"
-690 rem VERBS
-700 data 110,"PLUGH",111,"XYZZY",112,"PLOVER",113,"CROSS",114,"CLIMB",115,"JUMP"
-710 data 116,"FILL",117,"EMPTY",117,"POUR",118,"LOOK",118,"L",119,"LIGHT",119,"ON",120,"EXTINGUISH"
-720 data 120,"OFF",121,"IN",121,"ENTER",122,"LEAVE",122,"OUT",123,"INVENTORY",123,"I"
-730 data 124,"GET",124,"CATCH",124,"TAKE",125,"DROP",125,"DUMP",126,"THROW",127,"ATTACK"
-740 data 127,"KILL",128,"FEED",129,"WATER",130,"LOCK",131,"UNLOCK"
-750 data 132,"FREE",132,"RELEASE",133,"WAVE",134,"OPEN",135,"CLOSE"
-760 data 136,"OIL",137,"EAT",138,"DRINK",139,"FEE FIE FOE FOO"
-765 data 140,"SHORT",141,"LONG",142,"BRIEF",143,"QUIT",143,"STOP",143,"END"
-770 data 144,"SCORE",145,"SAVE",146,"LOAD",147,"READ",147,"EXAMINE"
-775 data 148,"YES",148,"Y",149,"BUG",150,"*"
-780 restore 580
-790 for i = 1 to 200
-791 k(i) = 0
-792 next i
-800 z1 = 0 : z3 = 0
-810 rem T3=TOTAL NUMBER OF KEYWORDS
-820 if z1 > t3 then 900
-830 read z1,b$
-840 b$ = " "+b$+" "
-850 rem IF KEYWORD WAS FOUND, NOTE THIS IN K(Z1)
-860 if instr(a$,b$) = 0 then goto 820
-861 k(z1) = 1
-870 rem KEYWORDK #Z1 NOT FOUND
-880 goto 820
+490 if instr(c$," ")=0 then 520
+500 numkeys=2:a$ = mid$(c$,instr(c$," "),len(c$)-instr(c$," ")+1)+" "
+510 c$ = mid$(c$,1,instr(c$," ")-1)
+520 c$ = " "+c$+" "
+800 k(1)=0:k(2)=0:z3 = 0
+870 a1 = instr(string$,c$):if a1=0 then 872
+871 c$ = mid$(string$,a1-3,3):k(1)=int(val(c$))
+872 if numkeys=1 then 900
+873 a1 = instr(string$,a$):if a1=0 then 900
+874 b$ = mid$(string$,a1-3,3):k(2)=int(val(b$))
 890 rem EXOTIC WORDS
 900 z0 = 36
-910 for x = z0 to 46
-920 if k(x) = 0 then 960
+910 if k(1) >= z0 and k(1) <=46 then 930
+920 if k(2) >= z0 and k(2) <=46 then 930 else 980
 930 gosub 8390
-940 print "What do you want to do with the ";d$;"?"
+940 PRINT "What do you want to do with the ";d$;"?"
 950 goto 410
-960 next x
-970 for x = 110 to t3
-980 if k(x) = 1 then 1950
-990 next x
-1000 rem THEN IT'S A DIRECTION
+980 if k(1) >= 110 and k(1) <= T3 then 1950
+990 if k(2) >= 110 and k(2) <= T3 then 1950
+1000 rem THEN IS IT A DIRECTION
 1010 for d = 1 to 10
-1020 if k(d+99) = 1 then 1070
+1020 if k(1) = d+99 or k(2) = d+99 then 1070
 1030 next d
 1040 rem COMMAND NOT A DIRECTION
 1050 goto 1950
@@ -213,7 +177,7 @@
 1670 goto 1180
 1680 rem Narrow Tunnel
 1690 if not (l1 = 57 or l1 = 58) then 1780
-1691 IF K(102)=0 AND K(106)=0 THEN 1780
+1691 if k(1) <> 102 and k(2) <> 102 and k(1) <> 106 and k(2) <> 106 then 1780
 1700 for z3 = 1 to t2
 1710  if z3 = 10 then 1750
 1720  if s(z3) <> -1 then 1750
@@ -240,14 +204,16 @@
 1910 z59 = 51:gosub 7620
 1920 goto 400
 1940 rem OTHER COMMANDS
-1950 for z1 = 100 to t3
-1960 if k(z1)=1 then 2090
-1970 next z1
+1950 z1=k(1):if k(1) >= 110 and k(1) <= T3 then 2090
+1960 z1=k(2):if k(2) >= 110 and k(2) <= T3 then 2090
 1980 rem ITEM BO NO VERB?
-1990 restore 9961
+1990 if k(1) >= 1 and k(1) <= 35 then 2000
+1991 if k(2) >= 1 and k(2) <= 35 then 2000 else 2040
 2000 for x = 1 to 35
-2010  read d$
-2020  if k(x) = 1 then 940
+2020  if k(1) <> x and k(2) <> x then 2030
+2021   restore 9960+x
+2022   read d$
+2023   goto 940
 2030 next x
 2040 restore 2070
 2050 for x = 1 to int(RND(1)*4)+1
@@ -405,17 +371,17 @@
 3560 PRINT
 3570 GOTO 400
 3590 rem *** GET ***
-3630 if k(47) = 1 then 3680
+3630 if k(1) = 47 or k(2) = 47 then 3680
 3640 gosub 8280
 3650 if z8 > 0 then 3680
 3660 PRINT "Get what?"
 3670 goto 2040
 3680 for z3 = 1 to t2
-3710 if k(47) = 1 then 3730
-3720 if k(z3) = 0 then 3900
+3710 if k(1) = 47 or k(2) = 47 then 3730
+3720 if k(1) <> z3 and k(2) <> z3 then 3900
 3730 if s(z3) <> l1 then 3750
 3740 if s(z3) = l1 then 3790
-3750 if k(47) = 1 then 3900
+3750 if k(1) = 47 or k(2) = 47 then 3900
 3760 restore 9960+z3:read a$:PRINT a$;" not here."
 3770 goto 3900
 3780 rem MUST CHECK NOW FOR LEGALITY OF TAKING ITEM
@@ -434,17 +400,17 @@
 3900 next z3
 3910 goto 400
 3920 REM *** DROP ***
-3940 if k(47) = 1 then 4000
+3940 if k(1) = 47 or k(2) = 47 then 4000
 3950 gosub 8280
 3960 IF Z8>0 THEN 4000
 3970 PRINT "Drop what?"
 3980 GOTO 2040
 4000 FOR Z3=1 TO T2
-4030  IF K(47)=1 THEN 4060
-4040  IF K(Z3)<>1 THEN 4140
+4030  IF K(1) = 47 or k(2) = 47 THEN 4060
+4040  IF K(1) <> Z3 and k(2) <> z3 THEN 4140
 4050  IF S(Z3)=0 THEN 4140
 4060  IF S(Z3)=-1 THEN 4100
-4070  IF K(47)=1 THEN 4140
+4070  IF K(1)=47 or k(2)=47 THEN 4140
 4080  restore 9960+z3:read b$:PRINT "You don't have the ";B$
 4090  GOTO 4140
 4100  REM STILL NEED TO ELABORATE ON DROP (BIRD IN CAGE, BOTTLE)
@@ -552,7 +518,7 @@
 5170 z59 = 13:gosub 7620
 5180 GOTO 400
 5190 REM *** FREE ***
-5200 IF K(31) = 1 THEN 5240
+5200 IF K(1) = 31 or k(2) = 31 THEN 5240
 5210 REM CAN'T FREE ANYTHING BUT BIRD
 5220 z59 = 2:gosub 7620
 5230 GOTO 410
@@ -572,7 +538,7 @@
 5390 S(31)=0
 5400 GOTO 400
 5410 REM *** WAVE ***
-5420 IF K(23) <> 1 THEN 2200
+5420 IF K(1) <> 23 and k(2) <> 23 THEN 2200
 5430 IF S(23)=-1 THEN 5460
 5440 B$="rod":GOTO 2710
 5460 REM  IS HERE NEAR FISSURE
@@ -608,7 +574,7 @@
 5790 z59 = 18:gosub 7620
 5800 GOTO 400
 5810 REM OIL
-5820 IF K(17)=0 THEN 2200
+5820 IF K(1) <> 17 and k(2) <> 17 THEN 2200
 5830 IF S(17)=-1 THEN 5860
 5840 B$="oil":GOTO 5630
 5860 IF L1<>73 THEN 2200
@@ -617,7 +583,7 @@
 5890 D2=1:S(17)=0:B0=0:z59 = 19:gosub 7620
 5900 GOTO 400
 5910 REM *** EAT ***
-5920 IF K(20) = 1 THEN 5950
+5920 IF K(1) = 20 or k(2) = 20 THEN 5950
 5930 z59 = 20:gosub 7620
 5940 GOTO 410
 5950 Z3=20:GOSUB 8490
@@ -625,7 +591,7 @@
 5980 z59 = 73:gosub 7620
 5381 S(20)=0:B0=0:GOTO 400
 6000 REM *** DRINK ***
-6010 IF K(16) =1 THEN 6040
+6010 IF K(1) = 16 or k(2) =16 THEN 6040
 6020 z59 = 21:gosub 7620
 6030 GOTO 410
 6040 Z3=16:GOSUB 8490
@@ -865,10 +831,11 @@
 8270 rem   z3=item code first found
 8280 z8 = 0 : z3 = 0: d$ = ""
 8300 for z5 = 1 to 45
-8320 if k(z5) = 0 then 8360
+8320 if k(1) <> z5 and k(2) <> z5 then 8360
 8330 z8 = z8+1
 8340 restore 9960+z5:read b$:d$ = b$
-8350 if k(z5)=1 and z8 = 1 then 8352 else 8360
+8350 if k(1) = z5 and z8 = 1 then 8352
+8351 if k(2) = z5 and z8 = 1 then 8352 else 8360
 8352 z3 = z5
 8360 next z5
 8370 b$ = d$
@@ -877,7 +844,7 @@
 8400 x1 = 0
 8410 FOR Z1=1 TO 47
 8415  if x1=1 then 8440
-8430  IF K(Z1) = 1 THEN 8431 else 8440
+8430  IF K(1) = Z1 OR K(2) = Z1 THEN 8431 else 8440
 8431  restore 9960+z1:read d$:x1=1
 8440 NEXT Z1
 8450 RETURN
@@ -903,16 +870,13 @@
 8650 if L1 >= 13 then 8660
 8652 s(35) = 0:goto 8790
 8660 if s(35) <> L1 then 8770
-8661 if (l1 <> 60 and l1 <> 61) or t <> 1 then 8670
-8662 z59 = 299:gosub 7620
-8663 s(35) = 0: goto 8790
 8670 if RND(1) > 0.5 then 8790
 8680 rem YES!
 8690 z59 = 32:gosub 7620
 8700 rem DOES THE KNIFE KILL THE PLAYER?
 8705 KC = KC - 0.02
-8706 IF KC >= 0.75 THEN 8710
-8707 KC = 0.75
+8706 IF KC >= 0.5 THEN 8710
+8707 KC = 0.5
 8710 if RND(1) <= KC then 8750
 8720 rem YES
 8730 PRINT "It gets you!"
@@ -920,8 +884,7 @@
 8750 PRINT "It misses!"
 8760 goto 8790
 8770 rem SHOULD WE PUT A DWARF HERE?
-8780 if RND(1) >= 0.05 then 8790
-8781 if (l1 = 60 or l1 = 61) and t = 1 then 8790
+8780 if RND(1) >= 0.1 then 8790
 8785 s(35) = l1
 8786 z59=31:gosub 7620
 8790 return
@@ -958,7 +921,7 @@
 9044 CLOSE #5
 9050 PRINT "Game saved"
 9051 C0 = 0
-9060 if k(143) = 1 then 9750
+9060 if k(1) = 143 OR K(2) = 143 then 9750
 9070 GOTO 410
 9080 REM *** LOAD OLD GAME ***
 9090 IF C0=0 THEN 9120
