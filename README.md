@@ -44,7 +44,7 @@ but this can be changed with parentheses.
 > 50 PRINT 15 MOD 10
 > RUN
 6
-2
+2.0
 20
 0
 5
@@ -260,37 +260,38 @@ and are declared in a comma separated list:
 
 These values can then later be assigned to variables using the **READ** statement. Note that the type of the value
 (string or numeric) must match the type of the variable, otherwise an error message will be triggered. Therefore,
-attention should be paid to the relative ordering of constants and variables. Further,
-there must be enough constants to fill all of the variables defined in the **READ** statement, or else an
-error will be given. This is to ensure that the program is not left in a state where a variable has not been
-assigned a value, but nevertheless an attempt to use that variable is made later on in the program.
+attention should be paid to the relative ordering of constants and variables. Once the constants on a **DATA**
+statement are used by a **READ** statement, the next **READ**
+statement will move to the **DATA** statement with the next higher line number, if there are no more **DATA**
+statements before the end of the program an error will be displayed. This is to ensure that the program is not left
+in a state where a variable has not been assigned a value, but nevertheless an attempt to use that variable is
+made later on in the program.
 
-The constants defined in the **DATA** statement may be consumed using several **READ** statements:
+Normally each **DATA** statement is consumed sequently by **READ** statements however, the **RESTORE** statment can
+be used to override this order and set the line number of the **DATA** statement that will be used by the next 
+**READ** statement. If the *line-number* used in a **RESTORE** statement does not refer to a **DATA** statement an
+error will be displayed.
+
+The constants defined in the **DATA** statement may be consumed using several **READ** statements or several **DATA**
+statements may be consumed by a single **READ** statement.:
 
 ```
 > 10 DATA 56, "Hello", 78
-> 20 READ FIRSTNUM, STR$
-> 30 PRINT FIRSTNUM, " ", STR$
+> 20 READ FIRSTNUM, S$
+> 30 PRINT FIRSTNUM, " ", S$
 > 40 READ SECONDNUM
 > 50 PRINT SECONDNUM
+> 60 DATA "Another "
+> 70 DATA "Line "
+> 80 DATA "of "
+> 90 DATA "Data"
+> 100 RESTORE 10
+> 110 READ FIRSTNUM, S$, SECONDNUM, A$, B$, C$, D$
+> 120 PRINT S$," ",A$,B$,C$,D$
 > RUN
 56 Hello
 78
->
-```
-
-The supply of constants may be refreshed by defining more **DATA** statements:
-
-```
-> 10 DATA 20
-> 20 READ NUM
-> 30 PRINT NUM
-> 40 DATA 30
-> 50 READ NUM
-> 60 PRINT NUM
-> RUN
-20
-30
+Hello Another Line of Data
 >
 ```
 
@@ -304,8 +305,6 @@ The **REM** statement is used to indicate a comment, and occupies an entire stat
 ```
 > 10 REM THIS IS A COMMENT
 ```
-
-Note that comments will be automatically normalised to upper case.
 
 ### Stopping a program
 
@@ -357,7 +356,7 @@ of dimensions, and attempts to assign to an array using an out of range index, w
 
 ### Printing to standard output
 
-The **PRINT** statement is used to print to the screen:
+The **PRINT** statement is used to print to the screen (or to a file, see File I/O below):
 
 ```
 > 10 PRINT 2 * 4
@@ -472,6 +471,9 @@ Note that the start value, end value and step value need not be integers, but ca
 point numbers as well. If the loop variable was previously assigned in the program, its value will
 be replaced by the start value, it will not be evaluated.
 
+After the completion of the loop, the loop variable value will be the end value + step value (unless
+the loop is exited using a **GOTO** statement).
+
 ### Conditional branching
 
 Conditional branches are implemented using the **IF-THEN-ELSE** statement. The expression is evaluated and the appropriate jump
@@ -496,14 +498,37 @@ expression evaluates to true, otherwise the following statement is executed.
 
 You can optionally give the **GOTO** keyword before your line numbers. This is for compatibility with other BASIC dialects. e.g. `40 IF I > J THEN GOTO 50 ELSE GOTO 70`
 
-It is also possible to call a subroutine depending upon the result of a conditional expression
-using the **ON-GOSUB** statement. If the expression evaluates to true, then the subroutine is
-called, otherwise execution continues to the next statement without making the call:
+The **ON GOTO|GOSUB** *expr* *line1,line2,...* statement will call a subroutine or branch to a line number in the list of line numbers corresponding to the ordinal
+value of the evaluated *expr*. The first line number corresponds with an *expr* value of 1.  *expr* must evaluate to an integer value.
+ If *expr* evaluates to less than 1 or greater than the number of provided line numbers execution continues on the next 
+statement without making a subroutine call or branch:
+
+```
+> 20 LET J = 2
+> 30 ON J GOSUB 100,200,300
+> 40 STOP
+> 100 REM THE 1ST SUBROUTINE
+> 110 PRINT "J is ONE"
+> 120 RETURN
+> 200 REM THE 2ND SUBROUTINE
+> 210 PRINT "J is TWO"
+> 220 RETURN
+> 300 REM THE 3RD SUBROUTINE
+> 310 PRINT "J is THREE"
+> 320 RETURN
+> RUN
+J is TWO
+>
+```
+
+It is also possible to call a subroutine depending upon the result of a conditional expression using the **IFF** function (see Ternary Functions below). In
+the example below, if the expression evaluates to true, **IFF** returns a 1 and the subroutine is called, otherwise **IFF** returns a 0 and execution
+continues to the next statement without making the call:
 
 ```
 > 10 LET I = 10
 > 20 LET J = 5
-> 30 ON I > J GOSUB 100
+> 30 ON IFF (I > J, 1, 0) GOSUB 100
 > 40 STOP
 > 100 REM THE SUBROUTINE
 > 110 PRINT "I is greater than J"
@@ -513,7 +538,7 @@ I is greater than J
 >
 ```
 
-It is also possible to use **ON-GOTO** to perform a conditional jump.
+
 
 Allowable relational operators are:
 
@@ -580,7 +605,7 @@ I is greater than J
 
 ### User input
 
-The **INPUT** statement is used to solicit input from the user:
+The **INPUT** statement is used to solicit input from the user (or read input from a file, see File I/O below):
 
 ```
 > 10 INPUT A
@@ -624,6 +649,43 @@ to re-input the values again.
 
 It is a limitation of this BASIC dialect that it is not possible to assign constants directly to array variables
 within an **INPUT** statement, only simple variables.
+
+### File Input/Output
+
+Data can be read from or written to files using the **OPEN**, **FSEEK**, **INPUT**, **PRINT** and **CLOSE** statments.
+
+When a file is opened using the syntax **OPEN** "*filename*" **FOR INPUT|OUTPUT|APPEND AS** *#filenum* [**ELSE** *linenum*] a
+file number (*#filenum*) is assigned to the file, which if specfied as the first argument of an **INPUT** or **PRINT**
+statment, will direct the input or output to the file. 
+
+If there is an error opening a file and the optional **ELSE** option has been specified, program control
+will branch to the specified line number, if the **ELSE** has not been provided an error message will be displayed.
+
+If a file is opened for **OUTPUT** which does not exist, the file will be created, if the file does exist, its contents will
+be erased and any new **PRINT** output will replace it. If a file is opened for **APPEND** an error will occur if the file
+doesn't exist (or the **ELSE** branch will occur if specified). If the file does exist, any **PRINT** statments will add to the end
+of the file.
+
+If an input prompt is specfied on an **INPUT** statement being used for file I/O (i.e. *#filenum* is specified) an error
+will be displayed.
+
+The **FSEEK** *#filenum*,*filepos* statement will position the file pointer for the next **INPUT** statement.
+
+The **CLOSE** *#filenum* statment will close the file.
+
+```
+> 10 OPEN "FILE.TXT" FOR OUTPUT AS #1
+> 20 PRINT #1,"0123456789Hello World!"
+> 30 CLOSE #1
+> 40 OPEN "FILE.TXT" FOR INPUT AS #2
+> 50 FSEEK #2,10
+> 60 INPUT #2,A$
+> 70 PRINT A$
+> RUN
+Hello World!
+>
+```
+
 
 ### Numeric functions
 
@@ -760,6 +822,8 @@ calculate the corresponding factorial *N!*.
 
 **CHR$**(*numerical-expression*) - Returns the character specified by character code of the result of *numerical-expression*.
 
+**CLOSE** *#filenum* - Closes an open file
+
 **COS**(*numerical-expression*) - Calculates the cosine value of the result of *numerical-expression*
 
 **DATA**(*expression-list*) - Defines a list of string or numerical values
@@ -772,6 +836,9 @@ calculate the corresponding factorial *N!*.
 
 **FOR** *loop-variable* = *start-value* **TO** *end-value* [**STEP** *increment*] - Bounded loop
 
+**FSEEK** *#filenum*,*filepos* - Positions the file input pointer to the specified location within the open file, the next **INPUT** *#filenum*
+will read starting at file position *filepos*
+
 **GOSUB** *line-number* - Subroutine call
 
 **GOTO** *line-number* - Unconditional branch
@@ -782,7 +849,7 @@ calculate the corresponding factorial *N!*.
 
 **IF$**(*expression*, *string-expression*, *string-expression*) - Evaluates *expression* and returns the value of the result of the first *string-expression* if true, or the second if false.
 
-**INPUT** [*input-prompt*:] *simple-variable-list* - Processes user input presented as a comma separated list
+**INPUT** [*#filenum*,|*input-prompt*:] *simple-variable-list* - Processes user or file input presented as a comma separated list
 
 **INSTR**(*hackstack-string-expression*, *needle-string-expression*[, *start-numeric-expression*[, *end-numeric-expression*]]) - Returns position of first *needle-string-expression* inside first *hackstack-string-expression*, optionally start searching at position given by *start-numeric-expression* and optionally ending at position given by *end-numeric-expression*. Returns -1 if no match found.
 
@@ -811,11 +878,14 @@ be omitted to get the rest of the string.  If *start-position* or *end-position*
 
 **ON** *expression* **GOSUB|GOTO** *line-number1,line-number2,...* - Conditional subroutine call|branch - Program flow will be transferred either through a **GOSUB** subroutine call or a **GOTO** branch to the line number in the list of line numbers corresponding to the ordinal value of the evaluated *expr*. The first line number corresponds with an *expr* value of 1.  *expr* must evaluate to an integer value.
 
+**OPEN** "*filename*" **FOR INPUT|OUTPUT|APPEND AS** *#filenum* [**ELSE** *linenum*] - Opens the specified file. Program control is transferred to *linenum* if an error occurs otherwise continues
+on the next line.
+
 **PI** - Returns the value of pi
 
 **POW**(*base*, *exponent*) - Calculates the result of raising the base to the power of the exponent
 
-**PRINT** *print-list* - Prints a comma separated list of literals or variables
+**PRINT** [*#filenum*,]*print-list* - Prints a comma separated list of literals or variables to the screen or to a file
 
 **RANDOMIZE** [*numeric-expression*] - Resets random number generator to an unpredictable sequence. With
 optional seed (*numeric expression*), the sequence is predictable.
@@ -825,6 +895,8 @@ optional seed (*numeric expression*), the sequence is predictable.
 **REM** *comment* - Internal program documentation
 
 **RETURN** - Return from a subroutine
+
+**RESTORE** *line-number* - sets the line number that the next **READ** will start loading constants from. *line-number* must refer to a **DATA** statement
 
 **RND** - Generates a pseudo random number N, where 0 <= N < 1
 
