@@ -730,7 +730,7 @@ The functions are:
 Note that despite the name, this function can return codes outside the ASCII range.
 * **CHR$**(x) - Returns the character specified by character code *x*.
 * **INSTR**(x$, y$[, start[, end]]) - Returns position of *y$* inside *x$*, optionally start searching
-at position *start* and end at *end*. Returns -1 if no match found.
+at position *start* and end at *end*. Returns 0 if no match found.
 * **LEN**(x$) - Returns the length of *x$*.
 * **LOWER$**(x$) - Returns a lower-case version of *x$*.
 * **MID$**(x$, y[, z]) - Returns part of *x$* starting at position *y*.  If z is provided, that number of characters is returned, if omitted the entire rest of the string is returned

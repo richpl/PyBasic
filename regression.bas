@@ -51,6 +51,7 @@
 520 PRINT "*** Testing file i/o ***"
 530 OPEN "REGRESSION.TXT" FOR OUTPUT AS #1
 540 PRINT #1,"0123456789Hello World!"
+545 PRINT #1,"This is second line for testing"
 550 CLOSE #1
 560 OPEN "REGRESSION.TXT" FOR INPUT AS #2
 570 PRINT "The next line should say 'Hello World!'"

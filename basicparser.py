@@ -1463,7 +1463,11 @@ class BASICParser:
             self.__consume(Token.RIGHTPAREN)
 
             try:
-                return hackstackstring.find(needlestring, start, end)
+                # Older basis dialets are 1 based, so the return value
+                # here needs to be incremented by one.  ALSO
+                # this moves the -1 not found value to 0
+                # which indicated not found in most dialects
+                return hackstackstring.find(needlestring, start, end) + 1
 
             except TypeError:
                 raise TypeError("Invalid type supplied to INSTR in line " +
