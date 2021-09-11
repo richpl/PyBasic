@@ -25,6 +25,115 @@ from .flowsignal import FlowSignal
 from .lexer import Lexer
 
 
+class BASICData:
+
+    def __init__(self):
+        # array of line numbers to represent data statements
+        self.__datastmts = {}
+
+        # Data pointer
+        self.__next_data = 0
+
+
+    def delete(self):
+        self.__datastmts.clear()
+        self.__next_data = 0
+
+    def delData(self,line_number):
+        if self.__datastmts.get(line_number) != None:
+            del self.__datastmts[line_number]
+
+    def addData(self,line_number,tokenlist):
+        """
+        Adds the supplied token list
+        to the program's DATA store. If a token list with the
+        same line number already exists, this is
+        replaced.
+
+        line_number: Basic program line number of DATA statement
+
+        """
+
+        try:
+            self.__datastmts[line_number] = tokenlist
+
+        except TypeError as err:
+            raise TypeError("Invalid line number: " + str(err))
+
+
+    def getTokens(self,line_number):
+        """
+        returns the tokens from the program DATA statement
+
+        line_number: Basic program line number of DATA statement
+
+        """
+
+        return self.__datastmts.get(line_number)
+
+    def readData(self,read_line_number):
+
+        if len(self.__datastmts) == 0:
+            raise RuntimeError('No DATA statements available to READ ' +
+                               'in line ' + str(read_line_number))
+
+        data_values = []
+
+        line_numbers = list(self.__datastmts.keys())
+        line_numbers.sort()
+
+        if self.__next_data == 0:
+            self.__next_data = line_numbers[0]
+        elif line_numbers.index(self.__next_data) < len(line_numbers)-1:
+            self.__next_data = line_numbers[line_numbers.index(self.__next_data)+1]
+        else:
+            raise RuntimeError('No DATA statements available to READ ' +
+                               'in line ' + str(read_line_number))
+
+        tokenlist = self.__datastmts[self.__next_data]
+
+        sign = 1
+        for token in tokenlist[1:]:
+            if token.category != Token.COMMA:
+                #data_values.append(token.lexeme)
+
+                if token.category == Token.STRING:
+                    data_values.append(token.lexeme)
+                elif token.category == Token.UNSIGNEDINT:
+                    data_values.append(sign*int(token.lexeme))
+                elif token.category == Token.UNSIGNEDFLOAT:
+                    data_values.append(sign*eval(token.lexeme))
+                elif token.category == Token.MINUS:
+                    sign = -1
+                #else:
+                    #data_values.append(token.lexeme)
+            else:
+                sign = 1
+
+
+        return data_values
+
+    def restore(self,restoreLineNo):
+        if restoreLineNo == 0 or restoreLineNo in self.__datastmts:
+
+            if restoreLineNo == 0:
+                self.__next_data = restoreLineNo
+            else:
+
+                line_numbers = list(self.__datastmts.keys())
+                line_numbers.sort()
+
+                indexln = line_numbers.index(restoreLineNo)
+
+                if indexln == 0:
+                    self.__next_data = 0
+                else:
+                    self.__next_data = line_numbers[indexln-1]
+        else:
+            raise RuntimeError('Attempt to RESTORE but no DATA ' +
+                               'statement at line ' + str(restoreLineNo))
+
+
 class Program:
 
     def __init__(self, terminal):
@@ -40,6 +149,9 @@ class Program:
         self.__return_stack = []
         self.__terminal = terminal
 
+        # Setup DATA object
+        self.__data = BASICData()
+
     def __str__(self):
 
         program_text = ""
@@ -54,6 +166,8 @@ class Program:
         line_text = str(line_number) + " "
 
         statement = self.__program[line_number]
+        if statement[0].category == Token.DATA:
+            statement = self.__data.getTokens(line_number)
         for token in statement:
             # Add in quotes for strings
             if token.category == Token.STRING:
@@ -116,7 +230,11 @@ class Program:
         """
         try:
             line_number = int(tokenlist[0].lexeme)
-            self.__program[line_number] = tokenlist[1:]
+            if tokenlist[1].lexeme == "DATA":
+                self.__data.addData(line_number,tokenlist[1:])
+                self.__program[line_number] = [tokenlist[1],]
+            else:
+                self.__program[line_number] = tokenlist[1:]
 
         except TypeError as err:
             raise TypeError("Invalid line number: " +
@@ -160,7 +278,8 @@ class Program:
     def execute(self):
         """Execute the program"""
 
-        self.__parser = BASICParser(self.__terminal)
+        self.__parser = BASICParser(self.__data, self.__terminal)
+        self.__data.restore(0) # reset data pointer
 
         line_numbers = self.line_numbers()
 
@@ -177,6 +296,7 @@ class Program:
             # has line number has been reached
             while True:
                 flowsignal = self.__execute(self.get_next_line_number())
+                self.__parser.last_flowsignal = flowsignal
 
                 if flowsignal:
                     if flowsignal.ftype == FlowSignal.SIMPLE_JUMP:
@@ -235,7 +355,8 @@ class Program:
                         # Put loop line number on the stack so
                         # that it can be returned to when the loop
                         # repeats
-                        self.__return_stack.append(self.get_next_line_number())
+                        #self.__return_stack.append(self.get_next_line_number())
+                        self.__return_stack.append(line_numbers[index])
 
                         # Continue to the next statement in the loop
                         index = index + 1
@@ -308,6 +429,7 @@ class Program:
     def delete(self):
         """Deletes the program by emptying the dictionary"""
         self.__program.clear()
+        self.__data.delete()
 
     def delete_statement(self, line_number):
         """Deletes a statement from the program with
@@ -316,6 +438,7 @@ class Program:
         :param line_number: The line number to be deleted
 
         """
+        self.__data.delData(line_number)
         try:
             del self.__program[line_number]
 

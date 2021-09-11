@@ -49,12 +49,23 @@ class BASICArray:
                 raise SyntaxError("Fractional array size specified")
             dimensions[i] = int(dimensions[i])
 
+        # MSBASIC: Initialize to Zero
+        # MSBASIC: Overdim by one, as some dialects are 1 based and expect
+        #          to use the last item at index = size
         if self.dims == 1:
-            self.data = [None for x in range(dimensions[0])]
+            self.data = [0 for x in range(dimensions[0] + 1)]
         elif self.dims == 2:
-            self.data = [[None for x in range(dimensions[1])] for x in range(dimensions[0])]
+            self.data = [
+                [0 for x in range(dimensions[1] + 1)] for x in range(dimensions[0] + 1)
+            ]
         else:
-            self.data = [[[None for x in range(dimensions[2])] for x in range(dimensions[1])] for x in range(dimensions[0])]
+            self.data = [
+                [
+                    [0 for x in range(dimensions[2] + 1)]
+                    for x in range(dimensions[1] + 1)
+                ]
+                for x in range(dimensions[0] + 1)
+            ]
 
     def pretty_print(self):
         print(str(self.data))
@@ -65,7 +76,7 @@ statement when supplied.
 """
 class BASICParser:
 
-    def __init__(self, terminal):
+    def __init__(self, basicdata, terminal):
         # Symbol table to hold variable names mapped
         # to values
         self.__symbol_table = {}
@@ -74,7 +85,9 @@ class BASICParser:
         # when evaluating expressions
         self.__operand_stack = []
 
-        # List to hold contents of DATA statement
+        # BasicDATA structure containing program DATA Statements
+        self.__data = basicdata
+        # List to hold values read from DATA statements
         self.__data_values = []
 
         # These values will be
@@ -83,8 +96,12 @@ class BASICParser:
         self.__tokenlist = []
         self.__tokenindex = None
 
-        # Set to keep track of extant loop variables
-        self. __loop_vars = set()
+        # Previous flowsignal used to determine initializion of
+        # loop variable
+        self.last_flowsignal = None
+
+        #file handle list
+        self.__file_handles = {}
 
         # Store the terminal object
         self.__terminal = terminal
@@ -102,15 +119,27 @@ class BASICParser:
         how to branch if necessary, None otherwise
 
         """
-        self.__tokenlist = tokenlist
-        self.__tokenindex = 0
-
         # Remember the line number to aid error reporting
         self.__line_number = line_number
+        self.__tokenlist = []
+        for token in tokenlist:
+            if token.category == token.COLON:
+                self.__tokenindex = 0
 
+                # Assign the first token
+                self.__token = self.__tokenlist[self.__tokenindex]
+                flow = self.__stmt()
+                if flow:
+                    return flow
+
+                self.__tokenlist = []
+            else:
+                self.__tokenlist.append(token)
+
+
+        self.__tokenindex = 0
         # Assign the first token
         self.__token = self.__tokenlist[self.__tokenindex]
-
         return self.__stmt()
 
     def __advance(self):
@@ -200,6 +229,21 @@ class BASICParser:
             self.__readstmt()
             return None
 
+        elif self.__token.category == Token.RESTORE:
+            self.__restorestmt()
+            return None
+
+        elif self.__token.category == Token.OPEN:
+            return self.__openstmt()
+
+        elif self.__token.category == Token.CLOSE:
+            self.__closestmt()
+            return None
+
+        elif self.__token.category == Token.FSEEK:
+            self.__fseekstmt()
+            return None
+
         else:
             # Ignore comments, but raise an error
             # for anything else
@@ -216,18 +260,49 @@ class BASICParser:
         """
         self.__advance()   # Advance past PRINT token
 
+        fileIO = False
+        if self.__token.category == Token.HASH:
+            fileIO = True
+
+            # Process the # keyword
+            self.__consume(Token.HASH)
+
+            # Acquire the file number
+            self.__expr()
+            filenum = self.__operand_stack.pop()
+
+            if self.__file_handles.get(filenum) == None:
+                raise RuntimeError("PRINT: file #"+str(filenum)+" not opened in line " + str(self.__line_number))
+
+            # Process the comma
+            if self.__tokenindex < len(self.__tokenlist) and self.__token.category != Token.COLON:
+                self.__consume(Token.COMMA)
+
         # Check there are items to print
         if not self.__tokenindex >= len(self.__tokenlist):
             self.__logexpr()
-            self.__terminal.write(self.__operand_stack.pop())
-
-            while self.__token.category == Token.COMMA:
-                self.__advance()
-                self.__logexpr()
+            if fileIO:
+                self.__file_handles[filenum].write('%s' %(self.__operand_stack.pop()))
+            else:
                 self.__terminal.write(self.__operand_stack.pop())
 
+            while self.__token.category == Token.SEMICOLON:
+                if self.__tokenindex == len(self.__tokenlist) - 1:
+                    # If a semicolon ends this line, don't print
+                    # a newline.. a-la ms-basic
+                    return
+                self.__advance()
+                self.__logexpr()
+                if fileIO:
+                    self.__file_handles[filenum].write('%s' %(self.__operand_stack.pop()))
+                else:
+                    self.__terminal.write(self.__operand_stack.pop())
+
         # Final newline
-        self.__terminal.enter()
+        if fileIO:
+            self.__file_handles[filenum].write("\n")
+        else:
+            self.__terminal.enter()
 
     def __letstmt(self):
         """Parses a LET statement,
@@ -277,6 +352,10 @@ class BASICParser:
 
         self.__advance()  # Advance past STOP token
 
+        for handles in self.__file_handles:
+            self.__file_handles[handles].close()
+        self.__file_handles.clear()
+
         return FlowSignal(ftype=FlowSignal.STOP)
 
     def __assignmentstmt(self):
@@ -320,32 +399,44 @@ class BASICParser:
         """
         self.__advance()  # Advance past DIM keyword
 
-        # Extract the array name, append a suffix so
-        # that we can distinguish from simple variables
-        # in the symbol table
-        name = self.__token.lexeme + '_array'
-        self.__advance()  # Advance past array name
+        # MSBASIC: allow dims of multiple arrays delimited by commas
+        while True:
+            # Extract the array name, append a suffix so
+            # that we can distinguish from simple variables
+            # in the symbol table
+            name = self.__token.lexeme + "_array"
+            self.__advance()  # Advance past array name
 
-        self.__consume(Token.LEFTPAREN)
+            self.__consume(Token.LEFTPAREN)
 
-        # Extract the dimensions
-        dimensions = []
-        if not self.__tokenindex >= len(self.__tokenlist):
-            self.__expr()
-            dimensions.append(self.__operand_stack.pop())
-
-            while self.__token.category == Token.COMMA:
-                self.__advance()  # Advance past comma
+            # Extract the dimensions
+            dimensions = []
+            if not self.__tokenindex >= len(self.__tokenlist):
                 self.__expr()
                 dimensions.append(self.__operand_stack.pop())
 
-        self.__consume(Token.RIGHTPAREN)
+                while self.__token.category == Token.COMMA:
+                    self.__advance()  # Advance past comma
+                    self.__expr()
+                    dimensions.append(self.__operand_stack.pop())
 
-        if len(dimensions) > 3:
-            raise SyntaxError("Maximum number of array dimensions is three " +
-                              "in line " + str(self.__line_number))
+            self.__consume(Token.RIGHTPAREN)
 
-        self.__symbol_table[name] = BASICArray(dimensions)
+            if len(dimensions) > 3:
+                raise SyntaxError(
+                    "Maximum number of array dimensions is three "
+                    + "in line "
+                    + str(self.__line_number)
+                )
+
+            self.__symbol_table[name] = BASICArray(dimensions)
+
+            if self.__tokenindex == len(self.__tokenlist):
+                # We have parsed the last token here...
+                return
+            else:
+                self.__consume(Token.COMMA)
+
 
     def __arrayassignmentstmt(self, name):
         """Parses an assignment to an array variable
@@ -409,6 +500,122 @@ class BASICParser:
             raise IndexError('Array index out of range in line ' +
                              str(self.__line_number))
 
+    def __openstmt(self):
+        """Parses an open statement, opens the indicated file and
+        places the file handle into handle table
+        """
+
+        self.__advance() # Advance past OPEN token
+
+        # Acquire the filename
+        self.__logexpr()
+        filename = self.__operand_stack.pop()
+
+        # Process the FOR keyword
+        self.__consume(Token.FOR)
+
+        if self.__token.category == Token.INPUT:
+            accessMode = "r"
+        elif self.__token.category == Token.APPEND:
+            accessMode = "r+"
+        elif self.__token.category == Token.OUTPUT:
+            accessMode = "w+"
+        else:
+            raise SyntaxError('Invalid Open access mode in line ' + str(self.__line_number))
+
+        self.__advance() # Advance past acess type
+
+        if self.__token.lexeme != "AS":
+            raise SyntaxError('Expecting AS in line ' + str(self.__line_number))
+
+        self.__advance() # Advance past AS keyword
+
+        # Process the # keyword
+        self.__consume(Token.HASH)
+
+        # Acquire the file number
+        self.__expr()
+        filenum = self.__operand_stack.pop()
+
+        branchOnError = False
+        if self.__token.category == Token.ELSE:
+            branchOnError = True
+            self.__advance() # Advance past ELSE
+
+            if self.__token.category == Token.GOTO:
+                self.__advance()    # Advance past optional GOTO
+
+            self.__expr()
+
+        if self.__file_handles.get(filenum) != None:
+            if branchOnError:
+                return FlowSignal(ftarget=self.__operand_stack.pop())
+            else:
+                raise RuntimeError("File #",filenum," already opened in line " + str(self.__line_number))
+
+        try:
+            self.__file_handles[filenum] = open(filename,accessMode)
+
+        except:
+            if branchOnError:
+                return FlowSignal(ftarget=self.__operand_stack.pop())
+            else:
+                raise RuntimeError('File '+filename+' could not be opened in line ' + str(self.__line_number))
+
+        if accessMode == "r+":
+            self.__file_handles[filenum].seek(0)
+            filelen = 0
+            for lines in self.__file_handles[filenum]:
+                filelen += len(lines)+1
+
+            self.__file_handles[filenum].seek(filelen)
+
+        return None
+
+    def __closestmt(self):
+        """Parses a close, closes the file and removes
+        the file handle from the handle table
+        """
+
+        self.__advance() # Advance past CLOSE token
+
+        # Process the # keyword
+        self.__consume(Token.HASH)
+
+        # Acquire the file number
+        self.__expr()
+        filenum = self.__operand_stack.pop()
+
+        if self.__file_handles.get(filenum) == None:
+            raise RuntimeError("CLOSE: file #"+str(filenum)+" not opened in line " + str(self.__line_number))
+
+        self.__file_handles[filenum].close()
+        self.__file_handles.pop(filenum)
+
+    def __fseekstmt(self):
+        """Parses an fseek statement, seeks the indicated file position
+        """
+
+        self.__advance() # Advance past FSEEK token
+
+        # Process the # keyword
+        self.__consume(Token.HASH)
+
+        # Acquire the file number
+        self.__expr()
+        filenum = self.__operand_stack.pop()
+
+        if self.__file_handles.get(filenum) == None:
+            raise RuntimeError("FSEEK: file #"+str(filenum)+" not opened in line " + str(self.__line_number))
+
+        # Process the comma
+        self.__consume(Token.COMMA)
+
+        # Acquire the file position
+        self.__expr()
+
+        self.__file_handles[filenum].seek(self.__operand_stack.pop())
+
     def __inputstmt(self):
         """Parses an input statement, extracts the input
         from the user and places the values into the
@@ -417,12 +624,33 @@ class BASICParser:
         """
         self.__advance()  # Advance past INPUT token
 
+        fileIO = False
+        if self.__token.category == Token.HASH:
+            fileIO = True
+
+            # Process the # keyword
+            self.__consume(Token.HASH)
+
+            # Acquire the file number
+            self.__expr()
+            filenum = self.__operand_stack.pop()
+
+            if self.__file_handles.get(filenum) == None:
+                raise RuntimeError("INPUT: file #"+str(filenum)+" not opened in line " + str(self.__line_number))
+
+            # Process the comma
+            self.__consume(Token.COMMA)
+
         prompt = '? '
         if self.__token.category == Token.STRING:
+            if fileIO:
+                raise SyntaxError('Input prompt specified for file I/O ' +
+                                'in line ' + str(self.__line_number))
+
             # Acquire the input prompt
             self.__logexpr()
             prompt = self.__operand_stack.pop()
-            self.__consume(Token.COLON)
+            self.__consume(Token.SEMICOLON)
 
         # Acquire the comma separated input variables
         variables = []
@@ -441,8 +669,12 @@ class BASICParser:
         valid_input = False
         while not valid_input:
             # Gather input from the user into the variables
-            self.__terminal.write(prompt)
-            inputvals = self.__terminal.input().split(',', (len(variables)-1))
+            if fileIO:
+                inputvals = ((self.__file_handles[filenum].readline().replace("\n","")).replace("\r","")).split(',', (len(variables)-1))
+                valid_input = True
+            else:
+                self.__terminal.write(prompt)
+                inputvals = self.__terminal.input().split(',', (len(variables)-1))
 
             for variable in variables:
                 left = variable
@@ -465,30 +697,30 @@ class BASICParser:
                             valid_input = True
 
                         except ValueError:
-                            valid_input = False
+                            if not fileIO:
+                                valid_input = False
                             self.__terminal.print('Non-numeric input provided to a numeric variable - redo from start')
                             break
 
                 except IndexError:
                     # No more input to process
-                    valid_input = False
+                    if not fileIO:
+                        valid_input = False
                     self.__terminal.print('Not enough values input - redo from start')
                     break
 
+    def __restorestmt(self):
+
+        self.__advance() # Advance past RESTORE token
+
+        # Acquire the line number
+        self.__expr()
+
+        self.__data_values.clear()
+        self.__data.restore(self.__operand_stack.pop())
+
     def __datastmt(self):
         """Parses a DATA statement"""
-
-        self.__advance()  # Advance past DATA token
-
-        # Acquire the comma separated values
-        if not self.__tokenindex >= len(self.__tokenlist):
-            self.__expr()
-            self.__data_values.append(self.__operand_stack.pop())
-
-            while self.__token.category == Token.COMMA:
-                self.__advance()  # Advance past comma
-                self.__expr()
-                self.__data_values.append(self.__operand_stack.pop())
 
     def __readstmt(self):
         """Parses a READ statement."""
@@ -506,14 +738,12 @@ class BASICParser:
                 variables.append(self.__token.lexeme)
                 self.__advance()  # Advance past variable
 
-        # Check that we have enough data values to fill the
-        # variables
-        if len(variables) > len(self.__data_values):
-            raise RuntimeError('Insufficient constants supplied to READ ' +
-                               'in line ' + str(self.__line_number))
-
         # Gather input from the DATA statement into the variables
         for variable in variables:
+
+            if len(self.__data_values) < 1:
+                self.__data_values = self.__data.readData(self.__line_number)
+
             left = variable
             right = self.__data_values.pop(0)
 
@@ -528,11 +758,6 @@ class BASICParser:
 
             elif not left.endswith('$'):
                 try:
-                    #if '.' in right:
-                    #    self.__symbol_table[left] = float(right)
-                    #else:
-                    #    self.__symbol_table[left] = int(right)
-
                     numeric = float(right)
                     if numeric.is_integer():
                         numeric = int(numeric)
@@ -619,12 +844,21 @@ class BASICParser:
             self.__operand_stack.append(self.__token.lexeme)
             self.__advance()
 
-        elif self.__token.category == Token.NAME and \
-             self.__token.category not in Token.functions:
+        elif (
+            self.__token.category == Token.NAME
+            and self.__token.category not in Token.functions
+        ):
             # Check if this is a simple or array variable
-            if (self.__token.lexeme + '_array') in self.__symbol_table:
+            # MSBASIC Allows simple and complex variables to have the
+            # same id.  This is probably a bad idea, but it's used in
+            # some old example programs.  So check if next token is parens
+            if (
+                (self.__token.lexeme + "_array") in self.__symbol_table
+                and self.__tokenindex < len(self.__tokenlist) - 1
+                and self.__tokenlist[self.__tokenindex + 1].category == Token.LEFTPAREN
+            ):
                 # Capture the current lexeme
-                arrayname = self.__token.lexeme + '_array'
+                arrayname = self.__token.lexeme + "_array"
 
                 # Array must be processed
                 # Capture the index variables
@@ -632,29 +866,31 @@ class BASICParser:
 
                 try:
                     self.__consume(Token.LEFTPAREN)
-                except RuntimeError:
-                    raise RuntimeError('Array used without index in line ' +
-                                     str(self.__line_number))
-
-                indexvars = []
-                if not self.__tokenindex >= len(self.__tokenlist):
-                    self.__expr()
-                    indexvars.append(self.__operand_stack.pop())
-
-                    while self.__token.category == Token.COMMA:
-                        self.__advance()  # Advance past comma
+                    indexvars = []
+                    if not self.__tokenindex >= len(self.__tokenlist):
                         self.__expr()
                         indexvars.append(self.__operand_stack.pop())
 
-                BASICarray = self.__symbol_table[arrayname]
-                arrayval = self.__get_array_val(BASICarray, indexvars)
+                        while self.__token.category == Token.COMMA:
+                            self.__advance()  # Advance past comma
+                            self.__expr()
+                            indexvars.append(self.__operand_stack.pop())
 
-                if arrayval != None:
-                    self.__operand_stack.append(self.__sign*arrayval)
+                    BASICarray = self.__symbol_table[arrayname]
+                    arrayval = self.__get_array_val(BASICarray, indexvars)
 
-                else:
-                    raise IndexError('Empty array value returned in line ' +
-                                     str(self.__line_number))
+                    if arrayval != None:
+                        self.__operand_stack.append(self.__sign * arrayval)
+
+                    else:
+                        raise IndexError(
+                            "Empty array value returned in line "
+                            + str(self.__line_number)
+                        )
+                except RuntimeError:
+                    raise RuntimeError(
+                        "Array used without index in line " + str(self.__line_number)
+                    )
 
             elif self.__token.lexeme in self.__symbol_table:
                 # Simple variable must be processed
@@ -685,7 +921,8 @@ class BASICParser:
 
         else:
             raise RuntimeError('Expecting factor in numeric expression' +
-                               ' in line ' + str(self.__line_number))
+                               ' in line ' + str(self.__line_number) +
+                               self.__token.lexeme)
 
     def __get_array_val(self, BASICarray, indexvars):
         """Extracts the value from the given BASICArray at the specified indexes
@@ -839,17 +1076,20 @@ class BASICParser:
 
         # Now determine the status of the loop
 
-        # If the loop variable is not in the set of extant
-        # variables, this is the first time we have entered the loop
         # Note that we cannot use the presence of the loop variable in
         # the symbol table for this test, as the same variable may already
         # have been instantiated elsewhere in the program
-        if loop_variable not in self.__loop_vars:
-            self.__symbol_table[loop_variable] = start_val
+        #
+        # Need to initialize the loop variable anytime the for
+        # statement is reached from a statement other than an active NEXT.
 
-            # Also add loop variable to set of extant loop
-            # variables
-            self.__loop_vars.add(loop_variable)
+        from_next = False
+        if self.last_flowsignal:
+            if self.last_flowsignal.ftype == FlowSignal.LOOP_REPEAT:
+                from_next = True
+
+        if not from_next:
+            self.__symbol_table[loop_variable] = start_val
 
         else:
             # We need to modify the loop variable
@@ -867,11 +1107,7 @@ class BASICParser:
             stop = True
 
         if stop:
-            # Loop must terminate, so remove loop vriable from set of
-            # extant loop variables and remove loop variable from
-            # symbol table
-            self.__loop_vars.remove(loop_variable)
-            del self.__symbol_table[loop_variable]
+            # Loop must terminate
             return FlowSignal(ftype=FlowSignal.LOOP_SKIP,
                               ftarget=loop_variable)
         else:
@@ -900,17 +1136,36 @@ class BASICParser:
         """
 
         self.__advance()  # Advance past ON token
-        self.__logexpr()
+        self.__expr()
 
         # Save result of expression
         saveval = self.__operand_stack.pop()
 
-        # Process the GOSUB part and save the jump value
-        # if the condition is met
-        if saveval:
-            return self.__gosubstmt()
+        if self.__token.category == Token.GOTO:
+            self.__consume(Token.GOTO)
+            branchtype = 1
         else:
+            self.__consume(Token.GOSUB)
+            branchtype = 2
+
+        branch_values = []
+        # Acquire the comma separated values
+        if not self.__tokenindex >= len(self.__tokenlist):
+            self.__expr()
+            branch_values.append(self.__operand_stack.pop())
+
+            while self.__token.category == Token.COMMA:
+                self.__advance()  # Advance past comma
+                self.__expr()
+                branch_values.append(self.__operand_stack.pop())
+
+        if saveval < 1 or saveval > len(branch_values) or len(branch_values) == 0:
             return None
+        elif branchtype == 1:
+            return FlowSignal(ftarget=branch_values[saveval-1])
+        else:
+            return FlowSignal(ftarget=branch_values[saveval-1],
+                              ftype=FlowSignal.GOSUB)
 
     def __relexpr(self):
         """Parses a relational expression
@@ -992,6 +1247,19 @@ class BASICParser:
 
         # Process arguments according to function
         if category == Token.RND:
+            self.__consume(Token.LEFTPAREN)
+
+            self.__expr()
+            arg = self.__operand_stack.pop()
+
+            self.__consume(Token.RIGHTPAREN)
+            # MSBASIC basic reseeds with negative values
+            # as arg to RND... not sure if it returned anything
+            # Zero returns the last value again (not implemented)
+            # Any positive value returns random fload btw 0 and 1
+            if arg < 0:
+                random.seed(arg)
+
             return random.random()
 
         if category == Token.PI:
@@ -1097,6 +1365,46 @@ class BASICParser:
 
             return whentrue if condition else whenfalse
 
+        if category == Token.LEFT:
+            self.__consume(Token.LEFTPAREN)
+
+            self.__expr()
+            instring = self.__operand_stack.pop()
+
+            self.__consume(Token.COMMA)
+
+            self.__expr()
+            chars = self.__operand_stack.pop()
+
+            self.__consume(Token.RIGHTPAREN)
+
+            try:
+                return instring[:chars]
+
+            except TypeError:
+                raise TypeError("Invalid type supplied to LEFT$ in line " +
+                                 str(self.__line_number))
+
+        if category == Token.RIGHT:
+            self.__consume(Token.LEFTPAREN)
+
+            self.__expr()
+            instring = self.__operand_stack.pop()
+
+            self.__consume(Token.COMMA)
+
+            self.__expr()
+            chars = self.__operand_stack.pop()
+
+            self.__consume(Token.RIGHTPAREN)
+
+            try:
+                return instring[-chars:]
+
+            except TypeError:
+                raise TypeError("Invalid type supplied to RIGHT$ in line " +
+                                 str(self.__line_number))
+
         if category == Token.MID:
             self.__consume(Token.LEFTPAREN)
 
@@ -1106,19 +1414,23 @@ class BASICParser:
             self.__consume(Token.COMMA)
 
             self.__expr()
-            start = self.__operand_stack.pop()
+            # Older basic dialets were always 1 based
+            start = self.__operand_stack.pop() - 1
 
             if self.__token.category == Token.COMMA:
                 self.__advance() # Advance past comma
                 self.__expr()
-                end = self.__operand_stack.pop()
+                chars = self.__operand_stack.pop()
             else:
-                end = None
+                chars = None
 
             self.__consume(Token.RIGHTPAREN)
 
             try:
-                return instring[start:end]
+                if chars:
+                    return instring[start:start+chars]
+                else:
+                    return instring[start:]
 
             except TypeError:
                 raise TypeError("Invalid type supplied to MID$ in line " +
@@ -1142,17 +1454,22 @@ class BASICParser:
             if self.__token.category == Token.COMMA:
                 self.__advance() # Advance past comma
                 self.__expr()
-                start = self.__operand_stack.pop()
+                # Older basic dialets were always 1 based
+                start = self.__operand_stack.pop() -1
 
                 if self.__token.category == Token.COMMA:
                     self.__advance() # Advance past comma
                     self.__expr()
-                    end = self.__operand_stack.pop()
+                    end = self.__operand_stack.pop() -1
 
             self.__consume(Token.RIGHTPAREN)
 
             try:
-                return hackstackstring.find(needlestring, start, end)
+                # Older basis dialets are 1 based, so the return value
+                # here needs to be incremented by one.  ALSO
+                # this moves the -1 not found value to 0
+                # which indicated not found in most dialects
+                return hackstackstring.find(needlestring, start, end) + 1
 
             except TypeError:
                 raise TypeError("Invalid type supplied to INSTR in line " +
@@ -1305,6 +1622,14 @@ class BASICParser:
 
             return value.lower()
 
+        elif category == Token.TAB:
+            # Return a string of value spaces
+            if not isinstance(value, int):
+                raise TypeError("Invalid type supplied to TAB in line " +
+                                 str(self.__line_number))
+
+            return " " * value
+
         else:
             raise SyntaxError("Unrecognised function in line " +
                               str(self.__line_number))
@@ -1324,4 +1649,3 @@ class BASICParser:
 
         else:
             random.seed(int(monotonic()))
-

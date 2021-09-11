@@ -144,6 +144,12 @@ class Lexer:
                 else:
                     token.category = Token.NAME
 
+                # Remark Statments - process rest of statement without checks
+                if token.lexeme == "REM":
+                    while c!= '':
+                        token.lexeme += c  # Append the current char to the lexeme
+                        c = self.__get_next_char()
+
             # Process operator symbols
             elif c in Token.smalltokens:
                 save = c
@@ -161,7 +167,7 @@ class Lexer:
                     token.lexeme = save
 
             # We do not recognise this token
-            else:
+            elif c != '':
                 raise SyntaxError('Syntax error')
 
             # Append the new token to the list
