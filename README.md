@@ -269,7 +269,8 @@ made later on in the program.
 
 Normally each **DATA** statement is consumed sequently by **READ** statements however, the **RESTORE** statment can
 be used to override this order and set the line number of the **DATA** statement that will be used by the next 
-**READ** statement.
+**READ** statement. If the *line-number* used in a **RESTORE** statement does not refer to a **DATA** statement an
+error will be displayed.
 
 The constants defined in the **DATA** statement may be consumed using several **READ** statements or several **DATA**
 statements may be consumed by a single **READ** statement.:
@@ -291,21 +292,6 @@ statements may be consumed by a single **READ** statement.:
 56 Hello
 78
 Hello Another Line of Data
->
-```
-
-The supply of constants may be refreshed by defining more **DATA** statements:
-
-```
-> 10 DATA 20
-> 20 READ NUM
-> 30 PRINT NUM
-> 40 DATA 30
-> 50 READ NUM
-> 60 PRINT NUM
-> RUN
-20
-30
 >
 ```
 
@@ -512,9 +498,9 @@ expression evaluates to true, otherwise the following statement is executed.
 
 You can optionally give the **GOTO** keyword before your line numbers. This is for compatibility with other BASIC dialects. e.g. `40 IF I > J THEN GOTO 50 ELSE GOTO 70`
 
-It is also possible to call a subroutine or branch to a line number using the **ON GOTO|GOSUB**
-statement. The subroutine or line number branched to is determined by evaluating the expression and selecting the line number from the list of
-line numbers. If the expression evaluates to less than 1 or greater than the number of provided line numbers execution continues to the next 
+The **ON GOTO|GOSUB** *expr* *line1,line2,...* statement will call a subroutine or branch to a line number in the list of line numbers corresponding to the ordinal
+value of the evaluated *expr*. The first line number corresponds with an *expr* value of 1.  *expr* must evaluate to an integer value.
+ If *expr* evaluates to less than 1 or greater than the number of provided line numbers execution continues on the next 
 statement without making a subroutine call or branch:
 
 ```
@@ -535,7 +521,9 @@ J is TWO
 >
 ```
 
-The **IFF** function (see Ternary Functions below) can be used with **ON GOSUB** to perform a conditional subroutine call.
+It is also possible to call a subroutine depending upon the result of a conditional expression using the **IFF** function (see Ternary Functions below). In
+the example below, if the expression evaluates to true, **IFF** returns a 1 and the subroutine is called, otherwise **IFF** returns a 0 and execution
+continues to the next statement without making the call:
 
 ```
 > 10 LET I = 10
@@ -848,7 +836,8 @@ calculate the corresponding factorial *N!*.
 
 **FOR** *loop-variable* = *start-value* **TO** *end-value* [**STEP** *increment*] - Bounded loop
 
-**FSEEK** *#filenum*,*filepos* - Positions the file input pointer to the specified location within the open file
+**FSEEK** *#filenum*,*filepos* - Positions the file input pointer to the specified location within the open file, the next **INPUT** *#filenum*
+will read starting at file position *filepos*
 
 **GOSUB** *line-number* - Subroutine call
 
@@ -860,7 +849,7 @@ calculate the corresponding factorial *N!*.
 
 **IF$**(*expression*, *string-expression*, *string-expression*) - Evaluates *expression* and returns the value of the result of the first *string-expression* if true, or the second if false.
 
-**INPUT** [*#filenum*,]|[*input-prompt*:] *simple-variable-list* - Processes user or file input presented as a comma separated list
+**INPUT** [*#filenum*,|*input-prompt*:] *simple-variable-list* - Processes user or file input presented as a comma separated list
 
 **INSTR**(*hackstack-string-expression*, *needle-string-expression*[, *start-numeric-expression*[, *end-numeric-expression*]]) - Returns position of first *needle-string-expression* inside first *hackstack-string-expression*, optionally start searching at position given by *start-numeric-expression* and optionally ending at position given by *end-numeric-expression*. Returns -1 if no match found.
 
@@ -907,7 +896,7 @@ optional seed (*numeric expression*), the sequence is predictable.
 
 **RETURN** - Return from a subroutine
 
-**RESTORE** *#filenum*,*filepos* - positions the input file position such that the next **INPUT** *#filenum* will read starting at file position *filepos* 
+**RESTORE** *line-number* - sets the line number that the next **READ** will start loading constants from. *line-number* must refer to a **DATA** statement
 
 **RND** - Generates a pseudo random number N, where 0 <= N < 1
 
