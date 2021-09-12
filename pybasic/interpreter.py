@@ -171,6 +171,9 @@ class Interpreter:
                         # Opportunity for GC here
                         self.program = Program(self.__terminal)
 
+                    elif tokenlist[0].category == Token.CLEAR:
+                        self.__terminal.clear()
+
                     # Unrecognised input
                     else:
                         self.__terminal.print("Unrecognised input")
@@ -181,4 +184,4 @@ class Interpreter:
             # keeps running
             except Exception as e:
                 self.__terminal.print(str(e))
-                print(e, file=stderr, flush=True)
+                #print(e, file=stderr, flush=True)
