@@ -790,17 +790,28 @@ The functions are:
 
 * **ASC**(x$) - Returns the character code for *x$*. *x$* is expected to be a single character.
 Note that despite the name, this function can return codes outside the ASCII range.
+
 * **CHR$**(x) - Returns the character specified by character code *x*.
+
 * **INSTR**(x$, y$[, start[, end]]) - Returns position of *y$* inside *x$*, optionally start searching
 at position *start* and end at *end*. Returns 0 if no match found.
+
 * **LEN**(x$) - Returns the length of *x$*.
+
 * **LOWER$**(x$) - Returns a lower-case version of *x$*.
+
 * **MID$**(x$, y[, z]) - Returns part of *x$* starting at position *y*.  If z is provided, that number of characters is returned, if omitted the entire rest of the string is returned
+
 * **LEFT$**(x$, y) - Returns the left most r characters from string x$. If y * exceeds the length of x$, the entire string will be returned.
+
 * **RIGHT$**(x$, y) - Returns the right most r characters from string x$. If y * exceeds the length of x$, the entire string will be returned.
+
 * **STR$**(x) - Returns a string representation of numeric value *x*.
+
 * **UPPER$**(x$) - Returns an upper-case version of *x$*
+
 * **VAL**(x$) - Attempts to convert *x$* to a numeric value. If *x$* is not numeric, returns 0.
+
 * **TAB**(x) - Generates a string containing x spaces with no CR/LF
 
 **NOTE** For compatibility with older basic dialetcs, all string indexes are 1 based.
@@ -818,7 +829,7 @@ A - 65
 
 ## Example programs
 
-A number of example BASIC programs have been supplied in the repository:
+A number of example BASIC programs have been supplied in the repository, in the examples directory:
 
 * *regression.bas* - A program to exercise the key programming language constructs
 in such a way as to allow verification that the interpreter is functioning correctly.
@@ -829,6 +840,10 @@ calculate the corresponding factorial *N!*.
 * *rock_scissors_paper.bas* - A BASIC implementation of the rock-paper-scissors game.
 
 * *PyBStartrek.bas* - A port of the 1971 Star Trek text based strategy game.
+
+* *adventure-fast.bas* - A port of a 1979 text based adventure game.
+
+* *bagels.bas* - A guessing game.
 
 ## Informal grammar definition
 
