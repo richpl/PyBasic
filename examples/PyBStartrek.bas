@@ -132,16 +132,7 @@
 1580 INPUT"command ";A$
 1590 FOR I=1 TO 9
 1591 IF MID$(A$,1,3)<> MID$(A1$,3*I-2,3) THEN 1610
-1600 rem ON I GOTO 1720,1510,2440,2530,2750,3090,3180,3980,3510
-1601 if i = 1 THEN 1720
-1602 if i = 2 THEN 1510
-1603 if i = 3 THEN 2440
-1604 if i = 4 THEN 2530
-1605 if i = 5 THEN 2750
-1606 if i = 6 THEN 3090
-1607 if i = 7 THEN 3180
-1608 if i = 8 THEN 3980
-1609 if i = 9 THEN 3510
+1600 ON I GOTO 1720,1510,2440,2530,2750,3090,3180,3980,3510
 1610 NEXT I
 1611 PRINT"Enter one of the following:"
 1620 PRINT"  NAV   (to set course)"
@@ -450,16 +441,6 @@
 3540 PRINT"The Federation is in need of a new starship commander"
 3550 PRINT"for a similar mission -- if there is a volunteer,"
 3560 INPUT"let him or her step forward and enter 'AYE' ";X$:IF X$="AYE" THEN 520
-3570 rem KEY 1,"LIST "
-3580 rem KEY 2,"RUN"+CHR$(13)
-3590 rem KEY 3,"LOAD"+CHR$(34)
-3600 rem KEY 4, "SAVE"+CHR$(34)
-3610 rem KEY 5, "CONT"+CHR$(13)
-3620 rem KEY 6,","+CHR$(34)+"LPT1:"+CHR$(34)+CHR$(13)
-3630 rem KEY 7, "TRON"+CHR$(13)
-3640 rem KEY 8, "TROFF"+CHR$(13)
-3650 rem KEY 9, "KEY "
-3660 rem KEY 10,"SCREEN 0,0,0"+CHR$(13)
 3670 END
 3680 PRINT"Congratulations, Captain! the last Klingon battle cruiser"
 3690 PRINT"menacing the Federation has been destroyed.":PRINT
@@ -491,15 +472,7 @@
 3851 PRINT "  . ";:GOTO 3861
 3860 PRINT " ";MID$(Q$,J+1,3);
 3861 NEXT J
-3870 rem ON I GOTO 3880,3900,3910,3920,3930,3940,3950,3960
-3871 if i=1 then 3880
-3872 if i=2 then 3900
-3873 if i=3 then 3910
-3874 if i=4 then 3920
-3875 if i=5 then 3930
-3876 if i=6 then 3940
-3877 if i=7 then 3950
-3878 if i=8 then 3960
+3870 ON I GOTO 3880,3900,3910,3920,3930,3940,3950,3960
 3880 PRINT"        Stardate           ";
 3890 TT= T*10 : TT=INT(TT)*0.1:PRINT TT :GOTO 3970
 3900 PRINT"        Condition          ";C$:GOTO 3970
@@ -527,13 +500,7 @@
 4080 INPUT"Computer active and awaiting command ";CM$:H8=1
 4090 FOR K1= 1 TO 6
 4100 IF MID$(CM$,1,3)<>MID$(CM1$,3*K1-2,3) THEN 4120
-4110 rem   ON K1 GOTO 4230,4400,4490,4750,4550,4210
-4111   if k1=1 then 4230
-4112   if k1=2 then 4400
-4113   if k1=3 then 4490
-4114   if k1=4 then 4750
-4115   if k1=5 then 4550
-4116   if k1=6 then 4210
+4110 ON K1 GOTO 4230,4400,4490,4750,4550,4210
 4120 NEXT K1
 4121 gosub 4130
 4122 goto 4080
@@ -643,15 +610,7 @@
 4861 Q$=MID$(Q$,1,189)+A$:RETURN
 4870 Q$=MID$(Q$,1,S8-1)+A$+MID$(Q$,s8+3,192-s8-2):RETURN
 4880 REM prints device name
-4890 rem ON R1 GOTO 4900,4910,4920,4930,4940,4950,4960,4970
-4891 if r1 = 1 then 4900
-4892 if r1 = 2 then 4910
-4893 if r1 = 3 then 4920
-4894 if r1 = 4 then 4930
-4895 if r1 = 5 then 4940
-4896 if r1 = 6 then 4950
-4897 if r1 = 7 then 4960
-4898 if r1 = 8 then 4970
+4890 ON R1 GOTO 4900,4910,4920,4930,4940,4950,4960,4970
 4900 G2$="Warp Engines":RETURN
 4910 G2$="Short Range Sensors":RETURN
 4920 G2$="Long Range Sensors":RETURN
@@ -668,15 +627,7 @@
 5020 REM quadrant name in g2$ from z4,z5 (=q1,q2)
 5030 REM call with g5=1 to get region name only
 5040 IF Z5<=4 THEN 5140
-5041 rem ON Z4 GOTO 5060,5070,5080,5090,5100,5110,5120,5130
-5042 if z4 = 1 then 5060
-5043 if z4 = 2 then 5070
-5044 if z4 = 3 then 5080
-5045 if z4 = 4 then 5090
-5046 if z4 = 5 then 5100
-5047 if z4 = 6 then 5110
-5048 if z4 = 7 then 5120
-5049 if z4 = 8 then 5130
+5041 ON Z4 GOTO 5060,5070,5080,5090,5100,5110,5120,5130
 5050 GOTO 5140
 5060 G2$="Antares":GOTO 5230
 5070 G2$="Rigel":GOTO 5230
@@ -686,15 +637,7 @@
 5110 G2$="Altair":GOTO 5230
 5120 G2$="Sagittarius":GOTO 5230
 5130 G2$="Pollux":GOTO 5230
-5140 rem ON Z4 GOTO 5150,5160,5170,5180,5180,5200,5210,5220
-5142 if z4 = 1 then 5150
-5143 if z4 = 2 then 5160
-5144 if z4 = 3 then 5170
-5145 if z4 = 4 then 5180
-5146 if z4 = 5 then 5190
-5147 if z4 = 6 then 5200
-5148 if z4 = 7 then 5210
-5149 if z4 = 8 then 5220
+5140 ON Z4 GOTO 5150,5160,5170,5180,5180,5200,5210,5220
 5150 G2$="Sirius":GOTO 5230
 5160 G2$="Deneb":GOTO 5230
 5170 G2$="Capella":GOTO 5230
@@ -704,15 +647,7 @@
 5210 G2$="Arcturus":GOTO 5230
 5220 G2$="Spica"
 5230 IF G5=1 THEN 5240
-5231 rem ON Z5 GOTO 5250,5260,5270,5280,5250,5260,5270,5280
-5232 if z4 = 1 then 5250
-5233 if z4 = 2 then 5260
-5234 if z4 = 3 then 5270
-5235 if z4 = 4 then 5280
-5236 if z4 = 5 then 5250
-5237 if z4 = 6 then 5260
-5238 if z4 = 7 then 5270
-5239 if z4 = 8 then 5280
+5231 ON Z5 GOTO 5250,5260,5270,5280,5250,5260,5270,5280
 5240 RETURN
 5250 G2$=G2$+" i":RETURN
 5260 G2$=G2$+" ii":RETURN
