@@ -26,6 +26,23 @@ $ python example.py
 ```
 
 Although this started of as a personal project, it has been enhanced considerably by some other Github users. You can see them in the list of contributors! It's very much a group endeavour now.
+## Terminals
+
+The command above will start the standard PyBasic interpreter connected to
+stdio and should be compatible with all systems that can run python.  There are
+some extra screen control features, such as CLEAR to clear the screen, and the
+ability to print at specific screen locations that can be enabled by using a
+curses enabled terminal.
+
+```
+$ python example_curses.py
+```
+
+This should work on most implementations of python on full OS's.  For specific
+hardware situations the Terminal class in term.py can be implemented to handle
+IO from non-standard keyboards/screens.  This is handy for specific hardware
+projects using CircuitPython comptible microcontrollers.
+
 
 ## Operators
 
