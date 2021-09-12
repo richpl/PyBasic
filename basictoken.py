@@ -115,6 +115,10 @@ class BASICToken:
         RESTORE         = 82  # RESTORE keyword
         APPEND          = 83  # APPEND keyword
         OUTPUT          = 84  # OUTPUT keyword
+        TAB             = 85  # TAB function
+        SEMICOLON       = 86  # SEMICOLON
+        LEFT            = 87  # LEFT$ function
+        RIGHT           = 88  # RIGHT$ function
 
         # Displayable names for each token category
         catnames = ['EOF', 'LET', 'LIST', 'PRINT', 'RUN',
@@ -132,14 +136,16 @@ class BASICToken:
         'VAL', 'LEN', 'UPPER', 'LOWER', 'ROUND',
         'MAX', 'MIN', 'INSTR', 'AND', 'OR', 'NOT', 'PI',
         'RNDINT', 'OPEN', 'HASH', 'CLOSE', 'FSEEK', 'APPEND',
-        'OUTPUT', 'RESTORE']
+        'OUTPUT', 'RESTORE', 'RNDINT', 'TAB', 'SEMICOLON',
+        'LEFT', 'RIGHT']
 
         smalltokens = {'=': ASSIGNOP, '(': LEFTPAREN, ')': RIGHTPAREN,
                        '+': PLUS, '-': MINUS, '*': TIMES, '/': DIVIDE,
                        '\n': NEWLINE, '<': LESSER,
                        '>': GREATER, '<>': NOTEQUAL,
                        '<=': LESSEQUAL, '>=': GREATEQUAL, ',': COMMA,
-                       ':': COLON, '%': MODULO, '!=': NOTEQUAL, '#': HASH}
+                       ':': COLON, '%': MODULO, '!=': NOTEQUAL, '#': HASH,
+                       ';': SEMICOLON}
 
 
         # Dictionary of BASIC reserved words
@@ -167,13 +173,14 @@ class BASICToken:
                     'PI': PI, 'RNDINT': RNDINT, 'OPEN': OPEN,
                     'CLOSE': CLOSE, 'FSEEK': FSEEK,
                     'APPEND': APPEND, 'OUTPUT':OUTPUT,
-                    'RESTORE': RESTORE}
+                    'RESTORE': RESTORE, 'TAB': TAB,
+                    'LEFT$': LEFT, 'RIGHT$': RIGHT}
 
 
         # Functions
         functions = {ABS, ATN, COS, EXP, INT, LOG, POW, RND, SIN, SQR, TAN,
                      CHR, ASC, MID, TERNARY, STR, VAL, LEN, UPPER, LOWER,
-                     ROUND, MAX, MIN, INSTR, PI, RNDINT}
+                     ROUND, MAX, MIN, INSTR, PI, RNDINT, TAB, LEFT, RIGHT}
 
         def __init__(self, column, category, lexeme):
 
