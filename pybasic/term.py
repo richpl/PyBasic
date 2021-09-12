@@ -60,14 +60,14 @@ class SimpleTerm:
         Clears the screen.
         Not Implemented here
         """
-        pass
+        raise Exception("Not Implemented by terminal")
 
     def home(self):
         """
         Returns the cursor to home position
         Not implemented here
         """
-        pass
+        raise Exception("Not Implemented by terminal")
 
     def cursor(self, x, y):
         """
@@ -75,7 +75,7 @@ class SimpleTerm:
         and y (row) position on screen
         Not implemented here
         """
-        pass
+        raise Exception("Not Implemented by terminal")
 
     def input(self):
         """
@@ -123,6 +123,7 @@ class CursesTerm:
 
         # accept arrows and other special chars
         self.__stdscr.keypad(True)
+        self.__stdscr.scrollok(True)
 
     def print(self, to_print):
         """
@@ -152,14 +153,14 @@ class CursesTerm:
         Clears the screen.
         Not Implemented here
         """
-        pass
+        self.__stdscr.clear()
 
     def home(self):
         """
         Returns the cursor to home position
         Not implemented here
         """
-        pass
+        raise Exception("Not Implemented by terminal")
 
     def cursor(self, x, y):
         """
@@ -167,7 +168,7 @@ class CursesTerm:
         and y (row) position on screen
         Not implemented here
         """
-        pass
+        raise Exception("Not Implemented by terminal")
 
     def input(self):
         """

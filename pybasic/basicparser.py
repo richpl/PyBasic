@@ -244,6 +244,10 @@ class BASICParser:
             self.__fseekstmt()
             return None
 
+        elif self.__token.category == Token.CLEAR:
+            self.__terminal.clear()
+            return None
+
         else:
             # Ignore comments, but raise an error
             # for anything else
