@@ -26,7 +26,7 @@
 150 l1 = int(RND(1)*4)+1 : l2 = l1
 160 g = 0 : b0 = 1 : sn = 1 : d1 = 1 : d2 = 0 : t = 1 : b1 = 0 : b2 = 0 : p1 = 0: dead = 0
 161 l = 0 : c = 0 : d3 = 0 : b3 = 0 : d0 = 2 : t1 = 100 : t2 = 35 : t3 = 149 : r0 = 0 : c0 = 0: c$=""
-162 KC = 1.03
+162 KC = 1.02
 170 for ii = 1 to 99
 171  s(ii) = 0 : v(ii) = 0
 172 next ii
@@ -903,13 +903,16 @@
 8650 if L1 >= 13 then 8660
 8652 s(35) = 0:goto 8790
 8660 if s(35) <> L1 then 8770
+8661 if (l1 <> 60 and l1 <> 61) or t <> 1 then 8670
+8662 z59 = 299:gosub 7620
+8663 s(35) = 0: goto 8790
 8670 if RND(1) > 0.5 then 8790
 8680 rem YES!
 8690 z59 = 32:gosub 7620
 8700 rem DOES THE KNIFE KILL THE PLAYER?
 8705 KC = KC - 0.02
-8706 IF KC >= 0.5 THEN 8710
-8707 KC = 0.5
+8706 IF KC >= 0.75 THEN 8710
+8707 KC = 0.75
 8710 if RND(1) <= KC then 8750
 8720 rem YES
 8730 PRINT "It gets you!"
@@ -917,7 +920,8 @@
 8750 PRINT "It misses!"
 8760 goto 8790
 8770 rem SHOULD WE PUT A DWARF HERE?
-8780 if RND(1) >= 0.1 then 8790
+8780 if RND(1) >= 0.05 then 8790
+8781 if (l1 = 60 or l1 = 61) and t = 1 then 8790
 8785 s(35) = l1
 8786 z59=31:gosub 7620
 8790 return
