@@ -184,4 +184,3 @@ class Interpreter:
             # keeps running
             except Exception as e:
                 self.__terminal.print(str(e))
-                #print(e, file=stderr, flush=True)

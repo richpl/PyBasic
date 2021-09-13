@@ -121,6 +121,8 @@ class CursesTerm:
         # Don't wait for cr to process input
         curses.cbreak()
 
+        # surpress visible cursor
+        curses.curs_set(0)
         # accept arrows and other special chars
         self.__stdscr.keypad(True)
         self.__stdscr.scrollok(True)
@@ -131,6 +133,7 @@ class CursesTerm:
         followed by a CR/LF
         """
         self.__stdscr.addstr(str(to_print) + "\n")
+        self.__stdscr.refresh()
 
 
     def write(self, to_write):
@@ -139,6 +142,7 @@ class CursesTerm:
         but does not include any other control chars
         """
         self.__stdscr.addstr(str(to_write))
+        self.__stdscr.refresh()
 
 
     def enter(self):
@@ -147,6 +151,7 @@ class CursesTerm:
         Equivilent of CR/LF combo
         """
         self.__stdscr.addstr("\n")
+        self.__stdscr.refresh()
 
     def clear(self):
         """
@@ -154,21 +159,22 @@ class CursesTerm:
         Not Implemented here
         """
         self.__stdscr.clear()
+        self.__stdscr.refresh()
 
     def home(self):
         """
         Returns the cursor to home position
-        Not implemented here
         """
-        raise Exception("Not Implemented by terminal")
+        self.__stdscr.move(0,0)
 
     def cursor(self, x, y):
         """
         Moves the cursor to the specified x (column)
         and y (row) position on screen
-        Not implemented here
         """
-        raise Exception("Not Implemented by terminal")
+        # Substract one to map from BASIC 1 index to
+        # Python 0 index
+        self.__stdscr.move(y-1,x-1)
 
     def input(self):
         """
@@ -176,8 +182,11 @@ class CursesTerm:
         This will echo to the screen
         """
         curses.echo()
+        curses.curs_set(1)
+        self.__stdscr.refresh()
         instr = self.__stdscr.getstr()
         curses.noecho()
+        curses.curs_set(0)
         return instr.decode()
 
     def get_char(self):
