@@ -248,6 +248,9 @@ class BASICParser:
             self.__terminal.clear()
             return None
 
+        elif self.__token.category == Token.CURSOR:
+            self.__cursorstmt()
+            return None
         else:
             # Ignore comments, but raise an error
             # for anything else
@@ -619,6 +622,31 @@ class BASICParser:
         self.__expr()
 
         self.__file_handles[filenum].seek(self.__operand_stack.pop())
+
+    def __cursorstmt(self):
+        """Parses a CURSOR statement
+        CURSOR column,line - Moves the cursor on screen to the
+        specified column and line
+
+        """
+        self.__advance()
+        if self.__tokenindex + 2 > len(self.__tokenlist):
+            raise RuntimeError(
+                "Expecting column and line positions on line " + str(self.__line_number)
+            )
+        else:
+            # get the X
+            self.__logexpr()
+            xpos = self.__operand_stack.pop()
+            
+            self.__consume(Token.COMMA)
+
+            # get the Y
+            self.__logexpr()
+            ypos = self.__operand_stack.pop()
+
+            self.__terminal.cursor(xpos, ypos)
+
 
     def __inputstmt(self):
         """Parses an input statement, extracts the input
