@@ -29,6 +29,7 @@ operation
 
 import curses
 
+
 class SimpleTerm:
     def __init__(self):
         return
@@ -46,7 +47,6 @@ class SimpleTerm:
         but does not include any other control chars
         """
         print(to_write, end="")
-
 
     def enter(self):
         """
@@ -136,7 +136,6 @@ class CursesTerm:
         self.__stdscr.addstr(str(to_print) + "\n")
         self.__stdscr.refresh()
 
-
     def write(self, to_write):
         """
         write sends the provided string to the terminal
@@ -144,7 +143,6 @@ class CursesTerm:
         """
         self.__stdscr.addstr(str(to_write))
         self.__stdscr.refresh()
-
 
     def enter(self):
         """
@@ -166,7 +164,7 @@ class CursesTerm:
         """
         Returns the cursor to home position
         """
-        self.__stdscr.move(0,0)
+        self.__stdscr.move(0, 0)
 
     def cursor(self, x, y):
         """
@@ -175,7 +173,7 @@ class CursesTerm:
         """
         # Substract one to map from BASIC 1 index to
         # Python 0 index
-        self.__stdscr.move(y-1,x-1)
+        self.__stdscr.move(y - 1, x - 1)
 
     def input(self):
         """
@@ -210,9 +208,9 @@ class CursesTerm:
 
             elif key == curses.KEY_LEFT:
                 # backspace any current input
-                    for i in range(len(retstr)):
-                        self.backspace()
-                    retstr = ""
+                for i in range(len(retstr)):
+                    self.backspace()
+                retstr = ""
             elif key == 127:
                 # Backspace
                 if len(retstr) > 0:
@@ -220,7 +218,7 @@ class CursesTerm:
                     retstr = retstr[:-1]
                 else:
                     curses.beep()
-            elif key < 32 or key >126:
+            elif key < 32 or key > 126:
                 pass
             else:
 
@@ -236,7 +234,7 @@ class CursesTerm:
         return retstr
 
     def backspace(self):
-        """ Handle a backspace """
+        """Handle a backspace"""
         self.__stdscr.echochar("\b")
         self.__stdscr.echochar(" ")
         self.__stdscr.echochar("\b")
@@ -264,3 +262,99 @@ class CursesTerm:
         """
         return 0
 
+
+class TestTerm(SimpleTerm):
+    """
+    A class that serves as a test harness for
+    running basic programs to test functionality
+
+
+    Intercepts any print statements and behaves
+    as follows depending on line start:
+        * Test name
+
+        : Expected value
+        line following expected value is compared
+
+    """
+
+    def __init__(self):
+
+        self.__testname = None
+        self.__expected = None
+        self.__result = None
+
+        self.__currentstring = ""
+
+    def eval_line(self):
+        """
+        Called after each line end
+        """
+        line_token = self.__currentstring[:1]
+        if line_token == "*":
+            if self.__testname or self.__expected:
+                raise Exception(
+                    "TEST ERROR: New Test Started before previous test complete"
+                )
+            else:
+                self.__testname = self.__currentstring[1:]
+        elif line_token == ":":
+            if self.__testname == None:
+                raise Exception(
+                    "TEST ERROR: Not ready for expected value no test started"
+                )
+            if self.__expected:
+                raise Exception(
+                    "TEST ERROR: Expected value provided, but test still pending"
+                )
+            self.__expected = self.__currentstring[1:]
+        else:
+            if self.__testname == None or self.__expected == None:
+                raise Exception("TEST ERROR: Undelimited string without test setup")
+            self.__result = self.__currentstring
+            self.eval_test()
+
+        self.__currentstring = ""
+
+    def eval_test(self):
+        """
+        Called for each test after result is gathered
+        """
+        print("TEST: " + self.__testname)
+        if self.__result != self.__expected:
+            print("\tFAILED")
+            print("\tExpected: " + self.__expected)
+            print("\tResult:   " + self.__result)
+            raise Exception("TEST FAILED")
+
+        if self.__result == self.__expected:
+            print("\tPASSED")
+
+        self.__testname = None
+        self.__expected = None
+        self.__result = None
+
+    def print(self, to_print):
+        """
+        Print send the provided string to the terminal
+        followed by a CR/LF
+        """
+        self.__currentstring += str(to_print)[:-1]
+        self.eval_line()
+
+    def write(self, to_write):
+        """
+        write sends the provided string to the terminal
+        but does not include any other control chars
+        """
+        self.__currentstring += str(to_write)
+
+    def enter(self):
+        """
+        Move down one line, and all the way to the left.
+        Equivilent of CR/LF combo
+        """
+        self.eval_line()
+
+    def get_last_line(self):
+        return self.__currentstring
