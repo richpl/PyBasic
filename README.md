@@ -25,6 +25,8 @@ The interpreter can be invoked as follows:
 $ python example.py
 ```
 
+Although this started of as a personal project, it has been enhanced considerably by some other Github users. You can see them in the list of contributors! It's very much a group endeavour now.
+
 ## Terminals
 
 The command above will start the standard PyBasic interpreter connected to
@@ -70,6 +72,8 @@ but this can be changed with parentheses.
 ```
 
 Additional numerical operations may be performed using numeric functions (see below).
+
+Not also that + does extra duty as a string concatenation operator.
 
 ## Commands
 
@@ -845,6 +849,14 @@ A - 65
 90
 ```
 
+Strings may also be concatenated using the '+' operator:
+
+```
+> 10 PRINT "Hello" + " there"
+> RUN
+Hello there
+```
+
 ## Example programs
 
 A number of example BASIC programs have been supplied in the repository, in the examples directory:
@@ -862,6 +874,8 @@ calculate the corresponding factorial *N!*.
 * *adventure-fast.bas* - A port of a 1979 text based adventure game.
 
 * *bagels.bas* - A guessing game.
+
+* *eliza.bas* - A port of the early chatbot, posing as a therapist, originally created by Joseph Weizenbaum in 1964.
 
 ## Informal grammar definition
 
