@@ -126,6 +126,7 @@ class CursesTerm:
         # accept arrows and other special chars
         self.__stdscr.keypad(True)
         self.__stdscr.scrollok(True)
+        self.__line_history = []
 
     def print(self, to_print):
         """
@@ -181,13 +182,64 @@ class CursesTerm:
         Retrieves a string terminated by CR from the termnial
         This will echo to the screen
         """
-        curses.echo()
+        history_index = len(self.__line_history)
         curses.curs_set(1)
         self.__stdscr.refresh()
-        instr = self.__stdscr.getstr()
-        curses.noecho()
+
+        retstr = ""
+        key = self.__stdscr.getch()
+        while key != 10:
+            if key == curses.KEY_UP or key == curses.KEY_DOWN:
+
+                # backspace any current input
+                for i in range(len(retstr)):
+                    self.backspace()
+
+                if key == curses.KEY_UP:
+                    history_index -= 1
+                    if history_index < 0:
+                        curses.beep()
+                        history_index = 0
+                else:
+                    history_index += 1
+                    if history_index > len(self.__line_history) - 1:
+                        curses.beep()
+                        history_index = len(self.__line_history) - 1
+                retstr = self.__line_history[history_index]
+                self.write(retstr)
+
+            elif key == curses.KEY_LEFT:
+                # backspace any current input
+                    for i in range(len(retstr)):
+                        self.backspace()
+                    retstr = ""
+            elif key == 127:
+                # Backspace
+                if len(retstr) > 0:
+                    self.backspace()
+                    retstr = retstr[:-1]
+                else:
+                    curses.beep()
+            elif key < 32 or key >126:
+                pass
+            else:
+
+                retstr = retstr + chr(key)
+                self.__stdscr.echochar(chr(key))
+            key = self.__stdscr.getch()
+
         curses.curs_set(0)
-        return instr.decode()
+        self.enter()
+        self.__line_history.append(retstr)
+        if len(self.__line_history) > 20:
+            self.__line_history.pop(0)
+        return retstr
+
+    def backspace(self):
+        """ Handle a backspace """
+        self.__stdscr.echochar("\b")
+        self.__stdscr.echochar(" ")
+        self.__stdscr.echochar("\b")
 
     def get_char(self):
         """
@@ -197,11 +249,8 @@ class CursesTerm:
         buttons/arrows.
 
         Block until recieved, does not echo
-
-        Not implemented well here as it requires more
-        OS specific code or curses
         """
-        return ord(input()[0])
+        return self.__stdscr.getch()
 
     def poll_char(self):
         """
