@@ -25,6 +25,8 @@ The interpreter can be invoked as follows:
 $ python interpreter.py
 ```
 
+Although this started of as a personal project, it has been enhanced considerably by some other Github users. You can see them in the list of contributors! It's very much a group endeavour now.
+
 ## Operators
 
 A limited range of arithmetic expressions are provided. Addition and subtraction have the lowest precedence,
@@ -52,6 +54,8 @@ but this can be changed with parentheses.
 ```
 
 Additional numerical operations may be performed using numeric functions (see below).
+
+Not also that + does extra duty as a string concatenation operator.
 
 ## Commands
 
@@ -784,7 +788,7 @@ Seeds may not produce the same result on another platform.
 Some functions are provided to help you manipulate strings. Functions that return a string
 have a '$' suffix like string variables.
 
-**NOTE** For compatibility with older basic dialetcs, all string indexes are 1 based.
+Note that unlike some other BASIC variants, string positions start at *0*.
 
 The functions are:
 
@@ -802,9 +806,9 @@ at position *start* and end at *end*. Returns 0 if no match found.
 
 * **MID$**(x$, y[, z]) - Returns part of *x$* starting at position *y*.  If z is provided, that number of characters is returned, if omitted the entire rest of the string is returned
 
-* **LEFT$**(x$, y) - Returns the left most y characters from string x$. If y * exceeds the length of x$, the entire string will be returned.
+* **LEFT$**(x$, y) - Returns the left most r characters from string x$. If y * exceeds the length of x$, the entire string will be returned.
 
-* **RIGHT$**(x$, y) - Returns the right most y characters from string x$. If y * exceeds the length of x$, the entire string will be returned.
+* **RIGHT$**(x$, y) - Returns the right most r characters from string x$. If y * exceeds the length of x$, the entire string will be returned.
 
 * **STR$**(x) - Returns a string representation of numeric value *x*.
 
@@ -814,6 +818,7 @@ at position *start* and end at *end*. Returns 0 if no match found.
 
 * **TAB**(x) - Generates a string containing x spaces with no CR/LF
 
+**NOTE** For compatibility with older basic dialetcs, all string indexes are 1 based.
 
 Examples for **ASC**, **CHR$** and **STR$**
 ```
@@ -824,6 +829,14 @@ Examples for **ASC**, **CHR$** and **STR$**
 RUN
 A - 65
 90
+```
+
+Strings may also be concatenated using the '+' operator:
+
+```
+> 10 PRINT "Hello" + " there"
+> RUN
+Hello there
 ```
 
 ## Example programs
@@ -843,6 +856,8 @@ calculate the corresponding factorial *N!*.
 * *adventure-fast.bas* - A port of a 1979 text based adventure game.
 
 * *bagels.bas* - A guessing game.
+
+* *eliza.bas* - A port of the early chatbot, posing as a therapist, originally created by Joseph Weizenbaum in 1964.
 
 ## Informal grammar definition
 
@@ -881,11 +896,9 @@ will read starting at file position *filepos*
 
 **IF$**(*expression*, *string-expression*, *string-expression*) - Evaluates *expression* and returns the value of the result of the first *string-expression* if true, or the second if false.
 
-**INPUT** [*#filenum*,|*input-prompt*;] *simple-variable-list* - Processes user or file input presented as a comma separated list
+**INPUT** [*#filenum*,|*input-prompt*:] *simple-variable-list* - Processes user or file input presented as a comma separated list
 
 **INSTR**(*hackstack-string-expression*, *needle-string-expression*[, *start-numeric-expression*[, *end-numeric-expression*]]) - Returns position of first *needle-string-expression* inside first *hackstack-string-expression*, optionally start searching at position given by *start-numeric-expression* and optionally ending at position given by *end-numeric-expression*. Returns -1 if no match found.
-
-**LEFT$**(*string-expression*, *char-count*) - Takes the result of *string-expression* and returns the left-most *char-count* characters.  If *char-count* exceeds string length the entire string is returned.
 
 **LEN**(*string-expression*) - Returns the length of the result of *string-expression*
 
@@ -919,7 +932,7 @@ on the next line.
 
 **POW**(*base*, *exponent*) - Calculates the result of raising the base to the power of the exponent
 
-**PRINT** [*#filenum*,]*print-list* - Prints a semicolon separated list of literals or variables to the screen or to a file.  Included CR/LF by default, but this can be suppressed by ending the statement with a semicolon.
+**PRINT** [*#filenum*,]*print-list* - Prints a comma separated list of literals or variables to the screen or to a file
 
 **RANDOMIZE** [*numeric-expression*] - Resets random number generator to an unpredictable sequence. With
 optional seed (*numeric expression*), the sequence is predictable.
@@ -932,9 +945,7 @@ optional seed (*numeric expression*), the sequence is predictable.
 
 **RESTORE** *line-number* - sets the line number that the next **READ** will start loading constants from. *line-number* must refer to a **DATA** statement
 
-**RIGHT$**(*string-expression*, *char-count*) - Takes the result of *string-expression* and returns the right-most *char-count* characters. If *char-count* exceeds string length, the entire string is returned.
-
-**RND**(*mode*) - For mode values >= 0 generates a pseudo random number N, where 0 <= N < 1.  For values < 0 reseeds the PRNG
+**RND** - Generates a pseudo random number N, where 0 <= N < 1
 
 **RNDINT**(*lo-numerical-expression*, *hi-numerical-expression*) - Generates a pseudo random integer N, where *lo-numerical-expression* <= N <= *hi-numerical-expression*
 
