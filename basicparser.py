@@ -286,7 +286,10 @@ class BASICParser:
 
             if type(self.__operand_stack[-1]) == tuple and self.__operand_stack[-1][0] == "TAB":
                 if self.__prnt_column > self.__operand_stack[-1][1]:
-                    print()
+                    if fileIO:
+                        self.__file_handles[filenum].write("\n")
+                    else:
+                        print()
                     self.__prnt_column = 0
 
                 current_pr_column = self.__operand_stack[-1][1] - self.__prnt_column
