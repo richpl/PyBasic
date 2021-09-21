@@ -286,7 +286,7 @@ class BASICParser:
             self.__logexpr()
 
             if prntTab:
-                if self.__prnt_column > len(self.__operand_stack[-1]):
+                if self.__prnt_column >= len(self.__operand_stack[-1]):
                     if fileIO:
                         self.__file_handles[filenum].write("\n")
                     else:
@@ -317,7 +317,7 @@ class BASICParser:
                 self.__logexpr()
 
                 if prntTab:
-                    if self.__prnt_column > len(self.__operand_stack[-1]):
+                    if self.__prnt_column >= len(self.__operand_stack[-1]):
                         if fileIO:
                             self.__file_handles[filenum].write("\n")
                         else:
