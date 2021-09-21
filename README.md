@@ -816,7 +816,9 @@ at position *start* and end at *end*. Returns 0 if no match found.
 
 * **VAL**(x$) - Attempts to convert *x$* to a numeric value. If *x$* is not numeric, returns 0.
 
-* **TAB**(x) - Generates a string containing x spaces with no CR/LF
+* **TAB**(x) -  When included in a **PRINT** statement *print-list*, specifies the position *x* on the line where the next text will be printed. If the specified position *x* is less than the current print position a newline is printed and the print location is set to the specified column. If the **TAB** function is used anywhere other than on a **PRINT** statement, it will return a string containing *x* spaces with no CR/LF
+
+
 
 **NOTE** For compatibility with older basic dialetcs, all string indexes are 1 based.
 
