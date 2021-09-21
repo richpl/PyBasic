@@ -24,7 +24,6 @@ from time import monotonic
 
 """Implements a BASIC array, which may have up
 to three dimensions of fixed size.
-
 """
 class BASICArray:
 
@@ -32,10 +31,8 @@ class BASICArray:
         """Initialises the object with the specified
         number of dimensions. Maximum number of
         dimensions is three
-
         :param dimensions: List of array dimensions and their
         corresponding sizes
-
         """
         self.dims = min(3,len(dimensions))
 
@@ -74,7 +71,6 @@ class BASICArray:
 
 """Implements a BASIC parser that parses a single
 statement when supplied.
-
 """
 class BASICParser:
 
@@ -113,13 +109,10 @@ class BASICParser:
         BTokens to be processed. These tokens
         represent a BASIC statement without
         its corresponding line number.
-
         :param tokenlist: The tokenized program statement
         :param line_number: The line number of the statement
-
         :return: The FlowSignal to indicate to the program
         how to branch if necessary, None otherwise
-
         """
         # Remember the line number to aid error reporting
         self.__line_number = line_number
@@ -146,7 +139,6 @@ class BASICParser:
 
     def __advance(self):
         """Advances to the next token
-
         """
         # Move to the next token
         self.__tokenindex += 1
@@ -157,7 +149,6 @@ class BASICParser:
 
     def __consume(self, expected_category):
         """Consumes a token from the list
-
         """
         if self.__token.category == expected_category:
             self.__advance()
@@ -168,10 +159,8 @@ class BASICParser:
 
     def __stmt(self):
         """Parses a program statement
-
         :return: The FlowSignal to indicate to the program
         how to branch if necessary, None otherwise
-
         """
         if self.__token.category in [Token.FOR, Token.IF, Token.NEXT,
                                      Token.ON]:
@@ -182,10 +171,8 @@ class BASICParser:
 
     def __simplestmt(self):
         """Parses a non-compound program statement
-
         :return: The FlowSignal to indicate to the program
         how to branch if necessary, None otherwise
-
         """
         if self.__token.category == Token.NAME:
             self.__assignmentstmt()
@@ -258,7 +245,6 @@ class BASICParser:
         the value that is on top of the
         operand stack to be printed on
         the screen.
-
         """
         self.__advance()   # Advance past PRINT token
 
@@ -285,7 +271,7 @@ class BASICParser:
             self.__logexpr()
 
             if type(self.__operand_stack[-1]) == tuple and self.__operand_stack[-1][0] == "TAB":
-                if self.__prnt_column > self.__operand_stack[-1][1]:
+                if self.__prnt_column >= self.__operand_stack[-1][1]:
                     if fileIO:
                         self.__file_handles[filenum].write("\n")
                     else:
@@ -315,7 +301,7 @@ class BASICParser:
                 self.__logexpr()
 
                 if type(self.__operand_stack[-1]) == tuple and self.__operand_stack[-1][0] == "TAB":
-                    if self.__prnt_column > self.__operand_stack[-1][1]:
+                    if self.__prnt_column >= self.__operand_stack[-1][1]:
                         if fileIO:
                             self.__file_handles[filenum].write("\n")
                         else:
@@ -350,10 +336,8 @@ class BASICParser:
 
     def __gotostmt(self):
         """Parses a GOTO statement
-
         :return: A FlowSignal containing the target line number
         of the GOTO
-
         """
         self.__advance()  # Advance past GOTO token
         self.__expr()
@@ -363,10 +347,8 @@ class BASICParser:
 
     def __gosubstmt(self):
         """Parses a GOSUB statement
-
         :return: A FlowSignal containing the first line number
         of the subroutine
-
         """
 
         self.__advance()  # Advance past GOSUB token
@@ -400,7 +382,6 @@ class BASICParser:
         placing the corresponding
         variable and its value in the symbol
         table.
-
         """
         left = self.__token.lexeme  # Save lexeme of
                                     # the current token
@@ -432,7 +413,6 @@ class BASICParser:
         """Parses  DIM statement and creates a symbol
         table entry for an array of the specified
         dimensions.
-
         """
         self.__advance()  # Advance past DIM keyword
 
@@ -477,9 +457,7 @@ class BASICParser:
 
     def __arrayassignmentstmt(self, name):
         """Parses an assignment to an array variable
-
         :param name: Array name
-
         """
         self.__consume(Token.LEFTPAREN)
 
@@ -657,7 +635,6 @@ class BASICParser:
         """Parses an input statement, extracts the input
         from the user and places the values into the
         symbol table
-
         """
         self.__advance()  # Advance past INPUT token
 
@@ -807,7 +784,6 @@ class BASICParser:
         """Parses a numerical expression consisting
         of two terms being added or subtracted,
         leaving the result on the operand stack.
-
         """
         self.__term()  # Pushes value of left term
                        # onto top of stack
@@ -830,7 +806,6 @@ class BASICParser:
         """Parses a numerical expression consisting
         of two factors being multiplied together,
         leaving the result on the operand stack.
-
         """
         self.__sign = 1  # Initialise sign to keep track of unary
                          # minuses
@@ -857,7 +832,6 @@ class BASICParser:
         """Evaluates a numerical expression
         and leaves its value on top of the
         operand stack.
-
         """
         if self.__token.category == Token.PLUS:
             self.__advance()
@@ -962,12 +936,9 @@ class BASICParser:
 
     def __get_array_val(self, BASICarray, indexvars):
         """Extracts the value from the given BASICArray at the specified indexes
-
         :param BASICarray: The BASICArray
         :param indexvars: The list of indexes, one for each dimension
-
         :return: The value at the indexed position in the array
-
         """
         if BASICarray.dims != len(indexvars):
             raise IndexError('Incorrect number of indices applied to array ' +
@@ -994,10 +965,8 @@ class BASICParser:
         """Parses compound statements,
         specifically if-then-else and
         loops
-
         :return: The FlowSignal to indicate to the program
         how to branch if necessary, None otherwise
-
         """
         if self.__token.category == Token.FOR:
             return self.__forstmt()
@@ -1014,10 +983,8 @@ class BASICParser:
     def __ifstmt(self):
         """Parses if-then-else
         statements
-
         :return: The FlowSignal to indicate to the program
         how to branch if necessary, None otherwise
-
         """
 
         self.__advance()  # Advance past IF token
@@ -1058,10 +1025,8 @@ class BASICParser:
 
     def __forstmt(self):
         """Parses for loops
-
         :return: The FlowSignal to indicate that
         a loop start has been processed
-
         """
 
         # Set up default loop increment value
@@ -1153,10 +1118,8 @@ class BASICParser:
     def __nextstmt(self):
         """Processes a NEXT statement that terminates
         a loop
-
         :return: A FlowSignal indicating that a loop
         has been processed
-
         """
 
         self.__advance()  # Advance past NEXT token
@@ -1165,10 +1128,8 @@ class BASICParser:
 
     def __ongosubstmt(self):
         """Process the ON-GOSUB statement
-
         :return: A FlowSignal indicating the subroutine line number
         if the condition is true, None otherwise
-
         """
 
         self.__advance()  # Advance past ON token
@@ -1274,9 +1235,7 @@ class BASICParser:
     def __evaluate_function(self, category):
         """Evaluate the function in the statement
         and return the result.
-
         :return: The result of the function
-
         """
 
         self.__advance()  # Advance past function name
@@ -1673,7 +1632,6 @@ class BASICParser:
     def __randomizestmt(self):
         """Implements a function to seed the random
         number generator
-
         """
         self.__advance()  # Advance past RANDOMIZE token
 
