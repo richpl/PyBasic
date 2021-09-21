@@ -285,7 +285,6 @@ class BASICParser:
             prntTab = (self.__token.category == Token.TAB)
             self.__logexpr()
 
-            #if type(self.__operand_stack[-1]) == tuple and self.__operand_stack[-1][0] == "TAB":
             if prntTab:
                 if self.__prnt_column > len(self.__operand_stack[-1]):
                     if fileIO:
@@ -317,7 +316,6 @@ class BASICParser:
                 prntTab = (self.__token.category == Token.TAB)
                 self.__logexpr()
 
-                #if type(self.__operand_stack[-1]) == tuple and self.__operand_stack[-1][0] == "TAB":
                 if prntTab:
                     if self.__prnt_column > len(self.__operand_stack[-1]):
                         if fileIO:
@@ -1664,7 +1662,7 @@ class BASICParser:
 
         elif category == Token.TAB:
             if isinstance(value, int):
-                return (" "*value)
+                return " "*value
 
             else:
                 raise TypeError("Invalid type supplied to TAB in line " +
