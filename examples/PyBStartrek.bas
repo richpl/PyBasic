@@ -456,7 +456,7 @@
 3761 NEXT I
 3762 IF Z3=1 THEN 3770
 3763 D0=0:GOTO 3790
-3770 D0=1:CC$="docked":E=E0:P=P0
+3770 D0=1:C$="docked":E=E0:P=P0
 3780 PRINT"Shields dropped for docking purposes":S=0:GOTO 3810
 3790 IF K3<=0 THEN 3800
 3791 C$="*red*":GOTO 3810
