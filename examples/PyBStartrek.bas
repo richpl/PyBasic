@@ -456,7 +456,7 @@
 3761 NEXT I
 3762 IF Z3=1 THEN 3770
 3763 D0=0:GOTO 3790
-3770 D0=1:CC$="docked":E=E0:P=P0
+3770 D0=1:C$="docked":E=E0:P=P0
 3780 PRINT"Shields dropped for docking purposes":S=0:GOTO 3810
 3790 IF K3<=0 THEN 3800
 3791 C$="*red*":GOTO 3810
@@ -500,7 +500,7 @@
 4080 INPUT"Computer active and awaiting command ";CM$:H8=1
 4090 FOR K1= 1 TO 6
 4100 IF MID$(CM$,1,3)<>MID$(CM1$,3*K1-2,3) THEN 4120
-4110 ON K1 GOTO 4230,4400,4490,4750,4550,4210
+4110 ON K1 GOTO 4250,4400,4490,4750,4550,4210
 4120 NEXT K1
 4121 gosub 4130
 4122 goto 4080
@@ -513,17 +513,15 @@
 4190 PRINT"   REG = Galaxy 'region name' map":PRINT
 4191 return
 4200 REM setup to change cum gal record to galaxy map
-4210 GOSUB 840
-4211 H8=0:G5=1:PRINT"                        the galaxy":GOTO 4290
-4250 GOSUB 840
-4260 PRINT:PRINT"            ";
+4210 H8=0:G5=1:PRINT"                        the galaxy":GOTO 4290
+4250 PRINT:PRINT"            ";
 4270 PRINT "Computer record of galaxy for quadrant ";Q1;",";Q2
 4280 PRINT
 4290 PRINT"       1     2     3     4     5     6    7      8"
 4300 O1$="     ----- ----- ----- ----- ----- ----- ----- -----"
 4310 PRINT O1$
 4311 FOR I=1 TO 8
-4312 PRINT I,"  ";:IF H8=0 THEN 4350
+4312 PRINT I;"  ";:IF H8=0 THEN 4350
 4320 FOR J=1 TO 8
 4321 PRINT"   ";:IF Z(I,J)<>0 THEN 4330
 4322 PRINT"***";:GOTO 4340
@@ -543,8 +541,7 @@
 4373 rem 'POKE 1229,0 POKE 1237,1
 4380 GOTO 1520
 4390 REM status report
-4400 GOSUB 840
-4401 PRINT"   Status Report":X$="":IF K9<=1 THEN 4410
+4400 PRINT"   Status Report":X$="":IF K9<=1 THEN 4410
 4402 X$="s"
 4410 PRINT"Klingon";X$;" left: ";K9
 4420 PRINT"Mission must be completed in ";0.1*INT((T0+T9-T)*10);" stardates"
@@ -555,8 +552,7 @@
 4460 PRINT"Your stupidity has left you on your own in"
 4470 PRINT"    the galaxy -- you have no starbases left!":GOTO 3180
 4480 REM torpedo, base nav, d/d calculator
-4490 GOSUB 840
-4491 IF K3<=0 THEN 2550
+4490 IF K3<=0 THEN 2550
 4500 X$="":IF K3<=1 THEN 4510
 4501 X$="s"
 4510 PRINT"From ENTERPRISE to Klingon battle cruiser";X$
@@ -564,8 +560,7 @@
 4521 IF K(I,3)<=0 THEN 4740
 4530 W1=K(I,1):X=K(I,2)
 4540 C1=S1:A=S2:GOTO 4590
-4550 GOSUB 840
-4551 PRINT"Direction/Distance Calculator:"
+4550 PRINT"Direction/Distance Calculator:"
 4560 PRINT"You are at quadrant ";Q1;",";Q2;" sector ";S1;",";S2
 4570 PRINT"Please enter ":INPUT" initial coordinates (x,y) ";C1,A
 4580 INPUT" Final coordinates (x,y) ";W1,X
@@ -589,8 +584,7 @@
 4730 PRINT"Distance = ";:cc1=SQR(x*X+A*A):PRINT cc1:IF H8=1 THEN 1520
 4740 NEXT I
 4741 GOTO 1520
-4750 GOSUB 840
-4751 IF B3=0 THEN 4770
+4750 IF B3=0 THEN 4770
 4752 PRINT"From ENTERPRISE to Starbase:":W1=B4:X=B5
 4760 GOTO 4540
 4770 PRINT"Mr. Spock reports, 'Sensors show no starbases in this";

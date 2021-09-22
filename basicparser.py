@@ -102,6 +102,9 @@ class BASICParser:
         # loop variable
         self.last_flowsignal = None
 
+        # Set to keep track of print column across multiple print statements
+        self.__prnt_column = 0
+
         #file handle list
         self.__file_handles = {}
 
@@ -279,11 +282,30 @@ class BASICParser:
 
         # Check there are items to print
         if not self.__tokenindex >= len(self.__tokenlist):
+            prntTab = (self.__token.category == Token.TAB)
             self.__logexpr()
-            if fileIO:
-                self.__file_handles[filenum].write('%s' %(self.__operand_stack.pop()))
+
+            if prntTab:
+                if self.__prnt_column >= len(self.__operand_stack[-1]):
+                    if fileIO:
+                        self.__file_handles[filenum].write("\n")
+                    else:
+                        print()
+                    self.__prnt_column = 0
+
+                current_pr_column = len(self.__operand_stack[-1]) - self.__prnt_column
+                self.__prnt_column = len(self.__operand_stack.pop()) - 1
+                if current_pr_column > 1:
+                    if fileIO:
+                        self.__file_handles[filenum].write(" "*(current_pr_column-1))
+                    else:
+                        print(" "*(current_pr_column-1), end="")
             else:
-                print(self.__operand_stack.pop(), end='')
+                self.__prnt_column += len(str(self.__operand_stack[-1]))
+                if fileIO:
+                    self.__file_handles[filenum].write('%s' %(self.__operand_stack.pop()))
+                else:
+                    print(self.__operand_stack.pop(), end='')
 
             while self.__token.category == Token.SEMICOLON:
                 if self.__tokenindex == len(self.__tokenlist) - 1:
@@ -291,17 +313,35 @@ class BASICParser:
                     # a newline.. a-la ms-basic
                     return
                 self.__advance()
+                prntTab = (self.__token.category == Token.TAB)
                 self.__logexpr()
-                if fileIO:
-                    self.__file_handles[filenum].write('%s' %(self.__operand_stack.pop()))
+
+                if prntTab:
+                    if self.__prnt_column >= len(self.__operand_stack[-1]):
+                        if fileIO:
+                            self.__file_handles[filenum].write("\n")
+                        else:
+                            print()
+                        self.__prnt_column = 0
+                    current_pr_column = len(self.__operand_stack[-1]) - self.__prnt_column
+                    if fileIO:
+                        self.__file_handles[filenum].write(" "*(current_pr_column-1))
+                    else:
+                        print(" "*(current_pr_column-1), end="")
+                    self.__prnt_column = len(self.__operand_stack.pop()) - 1
                 else:
-                    print(self.__operand_stack.pop(), end='')
+                    self.__prnt_column += len(str(self.__operand_stack[-1]))
+                    if fileIO:
+                        self.__file_handles[filenum].write('%s' %(self.__operand_stack.pop()))
+                    else:
+                        print(self.__operand_stack.pop(), end='')
 
         # Final newline
         if fileIO:
             self.__file_handles[filenum].write("\n")
         else:
             print()
+        self.__prnt_column = 0
 
     def __letstmt(self):
         """Parses a LET statement,
@@ -1621,12 +1661,12 @@ class BASICParser:
             return value.lower()
 
         elif category == Token.TAB:
-            # Return a string of value spaces
-            if not isinstance(value, int):
+            if isinstance(value, int):
+                return " "*value
+
+            else:
                 raise TypeError("Invalid type supplied to TAB in line " +
                                  str(self.__line_number))
-
-            return " " * value
 
         else:
             raise SyntaxError("Unrecognised function in line " +

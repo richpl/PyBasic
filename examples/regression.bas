@@ -91,6 +91,8 @@
 1010 READ I , J , K , L 
 1020 PRINT "the next line should print 4561.5:" 
 1030 PRINT I; J ; K ; L 
+1040 PRINT "The next lines should print: 'Hello World' and then 'AGAIN' under the word 'World'"
+1050 PRINT "Hel" ; : PRINT "lo" ; TAB ( 7 ) ; "World" ; TAB ( 7 ) ; "AGAIN" 
 1610 PRINT "*** Finished ***"
 1620 STOP
 1630 REM A SUBROUTINE TEST
