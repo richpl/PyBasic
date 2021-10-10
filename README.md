@@ -837,6 +837,7 @@ Strings may be repeated using the '*' operator:
 > 10 PRINT "Hello " * 5
 > RUN
 Hello Hello Hello Hello Hello
+```
 
 ## Example programs
 
