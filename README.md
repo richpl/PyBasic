@@ -55,7 +55,7 @@ but this can be changed with parentheses.
 
 Additional numerical operations may be performed using numeric functions (see below).
 
-Not also that + does extra duty as a string concatenation operator.
+Not also that '+' does extra duty as a string concatenation operator, while '*' can be used to repeat strings.
 
 ## Commands
 
@@ -70,17 +70,16 @@ Programs may be listed using the **LIST** command:
 
 The list command can take arguments to refine the line selection listed
 
-`LIST 50` Lists only line 50
+`LIST 50` Lists only line 50.
 
-`LIST 50-100` Lists lines 50 through 100 inclusive
+`LIST 50-100` Lists lines 50 through 100 inclusive.
 
 `LIST 50 100` Also Lists lines 50 through 100 inclusive, almost any delimiter
-works here
+works here.
 
-`LIST -100` Lists from the start of the program through line 100 inclusive
+`LIST -100` Lists from the start of the program through line 100 inclusive.
 
-`LIST 50-` Lists from line 50 to the end of the program
-
+`LIST 50-` Lists from line 50 to the end of the program.
 
 A program is executed using the **RUN** command:
 
@@ -105,12 +104,12 @@ The program may be re-loaded from disk using the **LOAD** command, again specify
 Program read from file
 >
 ```
-
 When loading or saving, the .bas extension is assumed if not provided.  If you are loading a simple name (alpha/numbers only) and in the working dir, quotes can be omitted:
+
 ```
 > LOAD regression
 ```
-Will load regression.bas from the current working directory.
+will load regression.bas from the current working directory.
 
 Individual program statements may be deleted by entering their line number only:
 
@@ -125,7 +124,6 @@ Individual program statements may be deleted by entering their line number only:
 20 PRINT "Goodbye"
 >
 ```
-
 The program may be erased entirely from memory using the **NEW** command:
 
 ```
@@ -557,8 +555,6 @@ I is greater than J
 >
 ```
 
-
-
 Allowable relational operators are:
 
 * '=' (equal, note that in BASIC the same operator is used for assignment)
@@ -705,7 +701,6 @@ Hello World!
 >
 ```
 
-
 ### Numeric functions
 
 Selected numeric functions are provided, and may be used with any numeric expression. For example,
@@ -818,10 +813,6 @@ at position *start* and end at *end*. Returns 0 if no match found.
 
 * **TAB**(x) -  When included in a **PRINT** statement *print-list*, specifies the position *x* on the line where the next text will be printed. If the specified position *x* is less than the current print position a newline is printed and the print location is set to the specified column. If the **TAB** function is used anywhere other than on a **PRINT** statement, it will return a string containing *x* spaces with no CR/LF
 
-
-
-**NOTE** For compatibility with older basic dialetcs, all string indexes are 1 based.
-
 Examples for **ASC**, **CHR$** and **STR$**
 ```
 > 10 I = 65
@@ -840,6 +831,12 @@ Strings may also be concatenated using the '+' operator:
 > RUN
 Hello there
 ```
+Strings may be repeated using the '*' operator:
+
+```
+> 10 PRINT "Hello " * 5
+> RUN
+Hello Hello Hello Hello Hello
 
 ## Example programs
 
@@ -855,11 +852,11 @@ calculate the corresponding factorial *N!*.
 
 * *PyBStartrek.bas* - A port of the 1971 Star Trek text based strategy game.
 
-* *adventure-fast.bas* - A port of a 1979 text based adventure game.
+* *adventure-fast.bas* - A port of a 1979 text based Microsoft Adventure game.
 
-* *bagels.bas* - A guessing game.
+* *bagels.bas* - A guessing game, which made its first appearnce in the book 'BASIC Computer Games' in 1978.
 
-* *eliza.bas* - A port of the early chatbot, posing as a therapist, originally created by Joseph Weizenbaum in 1964.
+* *eliza.bas* - A port of the early chatbot, posing as a therapist, originally created by Joseph Weizenbaum in 1964.This BASIC version can trace its lineage back to an implementation originally developed by Jeff Shrager in 1973.
 
 ## Informal grammar definition
 
