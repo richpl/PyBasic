@@ -190,7 +190,7 @@ Multiple statements may appear on one line separated by a colon:
 ```
 10 FOR I = 1 to 10: PRINT I: NEXT
 ```
-Will need to be decomposed to individual lines
+will need to be decomposed to individual lines.
 
 ### Variables
 
@@ -858,6 +858,8 @@ calculate the corresponding factorial *N!*.
 * *bagels.bas* - A guessing game, which made its first appearnce in the book 'BASIC Computer Games' in 1978.
 
 * *eliza.bas* - A port of the early chatbot, posing as a therapist, originally created by Joseph Weizenbaum in 1964.This BASIC version can trace its lineage back to an implementation originally developed by Jeff Shrager in 1973.
+
+* *oregon.bas* - A port (of a port by the looks of it) of The Oregon Trail. This is a text based adventure game, originally developed by Don Rawitsch, Bill Heinemann, and Paul Dillenberger in 1971. This could still be a bit buggy, the listing I found wasn't the greatest. 
 
 ## Informal grammar definition
 
