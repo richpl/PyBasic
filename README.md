@@ -855,9 +855,9 @@ calculate the corresponding factorial *N!*.
 
 * *adventure-fast.bas* - A port of a 1979 text based Microsoft Adventure game.
 
-* *bagels.bas* - A guessing game, which made its first appearnce in the book 'BASIC Computer Games' in 1978.
+* *bagels.bas* - A guessing game, which made its first appearance in the book 'BASIC Computer Games' in 1978.
 
-* *eliza.bas* - A port of the early chatbot, posing as a therapist, originally created by Joseph Weizenbaum in 1964.This BASIC version can trace its lineage back to an implementation originally developed by Jeff Shrager in 1973.
+* *eliza.bas* - A port of the early chatbot, posing as a therapist, originally created by Joseph Weizenbaum in 1964. This BASIC version can trace its lineage back to an implementation originally developed by Jeff Shrager in 1973.
 
 * *oregon.bas* - A port (of a port by the looks of it) of The Oregon Trail. This is a text based adventure game, originally developed by Don Rawitsch, Bill Heinemann, and Paul Dillenberger in 1971. This could still be a bit buggy, the listing I found wasn't the greatest. 
 
