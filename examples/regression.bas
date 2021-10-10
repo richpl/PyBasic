@@ -93,6 +93,13 @@
 1030 PRINT I; J ; K ; L 
 1040 PRINT "The next lines should print: 'Hello World' and then 'AGAIN' under the word 'World'"
 1050 PRINT "Hel" ; : PRINT "lo" ; TAB ( 7 ) ; "World" ; TAB ( 7 ) ; "AGAIN" 
+1060 PRINT "This loop should count from 1 to 10"
+1070 FOR I = 1 TO 10
+1080 FOR J = 1 TO 3
+1090 PRINT I
+1100 GOTO 1130
+1120 NEXT J
+1130 NEXT I
 1610 PRINT "*** Finished ***"
 1620 STOP
 1630 REM A SUBROUTINE TEST
