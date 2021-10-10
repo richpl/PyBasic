@@ -424,7 +424,7 @@ class Program:
                             raise RuntimeError("Invalid loop exit in line " +
                                                str(self.get_next_line_number()))
 
-                        except IndexError:
+                        except KeyError:
                             raise RuntimeError("NEXT encountered without corresponding " +
                                                "FOR loop in line " + str(self.get_next_line_number()))
 
