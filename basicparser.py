@@ -1150,7 +1150,7 @@ class BASICParser:
                               ftarget=loop_variable)
         else:
             # Set up and return the flow signal
-            return FlowSignal(ftype=FlowSignal.LOOP_BEGIN)
+            return FlowSignal(ftype=FlowSignal.LOOP_BEGIN,floop_var=loop_variable)
 
     def __nextstmt(self):
         """Processes a NEXT statement that terminates
@@ -1163,7 +1163,15 @@ class BASICParser:
 
         self.__advance()  # Advance past NEXT token
 
-        return FlowSignal(ftype=FlowSignal.LOOP_REPEAT)
+        # Process the loop variable initialisation
+        loop_variable = self.__token.lexeme  # Save lexeme of
+                                             # the current token
+
+        if loop_variable.endswith('$'):
+            raise SyntaxError('Syntax error: Loop variable is not numeric' +
+                              ' in line ' + str(self.__line_number))
+
+        return FlowSignal(ftype=FlowSignal.LOOP_REPEAT,floop_var=loop_variable)
 
     def __ongosubstmt(self):
         """Process the ON-GOSUB statement

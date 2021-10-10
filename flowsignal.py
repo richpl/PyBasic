@@ -73,7 +73,7 @@ class FlowSignal:
     # been processed. There should be therefore be no ftarget value specified
     STOP               = 6
 
-    def __init__(self, ftarget=None, ftype=SIMPLE_JUMP):
+    def __init__(self, ftarget=None, ftype=SIMPLE_JUMP, floop_var=None):
         """Creates a new FlowSignal for a branch. If the jump
         target is supplied, then the branch is assumed to be
         either a GOTO or conditional branch and the type is assigned as
@@ -103,4 +103,4 @@ class FlowSignal:
 
         self.ftype = ftype
         self.ftarget = ftarget
-
+        self.floop_var = floop_var
