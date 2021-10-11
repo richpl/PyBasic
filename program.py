@@ -371,8 +371,6 @@ class Program:
                         # Put loop line number on the stack so
                         # that it can be returned to when the loop
                         # repeats
-                        #self.__return_stack.append(self.get_next_line_number())
-                        #self.__return_stack.append(line_numbers[index])
                         self.__return_loop[flowsignal.floop_var] = line_numbers[index]
 
                         # Continue to the next statement in the loop
