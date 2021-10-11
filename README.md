@@ -861,6 +861,8 @@ calculate the corresponding factorial *N!*.
 
 * *oregon.bas* - A port (of a port by the looks of it) of The Oregon Trail. This is a text based adventure game, originally developed by Don Rawitsch, Bill Heinemann, and Paul Dillenberger in 1971. This could still be a bit buggy, the listing I found wasn't the greatest. 
 
+* *life.bas* - An implementation of Conway's Game of Life. This version is a port of the BASIC program which appeared in 'BASIC Computer Games' in 1978.
+
 ## Informal grammar definition
 
 **ABS**(*numerical-expression*) - Calculates the absolute value of the result of *numerical-expression*
