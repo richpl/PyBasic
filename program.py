@@ -147,8 +147,10 @@ class Program:
         self.__next_stmt = 0
 
         # Initialise return stack for subroutine returns
-        # and loop returns
         self.__return_stack = []
+
+        # return dictionary for loop returns
+        self.__return_loop = {}
 
         # Setup DATA object
         self.__data = BASICData()
@@ -369,8 +371,7 @@ class Program:
                         # Put loop line number on the stack so
                         # that it can be returned to when the loop
                         # repeats
-                        #self.__return_stack.append(self.get_next_line_number())
-                        self.__return_stack.append(line_numbers[index])
+                        self.__return_loop[flowsignal.floop_var] = line_numbers[index]
 
                         # Continue to the next statement in the loop
                         index = index + 1
@@ -415,13 +416,13 @@ class Program:
                         # Loop repeat encountered
                         # Pop the loop start address from the stack
                         try:
-                            index = line_numbers.index(self.__return_stack.pop())
+                            index = line_numbers.index(self.__return_loop.pop(flowsignal.floop_var))
 
                         except ValueError:
                             raise RuntimeError("Invalid loop exit in line " +
                                                str(self.get_next_line_number()))
 
-                        except IndexError:
+                        except KeyError:
                             raise RuntimeError("NEXT encountered without corresponding " +
                                                "FOR loop in line " + str(self.get_next_line_number()))
 
