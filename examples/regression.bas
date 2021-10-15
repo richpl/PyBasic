@@ -100,6 +100,35 @@
 1100 GOTO 1130
 1120 NEXT J
 1130 NEXT I
+1140 INPUT "Enter T for the THEN blocks to execute, E for the ELSE (T/E): " ; ANS$ 
+1150 ANS$ = UPPER$ ( ANS$ ) 
+1160 IF ANS$ = "T" THEN 1190 
+1170 PRINT "1170: Did not enter T" 
+1180 GOTO 1200 
+1190 PRINT "1190: Entered T" 
+1200 IF ANS$ = "T" THEN GOTO 1230 
+1210 PRINT "1210: Did not enter T" 
+1220 GOTO 1240 
+1230 PRINT "1230: Entered T" 
+1240 IF ANS$ = "T" THEN 1280 ELSE 1260 
+1250 PRINT "ERROR - Should not be at line 1250" 
+1260 PRINT "1260: Did not enter T" 
+1270 GOTO 1290 
+1280 PRINT "1280: Entered T" 
+1290 IF ANS$ = "T" THEN GOTO 1330 ELSE GOTO 1310 
+1300 PRINT "ERROR - Should not be at line 1300" 
+1310 PRINT "1310: Did not enter T" 
+1320 GOTO 1340 
+1330 PRINT "1330: Entered T" 
+1340 IF ANS$ = "T" THEN PRINT "1340: Entered T" 
+1350 IF ANS$ <> "T" THEN PRINT "1350: Did not enter T" 
+1360 IF ANS$ = "T" THEN PRINT "1360: Entered T" ELSE PRINT "1360: Did not enter T" 
+1370 IF ANS$ = "T" THEN PRINT "1370: Entered T" : GOTO 1390 
+1380 IF ANS$ <> "T" THEN PRINT "1380: Did not enter T" 
+1390 IF ANS$ = "T" THEN PRINT "1390: Entered " ; : PRINT "T" ELSE PRINT "1390: Did " ; : PRINT "not enter T" 
+1400 IF ANS$ = "T" THEN PRINT "1400: Entered T" ELSE PRINT "1400: Did " ; : PRINT "not enter T" 
+1410 IF ANS$ = "T" THEN PRINT "1410: Entered " ; : PRINT "T" ELSE PRINT "1410: Did not enter T" 
+1420 PRINT "Compount Stmt w/conditionals ";:IF ANS$ = "T" THEN PRINT "1420: Entered " ; : PRINT "T" ELSE PRINT "1420: Did " ; : PRINT "not enter T" 
 1610 PRINT "*** Finished ***"
 1620 STOP
 1630 REM A SUBROUTINE TEST
