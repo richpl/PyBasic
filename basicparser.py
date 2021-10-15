@@ -1103,7 +1103,6 @@ class BASICParser:
 
         else:
             # No ELSE action
-            #return FlowSignal(ftype=FlowSignal.SKIP)
             return None
 
     def __forstmt(self):
