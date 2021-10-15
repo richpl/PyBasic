@@ -491,10 +491,16 @@ be replaced by the start value, it will not be evaluated.
 After the completion of the loop, the loop variable value will be the end value + step value (unless
 the loop is exited using a **GOTO** statement).
 
-### Conditional branching
+### Conditionals
 
-Conditional branches are implemented using the **IF-THEN-ELSE** statement. The expression is evaluated and the appropriate jump
-made depending upon the result of the evaluation.
+Conditionals are implemented using the **IF-THEN-ELSE** statement. The expression is evaluated and the appropriate 
+statements executed depending upon the result of the evaluation. If a positive integer is supplied as 
+the **THEN** or the **ELSE** statement, a branch will be performed to the indicated line number.
+
+Note that the **ELSE** clause is optional and may be omitted. In this case, the **THEN** branch is taken if the
+expression evaluates to true, otherwise the next statement is executed.
+
+**Conditional branching example:**
 
 ```
 > 10 REM PRINT THE GREATEST NUMBER
@@ -510,49 +516,47 @@ made depending upon the result of the evaluation.
 >
 ```
 
-Note that the **ELSE** clause is optional and may be omitted. In this case, the **THEN** branch is taken if the
-expression evaluates to true, otherwise the following statement is executed.
-
-You can optionally give the **GOTO** keyword before your line numbers. This is for compatibility with other BASIC dialects. e.g. `40 IF I > J THEN GOTO 50 ELSE GOTO 70`
-
-The **ON GOTO|GOSUB** *expr* *line1,line2,...* statement will call a subroutine or branch to a line number in the list of line numbers corresponding to the ordinal
-value of the evaluated *expr*. The first line number corresponds with an *expr* value of 1.  *expr* must evaluate to an integer value.
- If *expr* evaluates to less than 1 or greater than the number of provided line numbers execution continues on the next 
-statement without making a subroutine call or branch:
+The following code segement is equivelant to the segment above:
 
 ```
-> 20 LET J = 2
-> 30 ON J GOSUB 100,200,300
-> 40 STOP
-> 100 REM THE 1ST SUBROUTINE
-> 110 PRINT "J is ONE"
-> 120 RETURN
-> 200 REM THE 2ND SUBROUTINE
-> 210 PRINT "J is TWO"
-> 220 RETURN
-> 300 REM THE 3RD SUBROUTINE
-> 310 PRINT "J is THREE"
-> 320 RETURN
+> 10 REM PRINT THE GREATEST NUMBER
+> 20 LET I = 10
+> 30 LET J = 20
+> 40 IF I > J THEN PRINT I ELSE PRINT J
+> 80 REM FINISHED
 > RUN
-J is TWO
+20
 >
 ```
 
-It is also possible to call a subroutine depending upon the result of a conditional expression using the **IFF** function (see Ternary Functions below). In
-the example below, if the expression evaluates to true, **IFF** returns a 1 and the subroutine is called, otherwise **IFF** returns a 0 and execution
-continues to the next statement without making the call:
+A **THEN** or **ELSE** can be supplied multiple statements if they are seperated by tha colon "**:**".
 
 ```
-> 10 LET I = 10
-> 20 LET J = 5
-> 30 ON IFF (I > J, 1, 0) GOSUB 100
-> 40 STOP
-> 100 REM THE SUBROUTINE
-> 110 PRINT "I is greater than J"
-> 120 RETURN
+> 10 REM PRINT THE GREATEST NUMBER
+> 20 LET I = 10
+> 30 LET J = 20
+> 40 IF I > J THEN LET L = I:PRINT I ELSE LET L = J:PRINT J
+> 50 PRINT L
+> 80 REM FINISHED
 > RUN
-I is greater than J
+20
+20
 >
+```
+
+Note that should an **IF-THEN-ELSE** stmt be used in a **THEN** code block or multiple **IF-THEN-ELSE** statements
+are used in either a single **THEN** or **ELSE** code block, the block grouping is ambiguious and logical processing
+may not function as expected. There is no ambiguity when single **IF-THEN-ELSE** statements are placed within **ELSE**
+blocks.
+
+Ambiguous:
+```
+> 100 IF I > J THEN IF J >= 100 THEN PRINT "I > 100" else PRINT "Not clear which **IF** this belongs to"
+```
+
+Not Ambiguous:
+```
+> 100 IF I < J THEN PRINT "I is less than J" ELSE IF J > 100 THEN PRINT "I > 100" ELSE PRINT "J <= 100"
 ```
 
 Allowable relational operators are:
@@ -598,6 +602,48 @@ Expressions can be inside brackets to change the order of evaluation. Compare th
 > 30 IF NOT a > b AND (b = 20 OR a >= 5) THEN 60
 > RUN
 Test failed!
+```
+
+### ON GOTO, ON GOSUB
+
+The **ON GOTO|GOSUB** *expr* *line1,line2,...* statement will call a subroutine or branch to a line number in the list of line numbers corresponding to the ordinal
+value of the evaluated *expr*. The first line number corresponds with an *expr* value of 1.  *expr* must evaluate to an integer value.
+ If *expr* evaluates to less than 1 or greater than the number of provided line numbers execution continues on the next 
+statement without making a subroutine call or branch:
+
+```
+> 20 LET J = 2
+> 30 ON J GOSUB 100,200,300
+> 40 STOP
+> 100 REM THE 1ST SUBROUTINE
+> 110 PRINT "J is ONE"
+> 120 RETURN
+> 200 REM THE 2ND SUBROUTINE
+> 210 PRINT "J is TWO"
+> 220 RETURN
+> 300 REM THE 3RD SUBROUTINE
+> 310 PRINT "J is THREE"
+> 320 RETURN
+> RUN
+J is TWO
+>
+```
+
+It is also possible to call a subroutine depending upon the result of a conditional expression using the **IFF** function (see Ternary Functions below). In
+the example below, if the expression evaluates to true, **IFF** returns a 1 and the subroutine is called, otherwise **IFF** returns a 0 and execution
+continues to the next statement without making the call:
+
+```
+> 10 LET I = 10
+> 20 LET J = 5
+> 30 ON IFF (I > J, 1, 0) GOSUB 100
+> 40 STOP
+> 100 REM THE SUBROUTINE
+> 110 PRINT "I is greater than J"
+> 120 RETURN
+> RUN
+I is greater than J
+>
 ```
 
 ### Ternary Functions
@@ -894,7 +940,7 @@ will read starting at file position *filepos*
 
 **GOTO** *line-number* - Unconditional branch
 
-**IF** *expression* **THEN** *line-number* [**ELSE** *line-number*] - Conditional branch
+**IF** *expression* **THEN** *line-number*|*basic-statement(s)* [**ELSE** *line-number*|*basic-statement(s)*] - Conditional
 
 **IFF**(*expression*, *numeric-expression*, *numeric-expression*) - Evaluates *expression* and returns the value of the result of the first *numeric-expression* if true, or the second if false.
 
