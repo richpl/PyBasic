@@ -124,24 +124,65 @@ class BASICParser:
         # Remember the line number to aid error reporting
         self.__line_number = line_number
         self.__tokenlist = []
+        self.__tokenindex = 0
+        linetokenindex = 0
         for token in tokenlist:
-            if token.category == token.COLON:
+            # If statements will always be the last statment processed on a line so
+            # any colons found after an IF are part of the condition execution statements
+            # and will be processed in the recursive call to parse
+            if token.category == token.IF:
+                # process IF statement to move __tokenidex to the code block
+                # of the THEN or ELSE and then call PARSE recursivly to process that code block
+                # this will terminate the token loop by RETURNing to the calling module
+                #
+                # **Warning** if an IF stmt is used in the THEN code block or multiple IF statement are used
+                # in a THEN or ELSE block the block grouping is ambiguious and logical processing may not
+                # function as expected. There is no ambiguity when single IF statements are placed within ELSE blocks
+                linetokenindex += self.__tokenindex
+                self.__tokenindex = 0
+                self.__tokenlist = tokenlist[linetokenindex:]
+
+                # Assign the first token
+                self.__token = self.__tokenlist[0]
+                flow = self.__stmt() # process IF statement
+                if flow and (flow.ftype == FlowSignal.EXECUTE):
+                    # recursive call to process THEN/ELSE block
+                    try:
+                        return self.parse(tokenlist[linetokenindex+self.__tokenindex:],line_number)
+                    except RuntimeError as err:
+                        raise RuntimeError(str(err)+' in line ' + str(self.__line_number))
+                else:
+                    # branch on original syntax 'IF cond THEN lineno [ELSE lineno]'
+                    # in this syntax the then or else code block is not a legal basic statement
+                    # so recursive processing can't be used
+                    return flow
+            elif token.category == token.COLON:
+                # Found a COLON, process tokens found to this point
+                linetokenindex += self.__tokenindex
                 self.__tokenindex = 0
 
                 # Assign the first token
                 self.__token = self.__tokenlist[self.__tokenindex]
+
                 flow = self.__stmt()
                 if flow:
                     return flow
 
+                linetokenindex += 1
                 self.__tokenlist = []
+            elif token.category == token.ELSE:
+                # if we find an ELSE we must be in a recursive call and be processing a THEN block
+                # since we're processing the THEN block we are done if we hit an ELSE
+                break
             else:
                 self.__tokenlist.append(token)
 
-
+        # reached end of statement, process tokens collected since last COLON (or from start if no COLONs)
+        linetokenindex += self.__tokenindex
         self.__tokenindex = 0
         # Assign the first token
         self.__token = self.__tokenlist[self.__tokenindex]
+
         return self.__stmt()
 
     def __advance(self):
@@ -311,6 +352,7 @@ class BASICParser:
                 if self.__tokenindex == len(self.__tokenlist) - 1:
                     # If a semicolon ends this line, don't print
                     # a newline.. a-la ms-basic
+                    self.__advance()
                     return
                 self.__advance()
                 prntTab = (self.__token.category == Token.TAB)
@@ -1031,28 +1073,33 @@ class BASICParser:
         # Process the THEN part and save the jump value
         self.__consume(Token.THEN)
 
-        if self.__token.category == Token.GOTO:
-            self.__advance()    # Advance past optional GOTO
+        if self.__token.category != Token.UNSIGNEDINT:
+            if saveval:
+                return FlowSignal(ftype=FlowSignal.EXECUTE)
+        else:
+            self.__expr()
 
-        self.__expr()
-        then_jump = self.__operand_stack.pop()
+            # Jump if the expression evaluated to True
+            if saveval:
+                # Set up and return the flow signal
+                return FlowSignal(ftarget=self.__operand_stack.pop())
 
-        # Jump if the expression evaluated to True
-        if saveval:
-            # Set up and return the flow signal
-            return FlowSignal(ftarget=then_jump)
+        # advance to ELSE
+        while self.__tokenindex < len(self.__tokenlist) and self.__token.category != Token.ELSE:
+            self.__advance()
 
         # See if there is an ELSE part
         if self.__token.category == Token.ELSE:
             self.__advance()
 
-            if self.__token.category == Token.GOTO:
-                self.__advance()    # Advance past optional GOTO
+            if self.__token.category != Token.UNSIGNEDINT:
+                return FlowSignal(ftype=FlowSignal.EXECUTE)
+            else:
 
-            self.__expr()
+                self.__expr()
 
-            # Set up and return the flow signal
-            return FlowSignal(ftarget=self.__operand_stack.pop())
+                # Set up and return the flow signal
+                return FlowSignal(ftarget=self.__operand_stack.pop())
 
         else:
             # No ELSE action
