@@ -232,7 +232,7 @@ many dimensions the array has, and the sizes of those dimensions:
 
 Note that the index of each dimension always starts at *zero*, but for
 compatibility with some basic dialects the bounds of each dimension will be
-expanded by one to enable element access inlcuding the len. So in the above example, 
+expanded by one to enable element access including the len. So in the above example, 
 valid index values for array *A* will be *0, 1*, *2* or *3*
 for each dimension. Arrays may have a maximum of three dimensions.
 
@@ -282,7 +282,7 @@ statements before the end of the program an error will be displayed. This is to 
 in a state where a variable has not been assigned a value, but nevertheless an attempt to use that variable is
 made later on in the program.
 
-Normally each **DATA** statement is consumed sequently by **READ** statements however, the **RESTORE** statment can
+Normally each **DATA** statement is consumed sequently by **READ** statements however, the **RESTORE** statement can
 be used to override this order and set the line number of the **DATA** statement that will be used by the next 
 **READ** statement. If the *line-number* used in a **RESTORE** statement does not refer to a **DATA** statement an
 error will be displayed.
@@ -516,7 +516,7 @@ expression evaluates to true, otherwise the next statement is executed.
 >
 ```
 
-The following code segement is equivelant to the segment above:
+The following code segment is equivalent to the segment above:
 
 ```
 > 10 REM PRINT THE GREATEST NUMBER
@@ -529,7 +529,7 @@ The following code segement is equivelant to the segment above:
 >
 ```
 
-A **THEN** or **ELSE** can be supplied multiple statements if they are seperated by tha colon "**:**".
+A **THEN** or **ELSE** can be supplied multiple statements if they are separated by a colon "**:**".
 
 ```
 > 10 REM PRINT THE GREATEST NUMBER
@@ -545,7 +545,7 @@ A **THEN** or **ELSE** can be supplied multiple statements if they are seperated
 ```
 
 Note that should an **IF-THEN-ELSE** stmt be used in a **THEN** code block or multiple **IF-THEN-ELSE** statements
-are used in either a single **THEN** or **ELSE** code block, the block grouping is ambiguious and logical processing
+are used in either a single **THEN** or **ELSE** code block, the block grouping is ambiguous and logical processing
 may not function as expected. There is no ambiguity when single **IF-THEN-ELSE** statements are placed within **ELSE**
 blocks.
 
@@ -713,26 +713,26 @@ within an **INPUT** statement, only simple variables.
 
 ### File Input/Output
 
-Data can be read from or written to files using the **OPEN**, **FSEEK**, **INPUT**, **PRINT** and **CLOSE** statments.
+Data can be read from or written to files using the **OPEN**, **FSEEK**, **INPUT**, **PRINT** and **CLOSE** statements.
 
 When a file is opened using the syntax **OPEN** "*filename*" **FOR INPUT|OUTPUT|APPEND AS** *#filenum* [**ELSE** *linenum*] a
-file number (*#filenum*) is assigned to the file, which if specfied as the first argument of an **INPUT** or **PRINT**
-statment, will direct the input or output to the file. 
+file number (*#filenum*) is assigned to the file, which if specified as the first argument of an **INPUT** or **PRINT**
+statement, will direct the input or output to the file. 
 
 If there is an error opening a file and the optional **ELSE** option has been specified, program control
 will branch to the specified line number, if the **ELSE** has not been provided an error message will be displayed.
 
 If a file is opened for **OUTPUT** which does not exist, the file will be created, if the file does exist, its contents will
 be erased and any new **PRINT** output will replace it. If a file is opened for **APPEND** an error will occur if the file
-doesn't exist (or the **ELSE** branch will occur if specified). If the file does exist, any **PRINT** statments will add to the end
+doesn't exist (or the **ELSE** branch will occur if specified). If the file does exist, any **PRINT** statements will add to the end
 of the file.
 
-If an input prompt is specfied on an **INPUT** statement being used for file I/O (i.e. *#filenum* is specified) an error
+If an input prompt is specified on an **INPUT** statement being used for file I/O (i.e. *#filenum* is specified) an error
 will be displayed.
 
 The **FSEEK** *#filenum*,*filepos* statement will position the file pointer for the next **INPUT** statement.
 
-The **CLOSE** *#filenum* statment will close the file.
+The **CLOSE** *#filenum* statement will close the file.
 
 ```
 > 10 OPEN "FILE.TXT" FOR OUTPUT AS #1

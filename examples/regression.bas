@@ -128,7 +128,7 @@
 1390 IF ANS$ = "T" THEN PRINT "1390: Entered " ; : PRINT "T" ELSE PRINT "1390: Did " ; : PRINT "not enter T" 
 1400 IF ANS$ = "T" THEN PRINT "1400: Entered T" ELSE PRINT "1400: Did " ; : PRINT "not enter T" 
 1410 IF ANS$ = "T" THEN PRINT "1410: Entered " ; : PRINT "T" ELSE PRINT "1410: Did not enter T" 
-1420 PRINT "Compount Stmt w/conditionals ";:IF ANS$ = "T" THEN PRINT "1420: Entered " ; : PRINT "T" ELSE PRINT "1420: Did " ; : PRINT "not enter T" 
+1420 PRINT "Compound Stmt w/conditionals ";:IF ANS$ = "T" THEN PRINT "1420: Entered " ; : PRINT "T" ELSE PRINT "1420: Did " ; : PRINT "not enter T" 
 1610 PRINT "*** Finished ***"
 1620 STOP
 1630 REM A SUBROUTINE TEST

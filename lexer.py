@@ -146,7 +146,7 @@ class Lexer:
                 else:
                     token.category = Token.NAME
 
-                # Remark Statments - process rest of statement without checks
+                # Remark Statements - process rest of statement without checks
                 if token.lexeme == "REM":
                     while c!= '':
                         token.lexeme += c  # Append the current char to the lexeme
