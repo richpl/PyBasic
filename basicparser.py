@@ -127,16 +127,16 @@ class BASICParser:
         self.__tokenindex = 0
         linetokenindex = 0
         for token in tokenlist:
-            # If statements will always be the last statment processed on a line so
+            # If statements will always be the last statement processed on a line so
             # any colons found after an IF are part of the condition execution statements
             # and will be processed in the recursive call to parse
             if token.category == token.IF:
                 # process IF statement to move __tokenidex to the code block
-                # of the THEN or ELSE and then call PARSE recursivly to process that code block
+                # of the THEN or ELSE and then call PARSE recursively to process that code block
                 # this will terminate the token loop by RETURNing to the calling module
                 #
                 # **Warning** if an IF stmt is used in the THEN code block or multiple IF statement are used
-                # in a THEN or ELSE block the block grouping is ambiguious and logical processing may not
+                # in a THEN or ELSE block the block grouping is ambiguous and logical processing may not
                 # function as expected. There is no ambiguity when single IF statements are placed within ELSE blocks
                 linetokenindex += self.__tokenindex
                 self.__tokenindex = 0
@@ -451,7 +451,7 @@ class BASICParser:
         self.__advance()
 
         if self.__token.category == Token.LEFTPAREN:
-            # We are assiging to an array
+            # We are assigning to an array
             self.__arrayassignmentstmt(left)
 
         else:
@@ -604,7 +604,7 @@ class BASICParser:
         else:
             raise SyntaxError('Invalid Open access mode in line ' + str(self.__line_number))
 
-        self.__advance() # Advance past acess type
+        self.__advance() # Advance past access type
 
         if self.__token.lexeme != "AS":
             raise SyntaxError('Expecting AS in line ' + str(self.__line_number))

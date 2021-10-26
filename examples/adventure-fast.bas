@@ -850,7 +850,7 @@
 8110 rem normal description
 8120 z59 = 200+l1:gosub 7620
 8130 return
-8180 rem always give long descriptio nfor forest and maze
+8180 rem always give long description for forest and maze
 8190 if l1 < 5 or (l1 > 88 and l1 < 98) or l1 = 99 then 8220
 8200 if v(l1)=1 then 8201 else 8220
 8201 gosub 6780
