@@ -8,18 +8,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
-      - run: pip install --upgrade pip wheel
-      - run: pip install bandit black codespell flake8 flake8-2020 flake8-bugbear
-                         flake8-comprehensions isort mypy pytest pyupgrade safety
-      - run: bandit --recursive  --skip B307,B311 .  # random library and eval()
-      - run: black --check . || true
+      - run: pip install --upgrade pip
+      - run: pip install bandit codespell flake8 mypy pytest
+      - run: bandit --recursive --skip B307,B311 .  # random library and eval()
       - run: codespell --ignore-words-list="ans,fro,hel"
-      - run: flake8 --ignore=B001,E111,E114,E116,E117,E127,E128,E221,E225,E226,E231,E261,E265,E302,E303,E305,E711,E722,R503,R504,W292,W503,W504
+      - run: flake8 --ignore=E111,E114,E116,E117,E127,E128,E221,E225,E226,E231,E261,E265,E302,E303,E305,E711,E722,W292,W503,W504
                     --count --max-complexity=88 --max-line-length=136 --show-source --statistics .
-      - run: isort --check-only --profile black . || true
-      - run: pip install -r requirements.txt || pip install --editable . || true  # Not needed yet...
       - run: mkdir --parents --verbose .mypy_cache
       - run: mypy --ignore-missing-imports --install-types --non-interactive .
       - run: pytest --doctest-modules .
-      - run: shopt -s globstar && pyupgrade --py36-plus **/*.py || true
-      - run: safety check
