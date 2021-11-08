@@ -22,11 +22,11 @@ return address need to be added to the return stack.
 
 >>> flowsignal = FlowSignal(ftype=FlowSignal.RETURN)
 >>> print(flowsignal.ftarget)
--1
+None
 >>> flowsignal = FlowSignal(ftarget=100, ftype=FlowSignal.SIMPLE_JUMP)
->>> print(flowsignal.ftarget)
+>>> flowsignal.ftarget
 100
->>> print(flowsignal.ftype)
+>>> flowsignal.ftype
 0
 """
 
