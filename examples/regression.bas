@@ -58,6 +58,8 @@
 580 FSEEK #2,10
 590 INPUT #2,A$
 600 PRINT A$
+610 OPEN "NOFILE.X7Z" FOR INPUT AS #2 ELSE 620
+615 PRINT "***This Message should NOT be Displayed***"
 620 N = 0
 630 I = 7
 640 PRINT "This loop should count to 5 in increments of 1 twice:"
