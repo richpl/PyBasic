@@ -121,6 +121,7 @@ class BASICParser:
         how to branch if necessary, None otherwise
 
         """
+
         # Remember the line number to aid error reporting
         self.__line_number = line_number
         self.__tokenlist = []
@@ -170,8 +171,9 @@ class BASICParser:
 
                 linetokenindex += 1
                 self.__tokenlist = []
-            elif token.category == token.ELSE:
-                # if we find an ELSE we must be in a recursive call and be processing a THEN block
+            elif token.category == token.ELSE and self.__tokenlist[0].category != token.OPEN:
+                # if we find an ELSE and we are not processing an OPEN statement, we must
+                # be in a recursive call and be processing a THEN block
                 # since we're processing the THEN block we are done if we hit an ELSE
                 break
             else:
