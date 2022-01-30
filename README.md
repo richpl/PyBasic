@@ -234,7 +234,9 @@ Note that the index of each dimension always starts at *zero*, but for
 compatibility with some basic dialects the bounds of each dimension will be
 expanded by one to enable element access including the len. So in the above example, 
 valid index values for array *A* will be *0, 1*, *2* or *3*
-for each dimension. Arrays may have a maximum of three dimensions.
+for each dimension. Arrays may have a maximum of three dimensions. Numeric arrays will
+be initialised with each element set to zero, while string arrays will be initialised
+with each element set to the empty string "".
 
 As for simple variables, a string array has its name suffixed by a '$' character, while a numeric array does not carry
 a suffix. An attempt to assign a string value to a numeric array or vice versa will generate an error.
