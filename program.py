@@ -244,17 +244,18 @@ class Program:
         numbered program statement
 
         """
-        try:
-            line_number = int(tokenlist[0].lexeme)
-            if tokenlist[1].lexeme == "DATA":
-                self.__data.addData(line_number,tokenlist[1:])
-                self.__program[line_number] = [tokenlist[1],]
-            else:
-                self.__program[line_number] = tokenlist[1:]
+        if len(tokenlist) > 0:
+            try:
+                line_number = int(tokenlist[0].lexeme)
+                if tokenlist[1].lexeme == "DATA":
+                    self.__data.addData(line_number,tokenlist[1:])
+                    self.__program[line_number] = [tokenlist[1],]
+                else:
+                    self.__program[line_number] = tokenlist[1:]
 
-        except TypeError as err:
-            raise TypeError("Invalid line number: " +
-                            str(err))
+            except TypeError as err:
+                raise TypeError("Invalid line number: " +
+                                str(err))
 
     def line_numbers(self):
         """Returns a list of all the
