@@ -28,16 +28,18 @@ to three dimensions of fixed size.
 """
 class BASICArray:
 
-    def __init__(self, dimensions):
+    def __init__(self, dimensions, elem_type):
         """Initialises the object with the specified
         number of dimensions. Maximum number of
         dimensions is three
 
         :param dimensions: List of array dimensions and their
         corresponding sizes
+        :param elem_type: Indicates whether the elements are strings ('str')
+        or numbers ('num')
 
         """
-        self.dims = min(3,len(dimensions))
+        self.dims = min(3, len(dimensions))
 
         if self.dims == 0:
             raise SyntaxError("Zero dimensional array specified")
@@ -55,19 +57,36 @@ class BASICArray:
         # MSBASIC: Overdim by one, as some dialects are 1 based and expect
         #          to use the last item at index = size
         if self.dims == 1:
-            self.data = [0 for x in range(dimensions[0] + 1)]
+            if elem_type == 'num':
+                self.data = [0 for x in range(dimensions[0] + 1)]
+            else:
+                self.data = ['' for x in range(dimensions[0] + 1)]
         elif self.dims == 2:
-            self.data = [
-                [0 for x in range(dimensions[1] + 1)] for x in range(dimensions[0] + 1)
-            ]
-        else:
-            self.data = [
-                [
-                    [0 for x in range(dimensions[2] + 1)]
-                    for x in range(dimensions[1] + 1)
+            if elem_type == 'num':
+                self.data = [
+                     [0 for x in range(dimensions[1] + 1)] for x in range(dimensions[0] + 1)
                 ]
-                for x in range(dimensions[0] + 1)
-            ]
+            else:
+                self.data = [
+                    ['' for x in range(dimensions[1] + 1)] for x in range(dimensions[0] + 1)
+                ]
+        else:
+            if elem_type == 'num':
+                self.data = [
+                    [
+                        [0 for x in range(dimensions[2] + 1)]
+                        for x in range(dimensions[1] + 1)
+                    ]
+                    for x in range(dimensions[0] + 1)
+                ]
+            else:
+                self.data = [
+                    [
+                        ['' for x in range(dimensions[2] + 1)]
+                        for x in range(dimensions[1] + 1)
+                    ]
+                    for x in range(dimensions[0] + 1)
+                ]
 
     def pretty_print(self):
         print(str(self.data))
@@ -487,7 +506,7 @@ class BASICParser:
             # Extract the array name, append a suffix so
             # that we can distinguish from simple variables
             # in the symbol table
-            name = self.__token.lexeme + "_array"
+            name = self.__token.lexeme + '_array'
             self.__advance()  # Advance past array name
 
             self.__consume(Token.LEFTPAREN)
@@ -507,12 +526,17 @@ class BASICParser:
 
             if len(dimensions) > 3:
                 raise SyntaxError(
-                    "Maximum number of array dimensions is three "
-                    + "in line "
+                    'Maximum number of array dimensions is three '
+                    + 'in line '
                     + str(self.__line_number)
                 )
 
-            self.__symbol_table[name] = BASICArray(dimensions)
+            # Ensure array is initialised with correct values
+            # depending upon type
+            if name.endswith('$_array'):
+                self.__symbol_table[name] = BASICArray(dimensions, 'str')
+            else:
+                self.__symbol_table[name] = BASICArray(dimensions, 'num')
 
             if self.__tokenindex == len(self.__tokenlist):
                 # We have parsed the last token here...
