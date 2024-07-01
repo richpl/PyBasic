@@ -220,7 +220,7 @@ are all invalid.
 
 Numeric variables have no suffix, whereas string variables are always suffixed by '$'. Note that 'I' and 'I$' are
 considered to be separate variables. Note that string literals must always be enclosed within double quotes (not single quotes).
-Using no quotes will result in a syntax error.
+Using no quotes will result in a syntax error. In addition, for floating point numbers less than one (e.g. 0.67), the decimal point must always be prefixed by a zero (e.g. .67 will be flagged as a syntax error).
 
 Array variables are defined using the **DIM** statement, which explicitly lists how
 many dimensions the array has, and the sizes of those dimensions:
