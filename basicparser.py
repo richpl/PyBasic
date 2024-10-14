@@ -1107,11 +1107,12 @@ class BASICParser:
                 return FlowSignal(ftype=FlowSignal.EXECUTE)
         else:
             self.__expr()
+            target = self.__operand_stack.pop()
 
             # Jump if the expression evaluated to True
             if saveval:
                 # Set up and return the flow signal
-                return FlowSignal(ftarget=self.__operand_stack.pop())
+                return FlowSignal(ftarget=target)
 
         # advance to ELSE
         while self.__tokenindex < len(self.__tokenlist) and self.__token.category != Token.ELSE:
