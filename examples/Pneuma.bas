@@ -1,8 +1,11 @@
 10 REM Pneuma - A space adventure 
 20 REM ========== backstory and instructions ========== 
-30 PRINT "***** Pneuma - A space adventure *****" : PRINT 
+30 PRINT "********************************" : PRINT
+35 PRINT "   Pneuma - A space adventure" : PRINT
+37 PRINT "********************************": PRINT 
 40 PRINT "Movement: [go] a[ft], f[orward], p[ort], s[tarboard], u[p] or d[own]" 
-45 PRINT "Actions: get, take, drop, examine, look, i[nventory], q[uit]" 
+45 PRINT "Actions: get, take, drop, examine, look, i[nventory], q[uit]"
+46 PRINT "To repeat these instructions: help" 
 50 PRINT 
 60 PRINT "You wake up in your bunk, in the sleeping quarters of the starship Pneuma. You can't" 
 65 PRINT "remember much. You went to bed feeling sick and after a feverish few hours tossing and" 
@@ -33,16 +36,16 @@
 272 FMC = 17 : LO$ ( FMC ) = "Forward Main Corridor" 
 275 REM encoded room exits, two digits per direction f, a, p, s, u, d 
 280 DIM EX$ ( RC ) 
-281 EX$ ( GAL ) = "020015000008" 
-282 EX$ ( REC ) = "000116000000" 
-283 EX$ ( ARM ) = "000017000000" 
+281 EX$ ( GAL ) = "020000150008" 
+282 EX$ ( REC ) = "000100160000" 
+283 EX$ ( ARM ) = "000000170000" 
 284 EX$ ( BDG ) = "001700000000"
 285 EX$ ( SLP ) = "000015000000"
 286 EX$ ( MED ) = "070016000000"
 287 EX$ ( GYM ) = "000617000013"
 288 EX$ ( LAC ) = "100000090100"
 289 EX$ ( ENG ) = "000008000000"
-290 EX$ ( STO ) = "120800000000"
+290 EX$ ( STO ) = "120800110000"
 291 EX$ ( MEN ) = "000010000000"
 292 EX$ ( LAB ) = "001000130000"
 293 EX$ ( LFC ) = "140012000700"
@@ -50,11 +53,11 @@
 295 EX$ ( AMC ) = "160001050000"
 296 EX$ ( MMC ) = "171502060000"
 297 EX$ ( FMC ) = "041603070000"
-300 OC = 4 : REM object count 
+300 OC = 3 : REM object count 
 310 DIM OB$ ( OC ) 
-320 PULSE = 0 : OB$ ( PULSE ) = "Pulse rifle" 
-330 SUIT = 1 : OB$ ( SUIT ) = "Space suit" 
-340 FOOD = 2 : OB$ ( FOOD ) = "Rotting food" 
+320 PULSE = 0 : OB$ ( PULSE ) = "pulse rifle" 
+330 SUIT = 1 : OB$ ( SUIT ) = "space suit" 
+340 FOOD = 2 : OB$ ( FOOD ) = "rotting food" 
 400 REM object locations 
 410 REM location 0 = player's inventory 
 420 DIM OL ( OC ) 
@@ -67,10 +70,8 @@
 700 REM ========== main loop ==========
 701 REM show room details 
 703 PRINT "You are in the " ; LO$ ( PL ) : PRINT 
-705 GOSUB 4010
-706 PRINT "Objects visible:" 
-707 FOR I = 0 TO OC - 1 : IF OL ( I ) = PL THEN PRINT OB$ ( I ) : NEXT I 
-708 PRINT 
+705 GOSUB 4010 : REM print room description
+707 GOSUB 4070 : REM print objects
 710 INPUT "What now? " ; I$ 
 715 PRINT 
 716 MOVE = 1 
@@ -79,6 +80,7 @@
 740 IF LEFT$ ( LOWER$ ( I$ ) , 5 ) = "drop " THEN MOVE = 0 : GOSUB 2000 
 750 IF LEFT$ ( LOWER$ ( I$ ) , 8 ) = "examine " THEN MOVE = 0 : GOSUB 2300 
 760 IF LEFT$ ( LOWER$ ( I$ ) , 4 ) = "look" THEN MOVE = 0 : GOSUB 4010 
+765 IF LEFT$ ( LOWER$ ( I$ ) , 4 ) = "help" THEN MOVE = 0 : GOSUB 4130
 770 IF LOWER$ ( I$ ) = "i" OR LOWER$ ( I$ ) = "inventory" THEN MOVE = 0 : GOSUB 1000 
 780 IF LEFT$ ( LOWER$ ( I$ ) , 1 ) = "q" THEN GOSUB 2600 
 785 IF LEFT$ ( LOWER$ ( I$ ) , 3 ) = "go " THEN GOSUB 1100 
@@ -88,7 +90,7 @@
 820 IF LOWER$ ( I$ ) = "s" OR LOWER$ ( I$ ) = "starboard" THEN GOSUB 1200 
 830 IF LOWER$ ( I$ ) = "u" OR LOWER$ ( I$ ) = "up" THEN GOSUB 1200 
 840 IF LOWER$ ( I$ ) = "d" OR LOWER$ ( I$ ) = "down" THEN GOSUB 1200 
-895 IF MOVE = 1 THEN GOTO 700 ELSE GOTO 708 
+895 IF MOVE = 1 THEN GOTO 700 ELSE PRINT : GOTO 710 
 900 STOP 
 995 REM ========== actions ========== 
 1000 REM list the player's inventory 
@@ -110,6 +112,7 @@
 1320 IF D$ = "a" THEN NPL = VAL ( MID$ ( EX$ ( PL ) , 3 , 2 ) )
 1330 IF D$ = "p" THEN NPL = VAL ( MID$ ( EX$ ( PL ) , 5 , 2 ) )
 1340 IF D$ = "s" THEN NPL = VAL ( MID$ ( EX$ ( PL ) , 7 , 2 ) )
+1345 IF D$ = "u" THEN NPL = VAL ( MID$ ( EX$ ( PL ) , 9 , 2 ) )
 1350 IF D$ = "d" THEN NPL = VAL ( MID$ ( EX$ ( PL ) , 11 , 2 ) )
 1355 IF NPL = 0 THEN PRINT "You can't go that way." : PRINT ELSE PL = NPL
 1360 RETURN 
@@ -143,7 +146,7 @@
 3160 RD$ ( ARM, 4 ) = "warped and bent. This cupboard appears to be empty. The only exit is a starboard door."
 3170 RD$ ( ARM, 5 ) = "" 
 3180 RD$ ( BDG, 1 ) = "The bridge is the heart of the ship. A vast array of glowing screens and switches fill"
-3190 RD$ ( BDG, 2 ) = "every surface. The screens are complex graphics providing detailed information about"
+3190 RD$ ( BDG, 2 ) = "every surface. On the screens are complex graphics providing detailed information about"
 3200 RD$ ( BDG, 3 ) = "the status of every system on the ship. Many of them are showing red warning symbols."
 3210 RD$ ( BDG, 4 ) = "An aft exit leads back into the main corridor."
 3220 RD$ ( BDG, 5 ) = ""
@@ -175,12 +178,12 @@
 3480 RD$ ( STO, 1 ) = "The storeroom is full of crates, most neatly stacked, but with some scattered across the"
 3490 RD$ ( STO, 2 ) = "floor, their contents spilling out. Along the port wall is a door marked 'Test specimens'."
 3500 RD$ ( STO, 3 ) = "From behind the door, strange animal noises are audible ... snuffling sounds and the"
-3510 RD$ ( STO, 4 ) = "occasional primate shriek. A dead man wearing a scuffed and torn lab coat is lying facedown"
+3510 RD$ ( STO, 4 ) = "occasional primate shriek. A dead man wearing a scuffed and torn lab coat is lying face down"
 3520 RD$ ( STO, 5 ) = "in front of the specimen door. Two other exists lead forward and aft."
 3530 RD$ ( MEN, 1 ) = "The room is a hellhole. Cages stand open, while various animals roam about: chimpanzees,"
 3540 RD$ ( MEN, 2 ) = "dogs, and rats. Some of the rats are dead, having been savaged and eviscerated. The floor"
 3550 RD$ ( MEN, 3 ) = "and walls are smeared with animal faeces, and the smell is almost overpowering. A single"
-3560 RD$ ( MEN, 4 ) = "port door leads back into the storeroom."
+3555 RD$ ( MEN, 4 ) = "port door leads back into the storeroom."
 3560 RD$ ( MEN, 5 ) = ""  
 3570 RD$ ( LAB, 1 ) = "The laboratory is full of scientific equipment, chemical glassware, electronic analysers,"
 3580 RD$ ( LAB, 2 ) = "fume cupboards, and two couches. The place looks disorded, like the rest of the ship, the"
@@ -217,5 +220,15 @@
 4020 FOR LINE = 1 TO 5
 4030 IF RD$(PL, LINE) <> "" THEN PRINT RD$(PL, LINE)
 4040 NEXT LINE
-4050 PRINT
+4050 REM PRINT
 4060 RETURN
+4070 REM print objects
+4080 FOR I = 0 TO OC-1
+4090 IF OL ( I ) = PL THEN PRINT : PRINT "You can see: ";OB$ ( I )
+4100 NEXT I 
+4110 PRINT
+4120 RETURN 
+4130 REM print help
+4140 PRINT "For movement, try [go] a[ft], f[orward], p[ort], s[tarboard], u[p] or d[own]" 
+4150 PRINT "For actions, try get, take, drop, examine, look, i[nventory], q[uit]" 
+4160 RETURN
