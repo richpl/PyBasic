@@ -901,7 +901,8 @@ calculate the corresponding factorial *N!*.
 
 * *PyBStartrek.bas* - A port of the 1971 Star Trek text based strategy game.
 
-* *adventure-fast.bas* - A port of a 1979 text based Microsoft Adventure game.
+* *adventure.bas* - A port of the original 1976 text based adventure game, originally developed for the PDP-10 by Will Crowther,
+and expanded by Don Woods.
 
 * *bagels.bas* - A guessing game, which made its first appearance in the book 'BASIC Computer Games' in 1978.
 
