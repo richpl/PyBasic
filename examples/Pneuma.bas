@@ -2,10 +2,8 @@
 20 REM ========== backstory and instructions ========== 
 30 PRINT "********************************" : PRINT
 35 PRINT "   Pneuma - A space adventure" : PRINT
-37 PRINT "********************************": PRINT 
-40 PRINT "Movement: [go] a[ft], f[orward], p[ort], s[tarboard], u[p] or d[own]" 
-45 PRINT "Actions: get, take, drop, examine, look, i[nventory], q[uit]"
-46 PRINT "To repeat these instructions: help" 
+40 PRINT "********************************": PRINT 
+45 PRINT "To get instructions, type 'help'" 
 50 PRINT 
 60 PRINT "You wake up in your bunk, in the sleeping quarters of the starship Pneuma. You can't" 
 65 PRINT "remember much. You went to bed feeling sick and after a feverish few hours tossing and" 
@@ -66,12 +64,11 @@
 450 OL ( FOOD ) = GAL 
 500 REM setup room descriptions 
 510 GOSUB 3000
-650 PL = 5 : REM player location 
+650 PL = 5 : REM initial player location 
 700 REM ========== main loop ==========
 701 REM show room details 
 703 PRINT "You are in the " ; LO$ ( PL ) : PRINT 
 705 GOSUB 4010 : REM print room description
-707 GOSUB 4070 : REM print objects
 710 INPUT "What now? " ; I$ 
 715 PRINT 
 716 MOVE = 1 
@@ -90,7 +87,7 @@
 820 IF LOWER$ ( I$ ) = "s" OR LOWER$ ( I$ ) = "starboard" THEN GOSUB 1200 
 830 IF LOWER$ ( I$ ) = "u" OR LOWER$ ( I$ ) = "up" THEN GOSUB 1200 
 840 IF LOWER$ ( I$ ) = "d" OR LOWER$ ( I$ ) = "down" THEN GOSUB 1200 
-895 IF MOVE = 1 THEN GOTO 700 ELSE PRINT : GOTO 710 
+895 IF MOVE = 1 THEN GOTO 700 ELSE GOTO 710 
 900 STOP 
 995 REM ========== actions ========== 
 1000 REM list the player's inventory 
@@ -117,8 +114,34 @@
 1355 IF NPL = 0 THEN PRINT "You can't go that way." : PRINT ELSE PL = NPL
 1360 RETURN 
 1400 REM get command 
+1405 F=-1: R$=""
+1410 R$ = MID$(I$, 5) : REM R$ is the requested object
+1420 REM get the object ID
+1430 FOR I= 0 TO OC-1
+1440 IF OB$(I) = R$ THEN F=I : REM object exists
+1450 NEXT I
+1460 REM can't find the item?
+1470 IF F=-1 THEN PRINT "Can't see that item here" : PRINT : GOTO 1540
+1480 IF OL(F) <> PL THEN PRINT "That item doesn't appear to be around here" : PRINT : GOTO 1540
+1490 IF OL(F)=0 THEN PRINT "You already have that item" : PRINT: GOTO 1540 
+1520 OL(F)=0 : REM add the item to the inventory
+1530 PRINT "You've picked up ";OB$(F) : PRINT
+1540 RETURN
 1700 REM take command 
+1710 F=-1: R$=""
+1720 R$ = MID$(I$, 6) : REM R$ is the requested object
+1730 GOTO 1420 : REM use the same logic as the get command
 2000 REM drop command 
+2010 F=-1: R$=""
+2020 R$ = MID$(I$, 6) : REM R$ is the requested object
+2030 FOR I= 0 TO OC-1
+2040 IF OB$(I) = R$ THEN F=I : REM object exists
+2050 NEXT I
+2060 REM can't find it?
+2070 IF F=-1 THEN PRINT "You've never seen that" : PRINT: GOTO 1540
+2080 IF OL(F) <> 0 THEN PRINT "You aren't carrying that" : PRINT: GOTO 2110
+2090 OL(F) = PL : PRINT "You've dropped ";OB$(F): PRINT: REM add the item to the current room
+2110 RETURN
 2300 REM examine command 
 2600 REM quit command 
 2610 PRINT "Farewell spacefarer ..."
@@ -220,7 +243,7 @@
 4020 FOR LINE = 1 TO 5
 4030 IF RD$(PL, LINE) <> "" THEN PRINT RD$(PL, LINE)
 4040 NEXT LINE
-4050 REM PRINT
+4055 GOSUB 4070
 4060 RETURN
 4070 REM print objects
 4080 FOR I = 0 TO OC-1
