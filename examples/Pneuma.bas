@@ -62,8 +62,16 @@
 430 OL ( PULSE ) = ARM 
 440 OL ( SUIT ) = POD 
 450 OL ( FOOD ) = GAL 
+455 IC = 1 : REM interactive object count
+457 DIM IO$ (IC)
+459 MEDLOG = 0 : IO$ ( MEDLOG ) = "medical log"
+475 REM interative object locations
+477 DIM IL ( IC ) 
+479 IL ( MEDLOG) = MED
 500 REM setup room descriptions 
 510 GOSUB 3000
+520 REM setup up interative descriptions
+530 GOSUB 5000
 650 PL = 5 : REM initial player location 
 700 REM ========== main loop ==========
 701 REM show room details 
@@ -115,7 +123,7 @@
 1360 RETURN 
 1400 REM get command 
 1405 F=-1: R$=""
-1410 R$ = MID$(I$, 5) : REM R$ is the requested object
+1410 R$ = MID$(LOWER$(I$), 5) : REM R$ is the requested object
 1420 REM get the object ID
 1430 FOR I= 0 TO OC-1
 1440 IF OB$(I) = R$ THEN F=I : REM object exists
@@ -129,11 +137,11 @@
 1540 RETURN
 1700 REM take command 
 1710 F=-1: R$=""
-1720 R$ = MID$(I$, 6) : REM R$ is the requested object
+1720 R$ = MID$(LOWER$(I$), 6) : REM R$ is the requested object
 1730 GOTO 1420 : REM use the same logic as the get command
 2000 REM drop command 
 2010 F=-1: R$=""
-2020 R$ = MID$(I$, 6) : REM R$ is the requested object
+2020 R$ = MID$(LOWER$(I$), 6) : REM R$ is the requested object
 2030 FOR I= 0 TO OC-1
 2040 IF OB$(I) = R$ THEN F=I : REM object exists
 2050 NEXT I
@@ -143,6 +151,16 @@
 2090 OL(F) = PL : PRINT "You've dropped ";OB$(F): PRINT: REM add the item to the current room
 2110 RETURN
 2300 REM examine command 
+2310 F=-1 : R$=""
+2320 R$ = MID$(LOWER$(I$), 9) : REM R$ is the object to examine
+2330 FOR I = 0 TO IC-1
+2340 IF IO$(I) = R$ THEN F=I : REM object exists
+2350 NEXT I
+2360 REM can't find it?
+2370 IF F=-1 THEN PRINT "You can't examine that" : PRINT : GOTO 2400
+2380 IF IL(F) <> PL THEN PRINT "There isn't one of these here" : PRINT : GOTO 2400
+2390 GOSUB 6000 : REM print result of examination
+2400 RETURN 
 2600 REM quit command 
 2610 PRINT "Farewell spacefarer ..."
 2620 STOP
@@ -255,3 +273,32 @@
 4140 PRINT "For movement, try [go] a[ft], f[orward], p[ort], s[tarboard], u[p] or d[own]" 
 4150 PRINT "For actions, try get, take, drop, examine, look, i[nventory], q[uit]" 
 4160 RETURN
+5000 REM interactive item descriptions
+5010 DIM ID$(IC, 20)
+5020 ID$( MEDLOG, 1 ) = "The last few entries of the medical log are still visible on the screen:"
+5030 ID$( MEDLOG, 2 ) = " "
+5040 ID$( MEDLOG, 3 ) = "'2142-6-13: Three days since chimpanzee Nova was innoculated with agent #53."
+5050 ID$( MEDLOG, 4 ) = " However, subject Nova showing no signs of adaptation to planetary destination"
+5060 ID$( MEDLOG, 5 ) = " atmosphere. In fact, she appears listless, though punctuated with periods of"
+5070 ID$( MEDLOG, 6 ) = " extreme agression."
+5080 ID$( MEDLOG, 7 ) = " "
+5090 ID$( MEDLOG, 8 ) = " 2142-6-14: This morning, Dr Pearson was bitten by Nova. Very quickly he exhibited"
+5100 ID$( MEDLOG, 9 ) = " signs of a high fever and is now resting in his quarters."
+5110 ID$( MEDLOG, 10) = " "
+5120 ID$( MEDLOG, 11) = " 2142-6-15: After a brief period of catatonia, Pearson got up on his own, returned"
+5130 ID$( MEDLOG, 12) = " to the medical bay and began to compulsively prepare more agent #53 samples. He"
+5140 ID$( MEDLOG, 13) = " is otherwise uncommunicative."
+5150 ID$( MEDLOG, 14) = " "
+5160 ID$( MEDLOG, 15) = " 2142-6-17: Pearson's compulsive behaviour continues unabated. We have a hypothesis"
+5170 ID$( MEDLOG, 16) = " for what the virus, which we have now designated HO-1, does to the brain. However,"
+5180 ID$( MEDLOG, 17) = " we are struggling to isolate Pearson and may have to seal the medical bay."
+5190 ID$( MEDLOG, 18) = " "
+5200 ID$ (MEDLOG, 19) = " 2142-6-17: Hollow (HO-1) confirmed as airborne, and other cases appearing around the ship."
+5210 ID$ (MEDLOG, 20) = " Shipwide lockdown declared but crew cohesion and discipline already breaking down.'"
+5220 RETURN
+6000 REM print interative object description
+6010 FOR LINE = 1 TO 20
+6020 IF ID$(F, LINE) <> "" THEN PRINT ID$(F, LINE)
+6030 NEXT LINE
+6035 PRINT
+6040 RETURN
