@@ -10,69 +10,14 @@
 70 PRINT "turning, feeling like you were burning up, you eventually fell asleep." : PRINT 
 75 PRINT "Now, your sheets and night clothes are damp with sweat, and you have a raging thirst." 
 80 PRINT "You have a sore throat and the mother of all headaches, like your brain has been boiling" 
-85 PRINT "in your skull." : PRINT 
-95 REM ========== set up environment =========== 
-100 RC = 18 : REM room count 
-110 DIM LO$ ( RC ) 
-120 INV = 0 : LO$ ( INV ) = "Inventory" 
-130 GAL = 1 : LO$ ( GAL ) = "Galley" 
-140 REC = 2 : LO$ ( REC ) = "Recreation/Dining Room" 
-150 ARM = 3 : LO$ ( ARM ) = "Armoury" 
-160 BDG = 4 : LO$ ( BDG ) = "Bridge" 
-170 SLP = 5 : LO$ ( SLP ) = "Sleeping Quarters" 
-180 MED = 6 : LO$ ( MED ) = "Medical Centre" 
-190 GYM = 7 : LO$ ( GYM ) = "Gymnasium" 
-200 LAC = 8 : LO$ ( LAC ) = "Lower Aft Corridor" 
-210 ENG = 9 : LO$ ( ENG ) = "Engine Room" 
-220 STO = 10 : LO$ ( STO ) = "Storeroom" 
-230 MEN = 11 : LO$ ( MEN ) = "Menagerie" 
-240 LAB = 12 : LO$ ( LAB ) = "Laboratory" 
-250 LFC = 13 : LO$ ( LFC ) = "Lower Forward Corridor" 
-260 POD = 14 : LO$ ( POD ) = "Pod Bay" 
-270 AMC = 15 : LO$ ( AMC ) = "Aft Main Corridor" 
-271 MMC = 16 : LO$ ( MMC ) = "Mid Main Corridor" 
-272 FMC = 17 : LO$ ( FMC ) = "Forward Main Corridor" 
-275 REM encoded room exits, two digits per direction f, a, p, s, u, d 
-280 DIM EX$ ( RC ) 
-281 EX$ ( GAL ) = "020000150008" 
-282 EX$ ( REC ) = "000100160000" 
-283 EX$ ( ARM ) = "000000170000" 
-284 EX$ ( BDG ) = "001700000000"
-285 EX$ ( SLP ) = "000015000000"
-286 EX$ ( MED ) = "070016000000"
-287 EX$ ( GYM ) = "000617000013"
-288 EX$ ( LAC ) = "100000090100"
-289 EX$ ( ENG ) = "000008000000"
-290 EX$ ( STO ) = "120800110000"
-291 EX$ ( MEN ) = "000010000000"
-292 EX$ ( LAB ) = "001000130000"
-293 EX$ ( LFC ) = "140012000700"
-294 EX$ ( POD ) = "001300000000"
-295 EX$ ( AMC ) = "160001050000"
-296 EX$ ( MMC ) = "171502060000"
-297 EX$ ( FMC ) = "041603070000"
-300 OC = 3 : REM object count 
-310 DIM OB$ ( OC ) 
-320 PULSE = 0 : OB$ ( PULSE ) = "pulse rifle" 
-330 SUIT = 1 : OB$ ( SUIT ) = "space suit" 
-340 FOOD = 2 : OB$ ( FOOD ) = "rotting food" 
-400 REM object locations 
-410 REM location 0 = player's inventory 
-420 DIM OL ( OC ) 
-430 OL ( PULSE ) = ARM 
-440 OL ( SUIT ) = POD 
-450 OL ( FOOD ) = GAL 
-455 IC = 1 : REM interactive object count
-457 DIM IO$ (IC)
-459 MEDLOG = 0 : IO$ ( MEDLOG ) = "medical log"
-475 REM interative object locations
-477 DIM IL ( IC ) 
-479 IL ( MEDLOG) = MED
+85 PRINT "in your skull. In fact, you're no longer sure exactly where you are ... you seem to be" 
+90 PRINT "suffering from some sort of amnesia ...": PRINT 
+95 REM set up environment
+100 GOSUB 2700
 500 REM setup room descriptions 
 510 GOSUB 3000
 520 REM setup up interative descriptions
 530 GOSUB 5000
-650 PL = 5 : REM initial player location 
 700 REM ========== main loop ==========
 701 REM show room details 
 703 PRINT "You are in the " ; LO$ ( PL ) : PRINT 
@@ -103,6 +48,7 @@
 1010 FOR I = 0 TO OC - 1 
 1020 IF OL ( I ) = 0 THEN PRINT OB$ ( I ) 
 1030 NEXT I 
+1035 PRINT
 1040 RETURN 
 1100 REM fully written out move (e.g. 'go aft') 
 1110 D$ = MID$ ( LOWER$(I$) , 4 , 1 ) 
@@ -164,7 +110,72 @@
 2600 REM quit command 
 2610 PRINT "Farewell spacefarer ..."
 2620 STOP
-3000 REM room descriptions
+2700 REM ========== set up environment =========== 
+2705 RC = 18 : REM room count 
+2710 DIM LO$ ( RC ) 
+2715 INV = 0 : LO$ ( INV ) = "Inventory" 
+2720 GAL = 1 : LO$ ( GAL ) = "Galley" 
+2725 REC = 2 : LO$ ( REC ) = "Recreation/Dining Room" 
+2730 ARM = 3 : LO$ ( ARM ) = "Armoury" 
+2735 BDG = 4 : LO$ ( BDG ) = "Bridge" 
+2740 SLP = 5 : LO$ ( SLP ) = "Sleeping Quarters" 
+2745 MED = 6 : LO$ ( MED ) = "Medical Centre" 
+2750 GYM = 7 : LO$ ( GYM ) = "Gymnasium" 
+2755 LAC = 8 : LO$ ( LAC ) = "Lower Aft Corridor" 
+2760 ENG = 9 : LO$ ( ENG ) = "Engine Room" 
+2765 STO = 10 : LO$ ( STO ) = "Storeroom" 
+2770 MEN = 11 : LO$ ( MEN ) = "Menagerie" 
+2775 LAB = 12 : LO$ ( LAB ) = "Laboratory" 
+2780 LFC = 13 : LO$ ( LFC ) = "Lower Forward Corridor" 
+2785 POD = 14 : LO$ ( POD ) = "Pod Bay" 
+2790 AMC = 15 : LO$ ( AMC ) = "Aft Main Corridor" 
+2795 MMC = 16 : LO$ ( MMC ) = "Mid Main Corridor" 
+2800 FMC = 17 : LO$ ( FMC ) = "Forward Main Corridor" 
+2805 REM encoded room exits, two digits per direction f, a, p, s, u, d 
+2810 DIM EX$ ( RC ) 
+2815 EX$ ( GAL ) = "020000150008" 
+2820 EX$ ( REC ) = "000100160000" 
+2825 EX$ ( ARM ) = "000000170000" 
+2830 EX$ ( BDG ) = "001700000000"
+2835 EX$ ( SLP ) = "000015000000"
+2840 EX$ ( MED ) = "070016000000"
+2845 EX$ ( GYM ) = "000617000013"
+2850 EX$ ( LAC ) = "100000090100"
+2855 EX$ ( ENG ) = "000008000000"
+2860 EX$ ( STO ) = "120800110000"
+2865 EX$ ( MEN ) = "000010000000"
+2870 EX$ ( LAB ) = "001000130000"
+2875 EX$ ( LFC ) = "140012000700"
+2880 EX$ ( POD ) = "001300000000"
+2890 EX$ ( AMC ) = "160001050000"
+2895 EX$ ( MMC ) = "171502060000"
+2900 EX$ ( FMC ) = "041603070000"
+2905 OC = 3 : REM object count 
+2910 DIM OB$ ( OC ) 
+2915 PULSE = 0 : OB$ ( PULSE ) = "pulse rifle" 
+2920 SUIT = 1 : OB$ ( SUIT ) = "space suit" 
+2925 FOOD = 2 : OB$ ( FOOD ) = "rotting food" 
+2930 REM object locations 
+2932 REM location 0 = player's inventory 
+2934 DIM OL ( OC ) 
+2936 OL ( PULSE ) = ARM 
+2938 OL ( SUIT ) = POD 
+2940 OL ( FOOD ) = GAL 
+2942 IC = 4 : REM interactive object count
+2944 DIM IO$ (IC)
+2946 MEDLOG = 0 : IO$ ( MEDLOG ) = "medical log"
+2948 PORTHOLE = 1 : IO$ (PORTHOLE) = "porthole"
+2950 CONSOLE = 2 : IO$(CONSOLE) = "console"
+2952 ENGINE = 3 :IO$(ENGINE)= "engine control"
+2960 REM interative object locations
+2962 DIM IL ( IC ) 
+2964 IL ( MEDLOG) = MED
+2966 IL (PORTHOLE) = POD
+2968 IL (CONSOLE) = BDG
+2970 IL (ENGINE) = ENG
+2980 PL = 5 : REM initial player location
+2990 RETURN
+3000 REM ========== room descriptions ==========
 3010 DIM RD$ ( RC, 5 ) 
 3020 RD$ ( INV, 1 ) = "" 
 3021 RD$ ( INV, 2 ) = ""
@@ -189,8 +200,8 @@
 3180 RD$ ( BDG, 1 ) = "The bridge is the heart of the ship. A vast array of glowing screens and switches fill"
 3190 RD$ ( BDG, 2 ) = "every surface. On the screens are complex graphics providing detailed information about"
 3200 RD$ ( BDG, 3 ) = "the status of every system on the ship. Many of them are showing red warning symbols."
-3210 RD$ ( BDG, 4 ) = "An aft exit leads back into the main corridor."
-3220 RD$ ( BDG, 5 ) = ""
+3210 RD$ ( BDG, 4 ) = "There is a console directly in front of you, a pilot gripping the throttle."
+3220 RD$ ( BDG, 5 ) = "An aft exit leads back into the main corridor."
 3230 RD$ ( SLP, 1 ) = "The sleeping quarters is filled with bunks, one up, one down. Several of the bunks"
 3240 RD$ ( SLP, 2 ) = "contain sleeping forms, some gently shoring. The room has a partition to separate"
 3250 RD$ ( SLP, 3 ) = "male and female bunks. Against the forward wall are two corresponding sets of heads."
@@ -212,8 +223,8 @@
 3410 RD$ ( LAC, 4 ) = ""
 3420 RD$ ( LAC, 5 ) = ""
 3430 RD$ ( ENG, 1 ) = "The engine room is characterised by a continual rumble, as though incredible energies are"
-3440 RD$ ( ENG, 2 ) = "barely being contained. There is a console in the far corner, festooned with controls and"
-3450 RD$ ( ENG, 3 ) = "engine readouts. A single exit leads out into the corridor."
+3440 RD$ ( ENG, 2 ) = "barely being contained. There is an engine control in the far corner, festooned with"
+3450 RD$ ( ENG, 3 ) = "switches and engine readouts. A single exit leads out into the corridor."
 3460 RD$ ( ENG, 4 ) = ""
 3470 RD$ ( ENG, 5 ) = ""
 3480 RD$ ( STO, 1 ) = "The storeroom is full of crates, most neatly stacked, but with some scattered across the"
@@ -239,7 +250,7 @@
 3670 RD$ ( POD, 1 ) = "You are in a large room, with a row of spacesuits hanging on the port wall. At the forward"
 3680 RD$ ( POD, 2 ) = "end of the room is a small, two seater vehicle, capable of operating in space outside the"
 3690 RD$ ( POD, 3 ) = "main ship for limited periods. In front of the small ship is the pod bay door, leading out"
-3700 RD$ ( POD, 4 ) = "into space. There is a single exit leading aft."
+3700 RD$ ( POD, 4 ) = "into space. There is a porthole on the far wall. There is a single exit leading aft."
 3710 RD$ ( POD, 5 ) = ""
 3720 RD$ ( AMC, 1 ) = "The main corridor stretches away from you towards the front of the ship. It is featureless"
 3730 RD$ ( AMC, 2 ) = "and utilitarian. The lighting is dim. You can see doors either side of you, to port and"
@@ -257,7 +268,7 @@
 3850 RD$ ( FMC, 4 ) = ""
 3860 RD$ ( FMC, 5 ) = ""
 4000 RETURN
-4010 REM print room description
+4010 REM ========== print room description ==========
 4020 FOR LINE = 1 TO 5
 4030 IF RD$(PL, LINE) <> "" THEN PRINT RD$(PL, LINE)
 4040 NEXT LINE
@@ -269,11 +280,12 @@
 4100 NEXT I 
 4110 PRINT
 4120 RETURN 
-4130 REM print help
-4140 PRINT "For movement, try [go] a[ft], f[orward], p[ort], s[tarboard], u[p] or d[own]" 
-4150 PRINT "For actions, try get, take, drop, examine, look, i[nventory], q[uit]" 
+4130 REM ========== print help ==========
+4140 PRINT "For movement, try [go] a[ft], f[orward], p[ort], s[tarboard], u[p] or d[own]." 
+4150 PRINT "For actions, try get, take, drop, examine, look, i[nventory], q[uit]." 
+4155 PRINT "To examine, pick up or drop items, refer to them exactly as they are printed."
 4160 RETURN
-5000 REM interactive item descriptions
+5000 REM ========== interactive item descriptions ==========
 5010 DIM ID$(IC, 20)
 5020 ID$( MEDLOG, 1 ) = "The last few entries of the medical log are still visible on the screen:"
 5030 ID$( MEDLOG, 2 ) = " "
@@ -295,8 +307,67 @@
 5190 ID$( MEDLOG, 18) = " "
 5200 ID$ (MEDLOG, 19) = " 2142-6-17: Hollow (HO-1) confirmed as airborne, and other cases appearing around the ship."
 5210 ID$ (MEDLOG, 20) = " Shipwide lockdown declared but crew cohesion and discipline already breaking down.'"
-5220 RETURN
-6000 REM print interative object description
+5220 ID$ (PORTHOLE, 1 ) = "Looking through the porthole, you seen a spacesuit clad figure floating outside."
+5230 ID$ (PORTHOLE, 2 ) = "Although he is tethered to an anchor point on the ship's hull, he is otherwise floating"
+5240 ID$ (PORTHOLE, 3 ) = "freely, his arms and legs splayed out to his sides."
+5250 ID$ (PORTHOLE, 4 ) = " "
+5260 ID$ (PORTHOLE, 5 ) = "Peering at the figure more closely, as he slowly rotates, a light from the ship"
+5270 ID$ (PORTHOLE, 6 ) = "briefly illuminates his face. He's clearly dead, his oxygen ran out some time ago."
+5280 ID$ (PORTHOLE, 7 ) = "His expression is frozen in a rictus of pain. He was screaming almost until the end ..."
+5290 ID$ (PORTHOLE, 8 ) = ""
+5300 ID$ (PORTHOLE, 9 ) = ""
+5310 ID$ (PORTHOLE, 10 ) = ""
+5320 ID$ (PORTHOLE, 11 ) = ""
+5330 ID$ (PORTHOLE, 12 ) = ""
+5340 ID$ (PORTHOLE, 13 ) = ""
+5342 ID$ (PORTHOLE, 14 ) = ""
+5344 ID$ (PORTHOLE, 15 ) = ""
+5346 ID$ (PORTHOLE, 16 ) = ""
+5348 ID$ (PORTHOLE, 17 ) = ""
+5350 ID$ (PORTHOLE, 18 ) = ""
+5352 ID$ (PORTHOLE, 19 ) = ""
+5354 ID$ (PORTHOLE, 20 ) = ""
+5356 ID$ (CONSOLE, 1 ) = "The console shows the state of the ship's engines. They are in overdrive. The pilot"
+5358 ID$ (CONSOLE, 2 ) = "appears to have the throttle jammed wide open with his right arm. The muscles in his"
+5360 ID$ (CONSOLE, 3 ) = "forearm are taught, there's no way he's going to release the throttle. He left hand"
+5362 ID$ (CONSOLE, 4 ) = "works its way around the console switches. After a few moments you realise that he is"
+5364 ID$ (CONSOLE, 5 ) = "executing the same sequence of switches over and over again."
+5366 ID$ (CONSOLE, 6 ) = " "
+5368 ID$ (CONSOLE, 7 ) = "You speak to the pilot but he is unresponsive. Mentally he is somewhere else. He is"
+5370 ID$ (CONSOLE, 8 ) = "mumbling to himself but you cannot make out the words, although he appears to be"
+5372 ID$ (CONSOLE, 9 ) = "reciting some sort of launch checklist."
+5374 ID$ (CONSOLE, 10 ) = " "
+5376 ID$ (CONSOLE, 11 ) = "One thing is certain, the ship is out of control, careering through space at maximum"
+5378 ID$ (CONSOLE, 12 ) = "speed. Rescue will be impossible unless you can find a way to shut down the engines."
+5380 ID$ (CONSOLE, 13 ) = ""
+5382 ID$ (CONSOLE, 14 ) = ""
+5384 ID$ (CONSOLE, 15 ) = ""
+5386 ID$ (CONSOLE, 16 ) = ""
+5388 ID$ (CONSOLE, 17 ) = ""
+5390 ID$ (CONSOLE, 18 ) = ""
+5392 ID$ (CONSOLE, 19 ) = ""
+5394 ID$ (CONSOLE, 20 ) = ""
+5296 ID$ (ENGINE, 1 ) = "The control panel is grubby, smeared with oil and grime. This is clearly"
+5298 ID$ (ENGINE, 2 ) = "the engineering heart of the ship. Most of the readouts mean nothing to you,"
+5300 ID$ (ENGINE, 3 ) = "whatever your duties were on this ship, you were clearly not a warp engineer."
+5302 ID$ (ENGINE, 4 ) = " "
+5304 ID$ (ENGINE, 5 ) = "Many of the lights on the front panel are flashing red. Not all is well with"
+5306 ID$ (ENGINE, 6 ) = "the Pneuma. Even to your untrained eye, it's obvious that the ship's engines appear to"
+5308 ID$ (ENGINE, 7 ) = "be on the point of burnout, having been run at full capacity for many hours."
+5310 ID$ (ENGINE, 8 ) = " "
+5312 ID$ (ENGINE, 9 ) = "To the top left of the panel, a screen reads:"
+5314 ID$ (ENGINE, 11 ) = " "
+5316 ID$ (ENGINE, 12 ) = "'WARNING: CORE BREACH IMMINENT'"
+5318 ID$ (ENGINE, 13 ) = " "
+5320 ID$ (ENGINE, 14 ) = "Just below the screen is a large red button, shielded by a cover that can be"
+5322 ID$ (ENGINE, 15 ) = "flipped aside."
+5324 ID$ (ENGINE, 16 ) = ""
+5326 ID$ (ENGINE, 17 ) = ""
+5328 ID$ (ENGINE, 18 ) = ""
+5330 ID$ (ENGINE, 19 ) = ""
+5332 ID$ (ENGINE, 20 ) = ""
+5990 RETURN
+6000 REM ========== print interative object description ==========
 6010 FOR LINE = 1 TO 20
 6020 IF ID$(F, LINE) <> "" THEN PRINT ID$(F, LINE)
 6030 NEXT LINE
