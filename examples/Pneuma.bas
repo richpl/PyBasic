@@ -264,14 +264,14 @@
 3840 DATA "to starboard, as well as a third door leading forward.", "", ""
 3860 REM assign to room descriptions
 3870 FOR ROOM = 0 to RC-1
-3880 FOR I = 1 TO 5
+3880 FOR I = 0 TO 4
 3885 READ DESC$ : RD$ (ROOM, I) = DESC$
 3886 REM PRINT DESC$
 3890 NEXT I
 3900 NEXT ROOM
 4000 RETURN
 4010 REM ========== print room description ==========
-4020 FOR LINE = 1 TO 5
+4020 FOR LINE = 0 TO 4
 4030 IF RD$(PL, LINE) <> "" THEN PRINT RD$(PL, LINE)
 4040 NEXT LINE
 4055 GOSUB 4070
@@ -337,13 +337,13 @@
 5520 DATA "Just below the screen is a large red button, shielded by a cover that can be"
 5530 DATA "flipped aside.", "", "", "", "", "", ""
 5940 FOR OBJECT = 0 TO IC-1
-5950 FOR I = 1 TO 20
+5950 FOR I = 0 TO 19
 5960 READ DESC$ : ID$ (OBJECT, I) = DESC$
 5970 NEXT I
 5980 NEXT OBJECT
 5990 RETURN
 6000 REM ========== print interative object description ==========
-6010 FOR LINE = 1 TO 20
+6010 FOR LINE = 0 TO 19
 6020 IF ID$(F, LINE) <> "" THEN PRINT ID$(F, LINE)
 6030 NEXT LINE
 6035 PRINT
