@@ -32,6 +32,7 @@
 760 IF LEFT$ ( LOWER$ ( I$ ) , 4 ) = "look" THEN MOVE = 0 : GOSUB 4010 
 765 IF LEFT$ ( LOWER$ ( I$ ) , 4 ) = "help" THEN MOVE = 0 : GOSUB 4130
 770 IF LOWER$ ( I$ ) = "i" OR LOWER$ ( I$ ) = "inventory" THEN MOVE = 0 : GOSUB 1000 
+775 IF LEFT$ ( LOWER$ ( I$ ) , 8 ) = "talk to " THEN MOVE = 0 : GOSUB 2630
 780 IF LEFT$ ( LOWER$ ( I$ ) , 1 ) = "q" THEN GOSUB 2600 
 785 IF LEFT$ ( LOWER$ ( I$ ) , 3 ) = "go " THEN GOSUB 1100 
 790 IF LOWER$ ( I$ ) = "f" OR LOWER$ ( I$ ) = "forward" THEN GOSUB 1200 
@@ -110,6 +111,9 @@
 2600 REM quit command 
 2610 PRINT "Farewell spacefarer ..."
 2620 STOP
+2630 REM talk to command
+2635 REM **** TBD ****
+2695 RETURN
 2700 REM ========== set up environment =========== 
 2705 RC = 18 : REM room count 
 2710 DIM LO$ ( RC ) 
@@ -173,15 +177,25 @@
 2966 IL (PORTHOLE) = POD
 2968 IL (CONSOLE) = BDG
 2970 IL (ENGINE) = ENG
-2980 PL = 5 : REM initial player location
-2990 RETURN
+2972 PC = 3 : REM person count
+2974 DIM P$ ( PC )
+2976 CHEF = 0 : P$ ( CHEF ) = "chef"
+2978 RUNNER = 1 : P$ ( RUNNER ) = "runner"
+2980 PILOT = 2 : P$ ( PILOT ) = "pilot"
+2982 REM person locations
+2984 DIM PLOC ( PC )
+2986 PLOC ( CHEF ) = GAL
+2988 PLOC ( RUNNER ) = GYM
+2990 PLOC ( PILOT ) = BDG
+2996 PL = 5 : REM initial player location
+2998 RETURN
 3000 REM ========== room descriptions ==========
 3010 DIM RD$ ( RC, 5 )
 3015 REM inventory
 3020 DATA "", "", "", "", "" 
 3025 REM galley
 3030 DATA "The galley contains gleaming, stainless steel cupboards along the aft wall. A food"
-3040 DATA "preparation surface is on the port wall, currently covered in rotting food. A chef"
+3040 DATA "preparation surface is on the port wall, currently covered in rotting food. A *chef*"
 3050 DATA "stands at the work surface, methodically chopping food even though everything has"
 3060 DATA "already been thoroughly diced. There are doors in the starboard and forward walls and"
 3070 DATA "a stairway leads downwards in the far corner." 
@@ -199,7 +213,7 @@
 3180 DATA "The bridge is the heart of the ship. A vast array of glowing screens and switches fill"
 3190 DATA "every surface. On the screens are complex graphics providing detailed information about"
 3200 DATA "the status of every system on the ship. Many of them are showing red warning symbols."
-3210 DATA "There is a *console* directly in front of you, a pilot gripping the throttle."
+3210 DATA "There is a *console* directly in front of you, a *pilot* gripping the throttle."
 3220 DATA "An aft exit leads back into the main corridor."
 3225 REM sleeping quarters
 3230 DATA "The sleeping quarters is filled with bunks, one up, one down. Several of the bunks"
@@ -214,10 +228,10 @@
 3310 DATA "one wall. In the corner you can see a medical scanner and next to it, a terminal. On the"
 3320 DATA "terminal screen is a portion of the *medical log*. Exits lead port and forward."
 3325 REM gymnasium
-3330 DATA "The gymnasium is full of exercise equipment. A woman is running furiously on a treadmill."
-3340 DATA "She looks exhausted and emaciated, but she keeps running at top speed, almost at a sprint."
-3350 DATA "Her eyes remain fixed on the treadmill console. There are aft and port exists, as well as"
-3360 DATA "a stairwell leading to the lower deck in the far corner.", ""
+3330 DATA "The gymnasium is full of exercise equipment. A female *runner* is sprinting furiously on a"
+3340 DATA "treadmill. She looks exhausted and emaciated, but she keeps running at top speed, almost at"
+3350 DATA "a sprint. Her eyes remain fixed on the treadmill console. There are aft and port exists,"
+3360 DATA " as well as a stairwell leading to the lower deck in the far corner.", ""
 3370 REM lower aft corridor
 3380 DATA "This is a featureless, utilitarian corridor. A stairwell leads upwards. There are also"
 3390 DATA "exits leading starboard and forward.", "", "", ""
@@ -348,3 +362,25 @@
 6030 NEXT LINE
 6035 PRINT
 6040 RETURN
+7000 REM ========== character speech ==========
+7010 REM chef
+7015 DIM PD$(PC, 4)
+7020 DATA "Carrots, potatoes, I'm going to make a nice beef stew."
+7030 DATA "This stew is going to be delicious."
+7060 REM runner
+7070 DATA "24:50, that's my new personal best. Not much further to go!"
+7080 DATA "24:50, that's my new personal best. Not much further to go!"
+7110 REM pilot
+7120 DATA "Main engines online, supercruise on my mark."
+7130 DATA "Five ... four ... three ... two ... one ... mark!"
+7140 FOR PERSON = 0 TO PC-1
+7150 FOR I = 0 TO 1
+7160 READ DESC$ : PD$ (PERSON, I) = DESC$
+7170 NEXT I
+7180 PD$(PERSON, 2) = PD$(PERSON, 0)
+7190 PD$(PERSON, 3) = PD$(PERSON, 1)
+7200 NEXT PERSON
+7210 RETURN
+7500 REM ========== print character speech ==========
+7510 REM **** TBD ****
+
