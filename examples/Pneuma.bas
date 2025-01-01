@@ -18,6 +18,8 @@
 510 GOSUB 3000
 520 REM setup up interative descriptions
 530 GOSUB 5000
+540 REM setup dialogue
+550 GOSUB 7000
 700 REM ========== main loop ==========
 701 REM show room details 
 703 PRINT "You are in the " ; LO$ ( PL ) : PRINT 
@@ -112,7 +114,15 @@
 2610 PRINT "Farewell spacefarer ..."
 2620 STOP
 2630 REM talk to command
-2635 REM **** TBD ****
+2635 F=-1 : R$ = ""
+2640 R$ = MID$(LOWER$(I$), 9) : REM R$ is the person to talk to
+2645 FOR I = 0 TO PC-1
+2650 IF P$(I) = R$ THEN F=I : REM person exists
+2655 NEXT I
+2660 REM can't find them?
+2665 IF F=-1 THEN PRINT "You've not met them" : PRINT : GOTO 2695
+2670 IF PLOC(F) <> PL THEN PRINT "They aren't here" : PRINT : GOTO 2695
+2675 GOSUB 7500 : REM print dialogue
 2695 RETURN
 2700 REM ========== set up environment =========== 
 2705 RC = 18 : REM room count 
@@ -382,5 +392,10 @@
 7200 NEXT PERSON
 7210 RETURN
 7500 REM ========== print character speech ==========
-7510 REM **** TBD ****
+7510 FOR LINE = 0 TO 4
+7520 PRINT PD$(F, LINE)
+7530 NEXT LINE
+7550 RETURN
+
+
 
