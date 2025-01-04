@@ -27,3 +27,68 @@ from basictoken import BASICToken as Token
 from lexer import Lexer
 from program import Program
 from sys import stderr
+
+class Interpreter:
+    def __init__(self):
+        self.lexer = Lexer()
+        self.program = Program()
+
+    def process_command(self, stmt: str) -> str:
+        try:
+            tokenlist = self.lexer.tokenize(stmt)
+
+            if len(tokenlist) > 0:
+                # Exit the interpreter
+                if tokenlist[0].category == Token.EXIT:
+                    return "Exiting interpreter."
+
+                # Add a new program statement
+                elif tokenlist[0].category == Token.UNSIGNEDINT and len(tokenlist) > 1:
+                    self.program.add_stmt(tokenlist)
+                    return f"Statement added: {stmt}"
+
+                # Delete a statement
+                elif tokenlist[0].category == Token.UNSIGNEDINT and len(tokenlist) == 1:
+                    self.program.delete_statement(int(tokenlist[0].lexeme))
+                    return f"Statement deleted: {stmt}"
+
+                # Execute the program
+                elif tokenlist[0].category == Token.RUN:
+                    try:
+                        self.program.execute()
+                        return "Program executed."
+                    except KeyboardInterrupt:
+                        return "Program terminated by user."
+
+                # List the program
+                elif tokenlist[0].category == Token.LIST:
+                    output = self.program.list()
+                    return f"Program listing:\n{output}"
+
+                # Save the program to disk
+                elif tokenlist[0].category == Token.SAVE:
+                    filename = tokenlist[1].lexeme
+                    self.program.save(filename)
+                    return f"Program saved to {filename}"
+
+                # Load a program from disk
+                elif tokenlist[0].category == Token.LOAD:
+                    filename = tokenlist[1].lexeme
+                    self.program.load(filename)
+                    return f"Program loaded from {filename}"
+
+                # Delete the program from memory
+                elif tokenlist[0].category == Token.NEW:
+                    self.program.delete()
+                    return "Program cleared."
+
+                # Unrecognized input
+                else:
+                    return "Unrecognized input."
+        except Exception as e:
+            return f"Error: {e}"
+
+# Example Usage
+interpreter = Interpreter()
+print(interpreter.process_command('10 PRINT "Hello world"'))
+print(interpreter.process_command("RUN"))
