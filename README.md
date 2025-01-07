@@ -450,6 +450,19 @@ Subroutines may be nested, that is, a subroutine call may be made within another
 A subroutine may also be called using the **ON-GOSUB** statement (see Conditional branching
 below).
 
+Further note that **RETURN** passes control back to the next line numbered statement after the call. Subsequent statements after
+the call in the same line will not be executed. For example:
+
+```
+> 10 PRINT "Print this":GOSUB 100:PRINT "This won't be printed"
+> 100 PRINT "Print this too"
+> 110 RETURN
+> RUN
+Print this
+Print this too
+>
+```
+
 ### Loops
 
 Bounded loops are achieved through the use of **FOR-NEXT** statements. The loop is controlled by a numeric
