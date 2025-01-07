@@ -24,6 +24,7 @@
 701 REM show room details 
 703 PRINT "You are in the " ; LO$ ( PL ) : PRINT 
 705 GOSUB 4010 : REM print room description
+706 GOSUB 8000 : REM tracker info if carried
 710 INPUT "What now? " ; I$ 
 715 PRINT 
 716 MOVE = 1 
@@ -164,17 +165,21 @@
 2890 EX$ ( AMC ) = "160001050000"
 2895 EX$ ( MMC ) = "171502060000"
 2900 EX$ ( FMC ) = "041603070000"
-2905 OC = 3 : REM object count 
+2905 OC = 5 : REM object count 
 2910 DIM OB$ ( OC ) 
 2915 PULSE = 0 : OB$ ( PULSE ) = "pulse rifle" 
 2920 SUIT = 1 : OB$ ( SUIT ) = "space suit" 
-2925 FOOD = 2 : OB$ ( FOOD ) = "rotting food" 
+2922 FOOD = 2 : OB$ ( FOOD ) = "rotting food" 
+2924 TRACKER = 3 : OB$ ( TRACKER ) = "tracker"
+2926 SYRINGE = 4 : OB$ ( SYRINGE ) = "syringe"
 2930 REM object locations 
 2932 REM location 0 = player's inventory 
 2934 DIM OL ( OC ) 
 2936 OL ( PULSE ) = ARM 
-2938 OL ( SUIT ) = POD 
-2940 OL ( FOOD ) = GAL 
+2937 OL ( SUIT ) = POD 
+2939 OL ( FOOD ) = GAL 
+2940 OL ( TRACKER ) = GYM
+2941 OL ( SYRINGE ) = MED
 2942 IC = 4 : REM interactive object count
 2944 DIM IO$ (IC)
 2946 MEDLOG = 0 : IO$ ( MEDLOG ) = "medical log"
@@ -197,7 +202,8 @@
 2986 PLOC ( CHEF ) = GAL
 2988 PLOC ( RUNNER ) = GYM
 2990 PLOC ( PILOT ) = BDG
-2996 PL = 5 : REM initial player location
+2996 PL = SLP : REM initial player location
+2997 WPL = MEN : REM wraith-hound initial location
 2998 RETURN
 3000 REM ========== room descriptions ==========
 3010 DIM RD$ ( RC, 5 )
@@ -396,6 +402,26 @@
 7520 PRINT PD$(F, LINE)
 7530 NEXT LINE
 7550 RETURN
+8000 REM ========== wraith-hound tracking ==========
+8010 IF OL ( TRACKER ) <> INV THEN GOTO 8180
+8030 IF WPL = GAL THEN LOC$ = "Galley"
+8040 IF WPL = SLP THEN LOC$ = "Sleeping Quarters"
+8050 IF WPL = REC THEN LOC$ = "Recreation Room"
+8060 IF WPL = ARM THEN LOC$ = "Armoury"
+8070 IF WPL = MED THEN LOC$ = "Medical Centre"
+8080 IF WPL = BDG THEN LOC$ = "Bridge"
+8090 IF WPL = STO THEN LOC$ = "Stores"
+8100 IF WPL = ENG THEN LOC$ = "Engine Room"
+8110 IF WPL = MEN THEN LOC$ = "Menagerie"
+8120 IF WPL = LAB THEN LOC$ = "Laboratory"
+8130 IF WPL = POD THEN LOC$ = "Pod Bay"
+8140 IF WPL = AMC OR WPL = MMC OR WPL = FMC THEN LOC$ = "upper deck main corridor" 
+8150 IF WPL = LAC THEN LOC$ = "Lower deck aft corridor"
+8160 IF WPL = LFC THEN LOC$ = "Lower deck forward corridor"
+8165 PRINT "Tracking: Wraith-hound current location is the "; LOC$
+8170 PRINT
+8180 RETURN
+
 
 
 
