@@ -455,6 +455,7 @@ the call in the same line will not be executed. For example:
 
 ```
 > 10 PRINT "Print this":GOSUB 100:PRINT "This won't be printed"
+> 20 STOP
 > 100 PRINT "Print this too"
 > 110 RETURN
 > RUN
