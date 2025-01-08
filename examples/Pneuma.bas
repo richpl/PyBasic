@@ -12,6 +12,7 @@
 80 PRINT "You have a sore throat and the mother of all headaches, like your brain has been boiling" 
 85 PRINT "in your skull. In fact, you're no longer sure exactly where you are ... you seem to be" 
 90 PRINT "suffering from some sort of amnesia ...": PRINT 
+92 PRINT "THIS GAME IS UNFINISHED AND IS A WORK IN PROGRESS" : PRINT
 95 REM set up environment
 100 GOSUB 2700
 500 REM setup room descriptions 
@@ -25,6 +26,7 @@
 703 PRINT "You are in the " ; LO$ ( PL ) : PRINT 
 705 GOSUB 4010 : REM print room description
 706 GOSUB 8000 : REM tracker info if carried
+708 GOSUB 8200 : REM wraith-hound proximity check
 710 INPUT "What now? " ; I$ 
 715 PRINT 
 716 MOVE = 1 
@@ -264,8 +266,9 @@
 3525 REM menagerie
 3530 DATA "The room is a hellhole. Cages stand open, while various animals roam about: chimpanzees,"
 3540 DATA "dogs, and rats. Some of the rats are dead, having been savaged and eviscerated. The floor"
-3550 DATA "and walls are smeared with animal faeces, and the smell is almost overpowering. A single"
-3555 DATA "port door leads back into the storeroom.", ""
+3550 DATA "and walls are smeared with animal faeces, and the smell is almost overpowering. A capsule,"
+3552 DATA "its door ajar, is marked 'BIOWEAPON CONTAINMENT'. The capsule is empty."
+3555 DATA "A single door to port leads back into the storeroom."
 3560 REM laboratory 
 3570 DATA "The laboratory is full of scientific equipment, chemical glassware, electronic analysers,"
 3580 DATA "fume cupboards, and two couches. The place looks disorded, like the rest of the ship, the"
@@ -296,7 +299,6 @@
 3870 FOR ROOM = 0 to RC-1
 3880 FOR I = 0 TO 4
 3885 READ DESC$ : RD$ (ROOM, I) = DESC$
-3886 REM PRINT DESC$
 3890 NEXT I
 3900 NEXT ROOM
 4000 RETURN
@@ -316,6 +318,7 @@
 4140 PRINT "For movement, try [go] a[ft], f[orward], p[ort], s[tarboard], u[p] or d[own]." 
 4150 PRINT "For actions, try get, take, drop, examine, look, i[nventory], q[uit]." 
 4155 PRINT "To examine, pick up or drop items, refer to them exactly as they are printed."
+4157 PRINT
 4160 RETURN
 5000 REM ========== interactive item descriptions ==========
 5010 DIM ID$(IC, 20)
@@ -401,12 +404,27 @@
 7510 FOR LINE = 0 TO 4
 7520 PRINT PD$(F, LINE)
 7530 NEXT LINE
+7535 PRINT
 7550 RETURN
 8000 REM ========== wraith-hound tracking ==========
 8010 IF OL ( TRACKER ) <> INV THEN GOTO 8040
 8020 PRINT "Tracking: Wraith-hound current location is the "; LO$ ( WPL )
 8030 PRINT
 8040 RETURN
+8200 REM ========== wraith-hound proximity check ==========
+8210 DIR$ = ""
+8220 IF VAL ( MID$ ( EX$ ( PL ) , 1 , 2 ) ) = WPL THEN DIR$ = "forward of you"
+8230 IF VAL ( MID$ ( EX$ ( PL ) , 3 , 2 ) ) = WPL THEN DIR$ = "aft of you"
+8240 IF VAL ( MID$ ( EX$ ( PL ) , 5 , 2 ) ) = WPL THEN DIR$ = "to port"
+8250 IF VAL ( MID$ ( EX$ ( PL ) , 7 , 2 ) ) = WPL THEN DIR$ = "to starboard"
+8260 IF VAL ( MID$ ( EX$ ( PL ) , 9 , 2 ) ) = WPL THEN DIR$ = "above you"
+8270 IF VAL ( MID$ ( EX$ ( PL ) , 11 , 2 ) ) = WPL THEN DIR$ = "below you"
+8280 IF DIR$ <> "" THEN PRINT "You hear a snarling, spitting noise "; DIR$
+8285 PRINT
+8290 RETURN
+
+
+
 
 
 
