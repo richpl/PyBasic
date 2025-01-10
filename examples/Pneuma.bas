@@ -27,6 +27,7 @@
 705 GOSUB 4010 : REM print room description
 706 GOSUB 8000 : REM tracker info if carried
 708 GOSUB 8200 : REM wraith-hound proximity check
+709 GOSUB 8400 : REM wraith-hound movement
 710 INPUT "What now? " ; I$ 
 715 PRINT 
 716 MOVE = 1 
@@ -419,9 +420,25 @@
 8250 IF VAL ( MID$ ( EX$ ( PL ) , 7 , 2 ) ) = WPL THEN DIR$ = "to starboard"
 8260 IF VAL ( MID$ ( EX$ ( PL ) , 9 , 2 ) ) = WPL THEN DIR$ = "above you"
 8270 IF VAL ( MID$ ( EX$ ( PL ) , 11 , 2 ) ) = WPL THEN DIR$ = "below you"
-8280 IF DIR$ <> "" THEN PRINT "You hear a snarling, spitting noise "; DIR$
+8280 IF DIR$ <> "" THEN PRINT "You hear a snarling, spitting noise "; DIR$; ". The tracker is pinging ..."
 8285 PRINT
 8290 RETURN
+8400 REM ========== wraith-hound movement ==========
+8410 REM decide to move one third of the time
+8420 MOVE = RNDINT(1, 3)
+8430 IF MOVE <> 1 THEN GOTO 8550
+8440 REM randomly determine direction
+8450 DIR = RNDINT(1, 6)
+8460 IF DIR = 1 THEN INDEX = 1
+8470 IF DIR = 2 THEN INDEX = 3
+8480 IF DIR = 3 THEN INDEX = 5
+8490 IF DIR = 4 THEN INDEX = 7
+8500 IF DIR = 5 THEN INDEX = 9
+8510 IF DIR = 6 THEN INDEX = 11
+8520 NWPL = VAL ( MID$ ( EX$ ( WPL ) , INDEX , 2 ) ) : REM potential next location
+8530 IF NWPL = 0 THEN GOTO 8450 : REM can't go that way
+8540 WPL = NWPL
+8550 RETURN
 
 
 
