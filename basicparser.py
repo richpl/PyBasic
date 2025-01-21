@@ -673,10 +673,29 @@ class BASICParser:
                 raise RuntimeError('File '+filename+' could not be opened in line ' + str(self.__line_number))
 
         if accessMode == "r+":
+            # By checking the 'newlines' attribute the appropriate adjustment for
+            # the file being opened can be determined.
+            if hasattr(self.__file_handles[filenum],'newlines'):
+                try:
+                    # newline attribute is only set after a line is read
+                    self.__file_handles[filenum].readline()
+                except:
+                    pass
+                newlines = self.__file_handles[filenum].newlines
+            else:
+                newlines = None
+            
             self.__file_handles[filenum].seek(0)
             filelen = 0
+            if newlines != None:
+                newlineAdj = len(newlines) - 1
+            else:
+                # If using version of Python that doesn't have newlines attribute
+                # use adjustment appropriate for Windows formatted files
+                newlineAdj = 1
+
             for lines in self.__file_handles[filenum]:
-                filelen += len(lines)+1
+                filelen += len(lines)+newlineAdj
 
             self.__file_handles[filenum].seek(filelen)
 

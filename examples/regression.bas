@@ -57,8 +57,22 @@
 570 PRINT "The next line should say 'Hello World!'"
 580 FSEEK #2,10
 590 INPUT #2,A$
-600 PRINT A$
-610 OPEN "NOFILE.X7Z" FOR INPUT AS #2 ELSE 620
+595 PRINT A$
+600 CLOSE #2
+601 OPEN "REGRESSION.TXT" FOR APPEND AS #2
+602 PRINT "3 text lines starting with 0,T,S and ending with !,g,e should follow:"
+603 PRINT #2,"Should be a seperate line"
+604 CLOSE #2
+605 OPEN "REGRESSION.TXT" FOR INPUT AS #2
+606 FOR I = 1 TO 2
+607 INPUT #2,A$:PRINT A$
+608 NEXT I
+609 INPUT #2,A$
+610 FOR I = 1 TO 25
+611 PRINT MID$(A$,I,1);
+612 NEXT I
+613 PRINT:CLOSE #2
+614 OPEN "NOFILE.X7Z" FOR INPUT AS #2 ELSE 620
 615 PRINT "***This Message should NOT be Displayed***"
 620 N = 0
 630 I = 7
