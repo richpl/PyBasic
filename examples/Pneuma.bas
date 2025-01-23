@@ -37,6 +37,7 @@
 750 IF LEFT$ ( LOWER$ ( I$ ) , 8 ) = "examine " THEN MOVE = 0 : GOSUB 2300 
 760 IF LEFT$ ( LOWER$ ( I$ ) , 4 ) = "look" THEN MOVE = 0 : GOSUB 4010 
 765 IF LEFT$ ( LOWER$ ( I$ ) , 4 ) = "help" THEN MOVE = 0 : GOSUB 4130
+767 IF LEFT$ ( LOWER$ ( I$ ) , 4 ) = "use " THEN MOVE = 0 : GOSUB 9000
 770 IF LOWER$ ( I$ ) = "i" OR LOWER$ ( I$ ) = "inventory" THEN MOVE = 0 : GOSUB 1000 
 775 IF LEFT$ ( LOWER$ ( I$ ) , 8 ) = "talk to " THEN MOVE = 0 : GOSUB 2630
 780 IF LEFT$ ( LOWER$ ( I$ ) , 1 ) = "q" THEN GOSUB 2600 
@@ -82,11 +83,11 @@
 1440 IF OB$(I) = R$ THEN F=I : REM object exists
 1450 NEXT I
 1460 REM can't find the item?
-1470 IF F=-1 THEN PRINT "Can't see that item here" : PRINT : GOTO 1540
-1480 IF OL(F) <> PL THEN PRINT "That item doesn't appear to be around here" : PRINT : GOTO 1540
-1490 IF OL(F)=0 THEN PRINT "You already have that item" : PRINT: GOTO 1540 
+1470 IF F=-1 THEN PRINT "Can't see that item here." : PRINT : GOTO 1540
+1480 IF OL(F) <> PL THEN PRINT "That item doesn't appear to be around here." : PRINT : GOTO 1540
+1490 IF OL(F)=0 THEN PRINT "You already have that item." : PRINT: GOTO 1540 
 1520 OL(F)=0 : REM add the item to the inventory
-1530 PRINT "You've picked up ";OB$(F) : PRINT
+1530 PRINT "You've picked up ";OB$(F); "." : PRINT
 1540 RETURN
 1700 REM take command 
 1710 F=-1: R$=""
@@ -99,9 +100,9 @@
 2040 IF OB$(I) = R$ THEN F=I : REM object exists
 2050 NEXT I
 2060 REM can't find it?
-2070 IF F=-1 THEN PRINT "You've never seen that" : PRINT: GOTO 1540
-2080 IF OL(F) <> 0 THEN PRINT "You aren't carrying that" : PRINT: GOTO 2110
-2090 OL(F) = PL : PRINT "You've dropped ";OB$(F): PRINT: REM add the item to the current room
+2070 IF F=-1 THEN PRINT "You don't have that." : PRINT: GOTO 1540
+2080 IF OL(F) <> 0 THEN PRINT "You aren't carrying that." : PRINT: GOTO 2110
+2090 OL(F) = PL : PRINT "You've dropped ";OB$(F); ".": PRINT: REM add the item to the current room
 2110 RETURN
 2300 REM examine command 
 2310 F=-1 : R$=""
@@ -110,8 +111,8 @@
 2340 IF IO$(I) = R$ THEN F=I : REM object exists
 2350 NEXT I
 2360 REM can't find it?
-2370 IF F=-1 THEN PRINT "You can't examine that" : PRINT : GOTO 2400
-2380 IF IL(F) <> PL THEN PRINT "There isn't one of these here" : PRINT : GOTO 2400
+2370 IF F=-1 THEN PRINT "You can't examine that." : PRINT : GOTO 2400
+2380 IF IL(F) <> PL THEN PRINT "There isn't one of these here." : PRINT : GOTO 2400
 2390 GOSUB 6000 : REM print result of examination
 2400 RETURN 
 2600 REM quit command 
@@ -124,8 +125,8 @@
 2650 IF P$(I) = R$ THEN F=I : REM person exists
 2655 NEXT I
 2660 REM can't find them?
-2665 IF F=-1 THEN PRINT "You've not met them" : PRINT : GOTO 2695
-2670 IF PLOC(F) <> PL THEN PRINT "They aren't here" : PRINT : GOTO 2695
+2665 IF F=-1 THEN PRINT "You've not met them." : PRINT : GOTO 2695
+2670 IF PLOC(F) <> PL THEN PRINT "They aren't here." : PRINT : GOTO 2695
 2675 GOSUB 7500 : REM print dialogue
 2695 RETURN
 2700 REM ========== set up environment =========== 
@@ -214,7 +215,7 @@
 3020 DATA "", "", "", "", "" 
 3025 REM galley
 3030 DATA "The galley contains gleaming, stainless steel cupboards along the aft wall. A food"
-3040 DATA "preparation surface is on the port wall, currently covered in rotting food. A *chef*"
+3040 DATA "preparation surface is on the port wall, currently covered in rotting food. A chef"
 3050 DATA "stands at the work surface, methodically chopping food even though everything has"
 3060 DATA "already been thoroughly diced. There are doors in the starboard and forward walls and"
 3070 DATA "a stairway leads downwards in the far corner." 
@@ -232,7 +233,7 @@
 3180 DATA "The bridge is the heart of the ship. A vast array of glowing screens and switches fill"
 3190 DATA "every surface. On the screens are complex graphics providing detailed information about"
 3200 DATA "the status of every system on the ship. Many of them are showing red warning symbols."
-3210 DATA "There is a *console* directly in front of you, a *pilot* gripping the throttle."
+3210 DATA "There is a console directly in front of you, a pilot gripping the throttle."
 3220 DATA "An aft exit leads back into the main corridor."
 3225 REM sleeping quarters
 3230 DATA "The sleeping quarters is filled with bunks, one up, one down. Several of the bunks"
@@ -245,9 +246,9 @@
 3290 DATA "lying around the room. Blood filled syringes are scattered on a workbench, as well as"
 3300 DATA "some bloodied bandanges. The words 'I'm losing myself' are scrawled messily in blood on"
 3310 DATA "one wall. In the corner you can see a medical scanner and next to it, a terminal. On the"
-3320 DATA "terminal screen is a portion of the *medical log*. Exits lead port and forward."
+3320 DATA "terminal screen is a portion of the medical log. Exits lead port and forward."
 3325 REM gymnasium
-3330 DATA "The gymnasium is full of exercise equipment. A female *runner* is sprinting furiously on a"
+3330 DATA "The gymnasium is full of exercise equipment. A female runner is sprinting furiously on a"
 3340 DATA "treadmill. She looks exhausted and emaciated, but she keeps running at top speed, almost at"
 3350 DATA "a sprint. Her eyes remain fixed on the treadmill console. There are aft and port exists,"
 3360 DATA " as well as a stairwell leading to the lower deck in the far corner.", ""
@@ -256,7 +257,7 @@
 3390 DATA "exits leading starboard and forward.", "", "", ""
 3400 REM engine room
 3430 DATA "The engine room is characterised by a continual rumble, as though incredible energies are"
-3440 DATA "barely being contained. There is an *engine control* in the far corner, festooned with"
+3440 DATA "barely being contained. There is an engine control in the far corner, festooned with"
 3450 DATA "switches and engine readouts. A single exit leads out into the corridor.", "", ""
 3460 REM storeroom
 3480 DATA  "The storeroom is full of crates, most neatly stacked, but with some scattered across the"
@@ -283,7 +284,7 @@
 3670 DATA "You are in a large room, with a row of spacesuits hanging on the port wall. At the forward"
 3680 DATA "end of the room is a small, two seater vehicle, capable of operating in space outside the"
 3690 DATA "main ship for limited periods. In front of the small ship is the pod bay door, leading out"
-3700 DATA "into space. There is a *porthole* on the far wall. There is a single exit leading aft.", ""
+3700 DATA "into space. There is a porthole on the far wall. There is a single exit leading aft.", ""
 3710 REM aft main corridor
 3720 DATA "The main corridor stretches away from you towards the front of the ship. It is featureless"
 3730 DATA "and utilitarian. The lighting is dim. You can see doors either side of you, to port and"
@@ -311,14 +312,14 @@
 4060 RETURN
 4070 REM print objects
 4080 FOR I = 0 TO OC-1
-4090 IF OL ( I ) = PL THEN PRINT : PRINT "You can see: ";OB$ ( I )
+4090 IF OL ( I ) = PL THEN PRINT : PRINT "You can see: ";OB$ ( I ); "."
 4100 NEXT I 
 4110 PRINT
 4120 RETURN 
 4130 REM ========== print help ==========
 4140 PRINT "For movement, try [go] a[ft], f[orward], p[ort], s[tarboard], u[p] or d[own]." 
-4150 PRINT "For actions, try get, take, drop, examine, look, i[nventory], q[uit]." 
-4155 PRINT "To examine, pick up or drop items, refer to them exactly as they are printed."
+4150 PRINT "For actions, try get, take, drop, examine, look, use, i[nventory], q[uit]." 
+4155 PRINT "To examine, pick up, use or drop items, refer to them exactly as they are described."
 4157 PRINT
 4160 RETURN
 5000 REM ========== interactive item descriptions ==========
@@ -439,6 +440,28 @@
 8530 IF NWPL = 0 THEN GOTO 8450 : REM can't go that way
 8540 WPL = NWPL
 8550 RETURN
+9000 REM ========== use an item ==========
+9010 F=-1: R$=""
+9020 R$ = MID$(LOWER$(I$), 5) : REM R$ is the requested object
+9025 IF R$ = "button" THEN GOSUB 9500
+9030 REM get the object ID
+9040 FOR I= 0 TO OC-1
+9050 IF OB$(I) = R$ THEN F=I : REM object exists
+9060 NEXT I
+9070 REM can't find the item?
+9080 IF F=-1 THEN PRINT "You haven't seen that item." : PRINT : GOTO 9400
+9090 IF OL(F) <> 0 THEN PRINT "You haven't picked up that item." : PRINT : GOTO 9400
+9100 REM item exists and is in inventory
+9110 IF F <> SYRINGE THEN GOTO 9140
+9120 OB$( SYRINGE ) = "blood filled syringe"
+9130 PRINT "You use the syringe to take a blood sample from your arm." : PRINT
+9140 IF F <> ( TRACKER ) THEN GOTO 9400 : REM ** change **
+9150 PRINT "The tracker is always on." : PRINT
+9400 RETURN
+9500 REM ========== special button routine ==========
+9600 RETURN
+10000 REM TODO - wraith-hound fight, use rotten food, use rifle, 
+10010 REM TODO - use space suit, engine shutdown, scientist conversation
 
 
 
