@@ -103,6 +103,7 @@
 2070 IF F=-1 THEN PRINT "You don't have that." : PRINT: GOTO 1540
 2080 IF OL(F) <> 0 THEN PRINT "You aren't carrying that." : PRINT: GOTO 2110
 2090 OL(F) = PL : PRINT "You've dropped ";OB$(F); ".": PRINT: REM add the item to the current room
+2095 IF F = SUIT THEN SUIT_WORN = 0
 2110 RETURN
 2300 REM examine command 
 2310 F=-1 : R$=""
@@ -208,7 +209,8 @@
 2990 PLOC ( PILOT ) = BDG
 2996 PL = SLP : REM initial player location
 2997 WPL = MEN : REM wraith-hound initial location
-2998 RETURN
+2998 SUIT_WORN = 0 : REM is space suit worn?
+2999 RETURN
 3000 REM ========== room descriptions ==========
 3010 DIM RD$ ( RC, 5 )
 3015 REM inventory
@@ -453,10 +455,16 @@
 9090 IF OL(F) <> 0 THEN PRINT "You haven't picked up that item." : PRINT : GOTO 9400
 9100 REM item exists and is in inventory
 9110 IF F <> SYRINGE THEN GOTO 9140
+9112 IF OB$( SYRINGE ) = "blood filled syringe" THEN PRINT "The syringe is full." : PRINT : GOTO 9400
+9115 IF SUIT_WORN = 1 THEN PRINT "You can't puncture a spacesuit with a syringe!" : PRINT : GOTO 9400
 9120 OB$( SYRINGE ) = "blood filled syringe"
-9130 PRINT "You use the syringe to take a blood sample from your arm." : PRINT
-9140 IF F <> ( TRACKER ) THEN GOTO 9400 : REM ** change **
+9130 PRINT "You use the syringe to take a blood sample from your arm." : PRINT : GOTO 9400
+9140 IF F <> TRACKER THEN GOTO 9160
 9150 PRINT "The tracker is always on." : PRINT
+9160 IF F <> SUIT THEN GOTO 9400
+9170 IF OL(F) <> 0 THEN PRINT "You don't have a space suit." : PRINT : GOTO 9400
+9180 SUIT_WORN = 1
+9190 PRINT "You put on the space suit." : PRINT
 9400 RETURN
 9500 REM ========== special button routine ==========
 9600 RETURN
