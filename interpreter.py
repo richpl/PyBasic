@@ -31,15 +31,13 @@ from sys import stderr
 
 def main():
 
-    banner = (
-        """
-        PPPP   Y   Y  BBBB    AAA    SSSS    I     CCC
-        P   P   Y Y   B   B  A   A  S        I    C
-        P   P   Y Y   B   B  A   A  S        I    C
-        PPPP     Y    BBBB   AAAAA  SSSS     I    C
-        P        Y    B   B  A   A      S    I    C
-        P        Y    B   B  A   A      S    I    C
-        P        Y    BBBB   A   A  SSSS     I     CCC
+    banner = (r"""
+        ._____________    ___________.       ___        ___________    ______ 
+        |   _   .__   \  /   ___   _  \     /   \      /           |  /      |
+        |  |_)  |  \   \/   /  |  |_)  |   /  ^  \    |   (----`|  | |  ,----'
+        |   ___/    \_    _/   |   _  <   /  /_\  \    \   \    |  | |  |     
+        |  |          |  |     |  |_)   \/  _____  \----)   |   |  | |  `----.
+        | _|          |__|     |___________/     \_________/    |____________|
         """)
 
     print(banner)
