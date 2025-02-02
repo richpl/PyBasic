@@ -83,9 +83,9 @@
 1440 IF OB$(I) = R$ THEN F=I : REM object exists
 1450 NEXT I
 1460 REM can't find the item?
-1470 IF F=-1 THEN PRINT "Can't see that item here." : PRINT : GOTO 1540
-1480 IF OL(F) <> PL THEN PRINT "That item doesn't appear to be around here." : PRINT : GOTO 1540
-1490 IF OL(F)=0 THEN PRINT "You already have that item." : PRINT: GOTO 1540 
+1470 IF F=-1 THEN PRINT "You can't take that." : PRINT : RETURN
+1480 IF OL(F) <> PL THEN PRINT "That item doesn't appear to be around here." : PRINT : RETURN
+1490 IF OL(F)=0 THEN PRINT "You already have that item." : PRINT: RETURN 
 1520 OL(F)=0 : REM add the item to the inventory
 1530 PRINT "You've picked up ";OB$(F); "." : PRINT
 1540 RETURN
@@ -100,8 +100,8 @@
 2040 IF OB$(I) = R$ THEN F=I : REM object exists
 2050 NEXT I
 2060 REM can't find it?
-2070 IF F=-1 THEN PRINT "You don't have that." : PRINT: GOTO 1540
-2080 IF OL(F) <> 0 THEN PRINT "You aren't carrying that." : PRINT: GOTO 2110
+2070 IF F=-1 THEN PRINT "You don't have that." : PRINT: RETURN
+2080 IF OL(F) <> 0 THEN PRINT "You aren't carrying that." : PRINT: RETURN
 2090 OL(F) = PL : PRINT "You've dropped ";OB$(F); ".": PRINT: REM add the item to the current room
 2095 IF F = SUIT THEN SUIT_WORN = 0
 2110 RETURN
@@ -112,8 +112,8 @@
 2340 IF IO$(I) = R$ THEN F=I : REM object exists
 2350 NEXT I
 2360 REM can't find it?
-2370 IF F=-1 THEN PRINT "You can't examine that." : PRINT : GOTO 2400
-2380 IF IL(F) <> PL THEN PRINT "There isn't one of these here." : PRINT : GOTO 2400
+2370 IF F=-1 THEN PRINT "You can't examine that." : PRINT : RETURN
+2380 IF IL(F) <> PL THEN PRINT "There isn't one of these here." : PRINT : RETURN
 2390 GOSUB 6000 : REM print result of examination
 2400 RETURN 
 2600 REM quit command 
@@ -126,8 +126,8 @@
 2650 IF P$(I) = R$ THEN F=I : REM person exists
 2655 NEXT I
 2660 REM can't find them?
-2665 IF F=-1 THEN PRINT "You've not met them." : PRINT : GOTO 2695
-2670 IF PLOC(F) <> PL THEN PRINT "They aren't here." : PRINT : GOTO 2695
+2665 IF F=-1 THEN PRINT "You've not met them." : PRINT : RETURN
+2670 IF PLOC(F) <> PL THEN PRINT "They aren't here." : PRINT : RETURN
 2675 GOSUB 7500 : REM print dialogue
 2695 RETURN
 2700 REM ========== set up environment =========== 
@@ -179,7 +179,7 @@
 2926 SYRINGE = 4 : OB$ ( SYRINGE ) = "syringe"
 2930 REM object locations 
 2932 REM location 0 = player's inventory 
-2934 DIM OL ( OC ) 
+2934 DIM OL ( OC )  
 2936 OL ( PULSE ) = ARM 
 2937 OL ( SUIT ) = POD 
 2939 OL ( FOOD ) = GAL 
@@ -190,7 +190,7 @@
 2946 MEDLOG = 0 : IO$ ( MEDLOG ) = "medical log"
 2948 PORTHOLE = 1 : IO$ (PORTHOLE) = "porthole"
 2950 CONSOLE = 2 : IO$(CONSOLE) = "console"
-2952 ENGINE = 3 :IO$(ENGINE)= "engine control"
+2952 ENGINE = 3 : IO$(ENGINE)= "engine control"
 2960 REM interative object locations
 2962 DIM IL ( IC ) 
 2964 IL ( MEDLOG) = MED
@@ -202,14 +202,15 @@
 2976 CHEF = 0 : P$ ( CHEF ) = "chef"
 2978 RUNNER = 1 : P$ ( RUNNER ) = "runner"
 2980 PILOT = 2 : P$ ( PILOT ) = "pilot"
-2982 REM person locations
-2984 DIM PLOC ( PC )
-2986 PLOC ( CHEF ) = GAL
-2988 PLOC ( RUNNER ) = GYM
-2990 PLOC ( PILOT ) = BDG
-2996 PL = SLP : REM initial player location
-2997 WPL = MEN : REM wraith-hound initial location
-2998 SUIT_WORN = 0 : REM is space suit worn?
+2981 REM person locations
+2983 DIM PLOC ( PC )
+2985 PLOC ( CHEF ) = GAL
+2987 PLOC ( RUNNER ) = GYM
+2989 PLOC ( PILOT ) = BDG
+2990 PL = SLP : REM initial player location
+2992 WPL = MEN : REM wraith-hound initial location
+2994 SUIT_WORN = 0 : REM is space suit worn?
+2995 SHUTDOWN = 0 : REM are engines shut down?
 2999 RETURN
 3000 REM ========== room descriptions ==========
 3010 DIM RD$ ( RC, 5 )
@@ -356,12 +357,16 @@
 5340 DATA "forearm are taught, there's no way he's going to release the throttle. He left hand"
 5350 DATA "works its way around the console switches. After a few moments you realise that he is"
 5360 DATA "executing the same sequence of switches over and over again.", " "
-5370 DATA "You speak to the pilot but he is unresponsive. Mentally he is somewhere else. He is"
+5370 DATA "His eyes are glazed, mentally he is somewhere else. He is"
 5380 DATA "mumbling to himself but you cannot make out the words, although he appears to be"
 5390 DATA "reciting some sort of launch checklist.", " "
+5392 DATA "One screen shows the mission parameters:"
+5394 DATA " 1. Explore potentially habitable worlds"
+5396 DATA " 2. Conduct research to develop gene therapies to aid adaptation to planetary conditions"
+5398 DATA " 3. Conduct research to develop custom biologic weapons systems, to protect colonists", " "
 5400 DATA "One thing is certain, the ship is out of control, careering through space at maximum"
 5410 DATA "speed. Rescue will be impossible unless you can find a way to shut down the engines."
-5420 DATA "", "", "", "", "", "", "", ""
+5420 DATA "", "", ""
 5430 REM engine control
 5440 DATA "The control panel is grubby, smeared with oil and grime. This is clearly"
 5450 DATA "the engineering heart of the ship. Most of the readouts mean nothing to you,"
@@ -445,31 +450,40 @@
 9000 REM ========== use an item ==========
 9010 F=-1: R$=""
 9020 R$ = MID$(LOWER$(I$), 5) : REM R$ is the requested object
-9025 IF R$ = "button" THEN GOSUB 9500
+9025 IF R$ <> "red button" THEN GOTO 9030
+9027 GOSUB 9500
+9028 RETURN
 9030 REM get the object ID
 9040 FOR I= 0 TO OC-1
 9050 IF OB$(I) = R$ THEN F=I : REM object exists
 9060 NEXT I
 9070 REM can't find the item?
-9080 IF F=-1 THEN PRINT "You haven't seen that item." : PRINT : GOTO 9400
-9090 IF OL(F) <> 0 THEN PRINT "You haven't picked up that item." : PRINT : GOTO 9400
+9080 IF F=-1 THEN PRINT "You haven't seen that item." : PRINT : RETURN
+9090 IF OL(F) <> 0 THEN PRINT "You haven't picked up that item." : PRINT : RETURN
 9100 REM item exists and is in inventory
 9110 IF F <> SYRINGE THEN GOTO 9140
-9112 IF OB$( SYRINGE ) = "blood filled syringe" THEN PRINT "The syringe is full." : PRINT : GOTO 9400
-9115 IF SUIT_WORN = 1 THEN PRINT "You can't puncture a spacesuit with a syringe!" : PRINT : GOTO 9400
+9112 IF OB$( SYRINGE ) = "blood filled syringe" THEN PRINT "The syringe is full." : PRINT : RETURN
+9115 IF SUIT_WORN = 1 THEN PRINT "You can't puncture a spacesuit with a syringe!" : PRINT : RETURN
 9120 OB$( SYRINGE ) = "blood filled syringe"
-9130 PRINT "You use the syringe to take a blood sample from your arm." : PRINT : GOTO 9400
+9130 PRINT "You use the syringe to take a blood sample from your arm." : PRINT : RETURN
 9140 IF F <> TRACKER THEN GOTO 9160
 9150 PRINT "The tracker is always on." : PRINT
-9160 IF F <> SUIT THEN GOTO 9400
-9170 IF OL(F) <> 0 THEN PRINT "You don't have a space suit." : PRINT : GOTO 9400
+9160 IF F <> SUIT THEN GOTO 9200
+9170 IF OL(F) <> 0 THEN PRINT "You don't have a space suit." : PRINT : RETURN
+9175 IF SUIT_WORN = 1 THEN PRINT "You're already wearing the space suit." : PRINT : RETURN
 9180 SUIT_WORN = 1
 9190 PRINT "You put on the space suit." : PRINT
 9400 RETURN
-9500 REM ========== special button routine ==========
-9600 RETURN
+9500 REM special button routine
+9510 IF PL <> ENG THEN PRINT "There is no red button here." : PRINT : RETURN
+9520 IF SHUTDOWN = 0 THEN GOTO 9540
+9525 SHUTDOWN = 0
+9530 PRINT "Engine restart initiated ... engines online." : PRINT : RETURN
+9540 SHUTDOWN = 1
+9550 PRINT "Engine shutdown initiated ... engines offline." : PRINT 
+9560 RETURN
 10000 REM TODO - wraith-hound fight, use rotten food, use rifle, 
-10010 REM TODO - use space suit, engine shutdown, scientist conversation
+10010 REM TODO - scientist conversation
 
 
 
