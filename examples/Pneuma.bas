@@ -185,18 +185,20 @@
 2939 OL ( FOOD ) = GAL 
 2940 OL ( TRACKER ) = GYM
 2941 OL ( SYRINGE ) = MED
-2942 IC = 4 : REM interactive object count
+2942 IC = 5 : REM interactive object count
 2944 DIM IO$ (IC)
 2946 MEDLOG = 0 : IO$ ( MEDLOG ) = "medical log"
 2948 PORTHOLE = 1 : IO$ (PORTHOLE) = "porthole"
 2950 CONSOLE = 2 : IO$(CONSOLE) = "console"
 2952 ENGINE = 3 : IO$(ENGINE)= "engine control"
+2954 TERMINAL = 4 : IO$(TERMINAL) = "library terminal"
 2960 REM interative object locations
 2962 DIM IL ( IC ) 
 2964 IL ( MEDLOG) = MED
 2966 IL (PORTHOLE) = POD
 2968 IL (CONSOLE) = BDG
 2970 IL (ENGINE) = ENG
+2971 IL (TERMINAL) = REC
 2972 PC = 3 : REM person count
 2974 DIM P$ ( PC )
 2976 CHEF = 0 : P$ ( CHEF ) = "chef"
@@ -225,8 +227,8 @@
 3075 REM recreation room
 3080 DATA "Space is clearly at a premium in this ship. The room doubles as both a dining and"
 3090 DATA "recreation area. Long tables for dining are located on the port side, while couches"
-3100 DATA "and low tables are scattered around the remaining space. There are doors in the aft"
-3110 DATA "and starboard walls.", ""
+3100 DATA "and low tables are scattered around the remaining space. A library terminal is switched"
+3105 DATA "on in the corner. There are doors in the aft and starboard walls.", ""
 3120 REM armoury
 3130 DATA "Locked cabinets line the starboard wall. Each cabinet has a prominently displayed"
 3140 DATA "notice on its door reading 'Weapons to be removed only when authorised by the Chief"
@@ -379,6 +381,10 @@
 5510 DATA "'WARNING: CORE BREACH IMMINENT'", " "
 5520 DATA "Just below the screen is a large red button, shielded by a cover that can be"
 5530 DATA "flipped aside.", "", "", "", "", "", ""
+5540 REM library terminal
+5550 DATA "A ancient text is open in the terminal: 'The Origin of Consciousness in the Breakdown"
+5560 DATA "of the Bicameral Mind by Julian Jaynes, 1976.'", "", "", "", "", "", "", "", "", ""
+5570 DATA "", "", "", "", "", "", "", "", ""
 5940 FOR OBJECT = 0 TO IC-1
 5950 FOR I = 0 TO 19
 5960 READ DESC$ : ID$ (OBJECT, I) = DESC$
