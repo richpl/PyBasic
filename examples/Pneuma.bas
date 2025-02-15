@@ -318,6 +318,7 @@
 4090 IF OL ( I ) = PL THEN PRINT : PRINT "You can see: ";OB$ ( I ); "."
 4100 NEXT I 
 4110 PRINT
+4115 IF PL = LAB THEN GOSUB 9700
 4120 RETURN 
 4130 REM ========== print help ==========
 4140 PRINT "For movement, try [go] a[ft], f[orward], p[ort], s[tarboard], u[p] or d[own]." 
@@ -352,7 +353,7 @@
 5280 DATA "His expression is frozen in a rictus of pain. He was screaming almost until the end ..."
 5290 DATA "", "", "", "", "", "", "", "", "", "", "", "", ""
 5300 REM console
-5310 DATA "The console shows the state of the ship's engines. They are in overdrive. The pilot"
+5310 DATA "The console shows the state of the ship's engines. The pilot"
 5320 DATA "appears to have the throttle jammed wide open with his right arm. The muscles in his"
 5340 DATA "forearm are taught, there's no way he's going to release the throttle. He left hand"
 5350 DATA "works its way around the console switches. After a few moments you realise that he is"
@@ -364,8 +365,8 @@
 5394 DATA " 1. Explore potentially habitable worlds"
 5396 DATA " 2. Conduct research to develop gene therapies to aid adaptation to planetary conditions"
 5398 DATA " 3. Conduct research to develop custom biologic weapons systems, to protect colonists", " "
-5400 DATA "One thing is certain, the ship is out of control, careering through space at maximum"
-5410 DATA "speed. Rescue will be impossible unless you can find a way to shut down the engines."
+5400 DATA "If the engines are online, the ship will be careering through space at maximum"
+5410 DATA "speed. Rescue will be impossible unless the engines are offline."
 5420 DATA "", "", ""
 5430 REM engine control
 5440 DATA "The control panel is grubby, smeared with oil and grime. This is clearly"
@@ -434,7 +435,7 @@
 8400 REM ========== wraith-hound movement ==========
 8410 REM decide to move one third of the time
 8420 MOVE = RNDINT(1, 3)
-8430 IF MOVE <> 1 THEN GOTO 8550
+8430 IF MOVE <> 1 THEN RETURN
 8440 REM randomly determine direction
 8450 DIR = RNDINT(1, 6)
 8460 IF DIR = 1 THEN INDEX = 1
@@ -482,8 +483,36 @@
 9540 SHUTDOWN = 1
 9550 PRINT "Engine shutdown initiated ... engines offline." : PRINT 
 9560 RETURN
-10000 REM TODO - wraith-hound fight, use rotten food, use rifle, 
-10010 REM TODO - scientist conversation
+9700 REM ========== laboratory conversation ==========
+9710 PRINT "Dr Lascoe is stood in the laboratory. He is armed. He speaks to you." : PRINT
+9720 PRINT "'It's you! You were infected with HO-1, but you seem to be normal."
+9730 PRINT " Hollow destroys consciousness, it shuts down all self awareness in the brain."
+9740 PRINT " The patient still functions to a degree, but they're an automaton, endlessly"
+9750 PRINT " running the same mental subroutines like a piece of clockwork until the body"
+9760 PRINT " breaks down.'" : PRINT
+9770 PRINT "'I've been hiding in here to avoid contagion. Someone released the wraith-hound"
+9780 PRINT " from containment, but I've been able to keep it away with this weapon."
+9790 PRINT " But if you're immune, I can develop a vaccine from your blood.'" : PRINT
+9800 IF OL(SYRINGE) = 0 AND OB$(SYRINGE) = "blood filled syringe" THEN GOTO 9820
+9810 PRINT "'You need to get me a sample of your blood.'" : PRINT : RETURN
+9820 PRINT "'Ah, I see you have a blood sample, excellent.'" : PRINT
+9830 IF SUIT_WORN = 1 THEN GOTO 9855
+9840 PRINT " I still don't want to take the risk that you are contagious. Put on a space"
+9850 PRINT " suit and then I'll let you approach me.'" : PRINT: RETURN
+9855 PRINT "'Good, you're wearing a suit to avoid contaminating me.'" : PRINT
+9860 IF SHUTDOWN = 1 THEN GOTO 9885
+9870 PRINT "'Rescue will be impossible while the engines are running out of control."
+9880 PRINT " You'll need to take them offline.'": PRINT : RETURN
+9885 PRINT "'Good job on taking the engines offline, you've saved us both!"
+9890 PRINT " I'll work up the serum and we can wait for rescue.'" : PRINT
+9900 GOSUB 10000
+9910 RETURN
+10000 REM ========== finale ==========
+10010 PRINT "Congratulations, you have save Pneuma and helped Dr Lascoe develop"
+10020 PRINT "vaccine against HO-1, the Hollow virus."
+10030 PRINT : PRINT "                 THE END" : PRINT
+10040 STOP
+11000 REM TODO - wraith-hound fight, use rotten food, use rifle
 
 
 
