@@ -26,8 +26,9 @@
 703 PRINT "You are in the " ; LO$ ( PL ) : PRINT 
 705 GOSUB 4010 : REM print room description
 706 GOSUB 8000 : REM tracker info if carried
-708 GOSUB 8200 : REM wraith-hound proximity check
-709 GOSUB 8400 : REM wraith-hound movement
+707 GOSUB 8200 : REM wraith-hound proximity check
+708 GOSUB 8400 : REM wraith-hound movement
+709 IF WPL = PL THEN GOSUB 11000 : REM fight wraith-hound 
 710 INPUT "What now? " ; I$ 
 715 PRINT 
 716 MOVE = 1 
@@ -518,7 +519,33 @@
 10020 PRINT "vaccine against HO-1, the Hollow virus."
 10030 PRINT : PRINT "                 THE END" : PRINT
 10040 STOP
-11000 REM TODO - wraith-hound fight, use rotten food, use rifle
+11000 REM ========== fight ==========
+11010 PRINT "The wraith-hound arrives. It is an abomination! A weapon system that"
+11020 PRINT "nature would never have created unaided. Everything about it is just"
+11030 PRINT "plain wrong on so many levels. One thing is clear, it is designed"
+11035 PRINT "purely for hunting and killing." : PRINT
+11040 INPUT "Do you r[un] or f[ight]?"; I$
+11050 PRINT
+11060 IF LOWER$ ( I$ ) = "f" OR LOWER$ ( I$ ) = "fight" THEN GOTO 11190
+11065 IF LOWER$ ( I$ ) = "r" OR LOWER$ ( I$ ) = "run" THEN GOTO 11070
+11067 PRINT "Command unrecognised, you must fight!" : PRINT : GOTO 11190
+11070 REM run away to a random adjoining room
+11080 DIR = RNDINT(1, 6)
+11090 IF DIR = 1 THEN INDEX = 1
+11100 IF DIR = 2 THEN INDEX = 3
+11110 IF DIR = 3 THEN INDEX = 5
+11120 IF DIR = 4 THEN INDEX = 7
+11130 IF DIR = 5 THEN INDEX = 9
+11140 IF DIR = 6 THEN INDEX = 11
+11150 NPL = VAL ( MID$ ( EX$ ( PL ) , INDEX , 2 ) ) : REM potential next location
+11160 IF NPL = 0 THEN GOTO 11080 : REM can't go that way
+11170 PL = NPL
+11175 GOSUB 4010
+11180 RETURN
+11190 REM fight 
+11200 REM TODO - wraith-hound fight, use rotten food, use rifle
+11210 RETURN
+
 
 
 
