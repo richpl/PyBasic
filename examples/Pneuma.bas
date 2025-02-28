@@ -26,8 +26,8 @@
 703 PRINT "You are in the " ; LO$ ( PL ) : PRINT 
 705 GOSUB 4010 : REM print room description
 706 GOSUB 8000 : REM tracker info if carried
-707 GOSUB 8200 : REM wraith-hound proximity check
-708 GOSUB 8400 : REM wraith-hound movement
+707 IF WPL <> 99 THEN GOSUB 8200 : REM wraith-hound proximity check
+708 IF WPL <> 99 THEN GOSUB 8400 : REM wraith-hound movement
 709 IF WPL = PL THEN GOSUB 11000 : REM fight wraith-hound 
 710 INPUT "What now? " ; I$ 
 715 PRINT 
@@ -175,7 +175,7 @@
 2910 DIM OB$ ( OC ) 
 2915 PULSE = 0 : OB$ ( PULSE ) = "pulse rifle" 
 2920 SUIT = 1 : OB$ ( SUIT ) = "space suit" 
-2922 FOOD = 2 : OB$ ( FOOD ) = "rotting food" 
+2922 KNIFE = 2 : OB$ ( KNIFE ) = "knife" 
 2924 TRACKER = 3 : OB$ ( TRACKER ) = "tracker"
 2926 SYRINGE = 4 : OB$ ( SYRINGE ) = "syringe"
 2930 REM object locations 
@@ -183,7 +183,7 @@
 2934 DIM OL ( OC )  
 2936 OL ( PULSE ) = ARM 
 2937 OL ( SUIT ) = POD 
-2939 OL ( FOOD ) = GAL 
+2939 OL ( KNIFE ) = GAL 
 2940 OL ( TRACKER ) = GYM
 2941 OL ( SYRINGE ) = MED
 2942 IC = 5 : REM interactive object count
@@ -424,7 +424,8 @@
 7535 PRINT
 7550 RETURN
 8000 REM ========== wraith-hound tracking ==========
-8010 IF OL ( TRACKER ) <> INV THEN GOTO 8040
+8010 IF OL ( TRACKER ) <> INV THEN RETURN
+8015 IF WPL = 99 THEN PRINT "Tracking: Wraith-hound terminated." : GOTO 8030
 8020 PRINT "Tracking: Wraith-hound current location is the "; LO$ ( WPL )
 8030 PRINT
 8040 RETURN
@@ -539,12 +540,40 @@
 11140 IF DIR = 6 THEN INDEX = 11
 11150 NPL = VAL ( MID$ ( EX$ ( PL ) , INDEX , 2 ) ) : REM potential next location
 11160 IF NPL = 0 THEN GOTO 11080 : REM can't go that way
-11170 PL = NPL
+11170 PL = NPL : PRINT "You are in the " ; LO$ ( PL ) : PRINT 
 11175 GOSUB 4010
 11180 RETURN
-11190 REM fight 
-11200 REM TODO - wraith-hound fight, use rotten food, use rifle
-11210 RETURN
+11190 REM fight
+11200 FEROCITY = 60 : REM ferocity factor for wraith-hound 
+11205 STAMINA = 60 : REM your stamina
+11210 IF OL(PULSE) <> INV AND OL(KNIFE) <> INV THEN PRINT "You have no weapons, and must fight bare handed." : PRINT : GOTO 11280
+11220 IF OL(PULSE) = INV AND OL(KNIFE) <> INV THEN PRINT "Luckily, you have a pulse rifle." : PRINT: FEROCITY=50 : GOTO 11280
+11230 IF OL(PULSE) <> INV AND OL(KNIFE) = INV THEN PRINT "You only have a knife with which to fight." : PRINT : FEROCITY = 55 : GOTO 11280
+11240 INPUT "Which weapon do you choose? 1 - Pulse rifle, 2 - Knife: "; WPN
+11245 PRINT
+11250 IF WPN<1 OR WPN>2 THEN GOTO 11240
+11260 IF WPN=1 THEN FEROCITY = 50
+11270 IF WPN=2 THEN FEROCITY = 55
+11280 REM the battle
+11290 IF RND(1)>0.5 THEN PRINT "The wraith-hound attacks!" ELSE PRINT "You attack!"
+11300 PRINT
+11305 GOSUB 11430
+11310 IF RND(1)>0.5 THEN PRINT "You wound the creature." : PRINT: FEROCITY = FEROCITY-5 : GOTO 11330
+11320 PRINT "The wraith-hound wounds you." : PRINT : STAMINA = STAMINA-5
+11330 GOSUB 11430
+11340 IF FEROCITY > 0 THEN GOTO 11390
+11350 PRINT "You slayed the wraith-hound!" : PRINT
+11360 REM remove creature from the game
+11370 WPL = 99 : REM inaccessible location 
+11380 RETURN
+11390 IF STAMINA > 0 THEN GOTO 11420
+11400 PRINT "You were slayed by the wraith-hound! You have failed to save the Pneuma." : PRINT
+11410 STOP
+11420 GOTO 11280 : REM next round of the battle
+11430 REM ========== delay loop ==========
+11440 FOR T = 1 TO 80000
+11450 NEXT T
+11460 RETURN
 
 
 
