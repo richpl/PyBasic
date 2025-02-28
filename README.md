@@ -926,6 +926,8 @@ and expanded by Don Woods.
 
 * *life.bas* - An implementation of Conway's Game of Life. This version is a port of the BASIC program which appeared in 'BASIC Computer Games' in 1978.
 
+* *Pneuma.bas* - A brief 21st century take on the venerable text adventure.
+
 ## Informal grammar definition
 
 **ABS**(*numerical-expression*) - Calculates the absolute value of the result of *numerical-expression*
