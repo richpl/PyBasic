@@ -12,7 +12,6 @@
 80 PRINT "You have a sore throat and the mother of all headaches, like your brain has been boiling" 
 85 PRINT "in your skull. In fact, you're no longer sure exactly where you are ... you seem to be" 
 90 PRINT "suffering from some sort of amnesia ...": PRINT 
-92 PRINT "THIS GAME IS UNFINISHED AND IS A WORK IN PROGRESS" : PRINT
 95 REM set up environment
 100 GOSUB 2700
 500 REM setup room descriptions 
@@ -251,13 +250,13 @@
 3280 DATA "The medical centre looks relatively normal, but there is evidence of discarded items"
 3290 DATA "lying around the room. Blood filled syringes are scattered on a workbench, as well as"
 3300 DATA "some bloodied bandanges. The words 'I'm losing myself' are scrawled messily in blood on"
-3310 DATA "one wall. In the corner you can see a medical scanner and next to it, a terminal. On the"
-3320 DATA "terminal screen is a portion of the medical log. Exits lead port and forward."
+3310 DATA "one wall. In the corner you can see a terminal. On the terminal screen is a portion"
+3320 DATA "of the medical log. Exits lead port and forward."
 3325 REM gymnasium
 3330 DATA "The gymnasium is full of exercise equipment. A female runner is sprinting furiously on a"
 3340 DATA "treadmill. She looks exhausted and emaciated, but she keeps running at top speed, almost at"
-3350 DATA "a sprint. Her eyes remain fixed on the treadmill console. There are aft and port exists,"
-3360 DATA " as well as a stairwell leading to the lower deck in the far corner.", ""
+3350 DATA "a sprint. Her eyes remain fixed on the treadmill console. There are aft and port exits,"
+3360 DATA "as well as a stairwell leading to the lower deck in the far corner.", ""
 3370 REM lower aft corridor
 3380 DATA "This is a featureless, utilitarian corridor. A stairwell leads upwards. There are also"
 3390 DATA "exits leading starboard and forward.", "", "", ""
@@ -270,7 +269,7 @@
 3490 DATA  "floor, their contents spilling out. Along the port wall is a door marked 'Test specimens'."
 3500 DATA  "From behind the door, strange animal noises are audible ... snuffling sounds and the"
 3510 DATA  "occasional primate shriek. A dead man wearing a scuffed and torn lab coat is lying face down"
-3520 DATA  "in front of the specimen door. Two other exists lead forward and aft."
+3520 DATA  "in front of the specimen door. Two other exits lead forward and aft."
 3525 REM menagerie
 3530 DATA "The room is a hellhole. Cages stand open, while various animals roam about: chimpanzees,"
 3540 DATA "dogs, and rats. Some of the rats are dead, having been savaged and eviscerated. The floor"
@@ -547,7 +546,7 @@
 11180 RETURN
 11190 REM fight
 11200 FEROCITY = 60 : REM ferocity factor for wraith-hound 
-11205 STAMINA = 60 : REM your stamina
+11205 STAMINA = 50 : REM your stamina
 11210 IF OL(PULSE) <> INV AND OL(KNIFE) <> INV THEN PRINT "You have no weapons, and must fight bare handed." : PRINT : GOTO 11280
 11220 IF OL(PULSE) = INV AND OL(KNIFE) <> INV THEN PRINT "Luckily, you have a pulse rifle." : PRINT: FEROCITY=50 : GOTO 11280
 11230 IF OL(PULSE) <> INV AND OL(KNIFE) = INV THEN PRINT "You only have a knife with which to fight." : PRINT : FEROCITY = 55 : GOTO 11280
