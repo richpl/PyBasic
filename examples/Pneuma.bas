@@ -22,12 +22,12 @@
 540 REM setup dialogue
 550 GOSUB 7000
 700 REM ========== main loop ==========
-701 REM show room details 
+701 IF WPL <> 99 THEN GOSUB 8400 : REM wraith-hound movement
+702 REM show room details 
 703 PRINT "You are in the " ; LO$ ( PL ) : PRINT 
 705 GOSUB 4010 : REM print room description
 706 GOSUB 8000 : REM tracker info if carried
 707 IF WPL <> 99 THEN GOSUB 8200 : REM wraith-hound proximity check
-708 IF WPL <> 99 THEN GOSUB 8400 : REM wraith-hound movement
 709 IF WPL = PL THEN GOSUB 11000 : REM fight wraith-hound 
 710 INPUT "What now? " ; I$ 
 715 PRINT 
@@ -487,9 +487,11 @@
 9510 IF PL <> ENG THEN PRINT "There is no red button here." : PRINT : RETURN
 9520 IF SHUTDOWN = 0 THEN GOTO 9540
 9525 SHUTDOWN = 0
-9530 PRINT "Engine restart initiated ... engines online." : PRINT : RETURN
+9530 PRINT "Engine restart initiated ... engines online." : PRINT
+9535 ID$ (ENGINE, 10) = "'WARNING: CORE BREACH IMMINENT'" : RETURN
 9540 SHUTDOWN = 1
 9550 PRINT "Engine shutdown initiated ... engines offline." : PRINT 
+9555 ID$ (ENGINE, 10) = "'ENGINES OFFLINE'"
 9560 RETURN
 9700 REM ========== laboratory conversation ==========
 9710 PRINT "Dr Lascoe is stood in the laboratory. He is armed. He speaks to you." : PRINT
