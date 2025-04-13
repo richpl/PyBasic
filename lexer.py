@@ -99,9 +99,12 @@ class Lexer:
                             break
 
             # Process numbers
-            elif c.isdigit():
+            elif c.isdigit() or c == '.':
                 token.category = Token.UNSIGNEDINT
                 found_point = False
+                if c == '.':
+                    token.category = Token.UNSIGNEDFLOAT
+                    found_point = True
 
                 # Consume all of the digits, including any decimal point
                 while True:
@@ -112,7 +115,7 @@ class Lexer:
                     # and this is not the first decimal point
                     if not c.isdigit():
                         if c == '.':
-                            if not found_point:
+                            if found_point is False:
                                 found_point = True
                                 token.category = Token.UNSIGNEDFLOAT
 
