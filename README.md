@@ -1080,7 +1080,6 @@ control flow changes to the Program object, is used consistently throughout the 
 
 * It is not possible to renumber a program. This would require considerable extra functionality.
 * Negative values are printed with a space (e.g. '- 5') in program listings because of tokenization. This does not affect functionality.
-* Decimal values less than one must be expressed with a leading zero (i.e. 0.34 rather than .34)
 * User input values cannot be directly assigned to array variables in an **INPUT** or **READ** statement
 * Strings representing numbers (e.g. "10") can actually be assigned to numeric variables in **INPUT** and **READ** statements without an
 error, Python will silently convert them to integers.
