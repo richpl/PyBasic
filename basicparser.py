@@ -1025,9 +1025,14 @@ class BASICParser:
                 self.__operand_stack.append(self.__sign*self.__symbol_table[self.__token.lexeme])
 
             else:
-                raise RuntimeError('Name ' + self.__token.lexeme + ' is not defined' +
-                                   ' in line ' + str(self.__line_number))
-
+                # default variables values for undefined variables.
+                if self.__token.lexeme.endswith ("$"):
+                    # default string
+                    self.__operand_stack.append("")
+                else:
+                    #default int
+                    self.__operand_stack.append(0)
+            
             self.__advance()
 
         elif self.__token.category == Token.LEFTPAREN:
