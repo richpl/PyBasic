@@ -263,8 +263,7 @@ Empty array value returned in line 30
 >
 ```
 
-As in all implementations of BASIC, there is no garbage collection (not surprising since all variables
-have global scope)!
+Since **all PyBasic variables have a global scope** and string memory is managed by the python interpreter, there is no garbage collection in PyBasic.  
 
 ### Program constants
 
