@@ -117,6 +117,46 @@ def main():
                 elif tokenlist[0].category == Token.NEW:
                     program.delete()
 
+                # Renumber the program
+                elif tokenlist[0].category == Token.RENUMBER:
+                    try:
+                        if len(tokenlist) == 1:
+                            # RENUMBER with no arguments
+                            program.renumber()
+                        else:
+                            # Parse comma-separated arguments, handling blank parameters
+                            args = []
+                            current_arg = ""
+                            
+                            for i in range(1, len(tokenlist)):
+                                if tokenlist[i].category == Token.COMMA:
+                                    # Process the accumulated argument
+                                    if current_arg.strip():
+                                        args.append(int(current_arg.strip()))
+                                    else:
+                                        args.append(None)  # Blank parameter
+                                    current_arg = ""
+                                elif tokenlist[i].category == Token.UNSIGNEDINT:
+                                    current_arg += tokenlist[i].lexeme
+                            
+                            # Process the final argument if any
+                            if current_arg.strip():
+                                args.append(int(current_arg.strip()))
+                            elif len(tokenlist) > 1 and tokenlist[-1].category == Token.COMMA:
+                                args.append(None)  # Trailing comma means blank parameter
+                            
+                            # Convert args list to proper parameters for renumber()
+                            # RENUMBER [newStart][,increment][,oldStart][,oldEnd]
+                            new_start = args[0] if len(args) > 0 and args[0] is not None else 10
+                            increment = args[1] if len(args) > 1 and args[1] is not None else 10
+                            old_start = args[2] if len(args) > 2 and args[2] is not None else None
+                            old_end = args[3] if len(args) > 3 and args[3] is not None else None
+                            
+                            program.renumber(new_start, increment, old_start, old_end)
+                        print("Program renumbered")
+                    except Exception as e:
+                        print(f"RENUMBER error: {e}", file=stderr)
+
                 # Unrecognised input
                 else:
                     print("Unrecognised input", file=stderr)
