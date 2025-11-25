@@ -429,6 +429,72 @@ class Program:
 
                         self.set_next_line_number(line_numbers[index])
 
+                    elif flowsignal.ftype == FlowSignal.WHILE_BEGIN:
+                        # WHILE loop start encountered
+                        # Put loop line number on the stack so
+                        # that it can be returned to when the loop
+                        # repeats
+                        self.__return_stack.append(line_numbers[index])
+
+                        # Continue to the next statement in the loop
+                        index = index + 1
+
+                        if index < len(line_numbers):
+                            self.set_next_line_number(line_numbers[index])
+
+                        else:
+                            # Reached end of program
+                            raise RuntimeError("Program terminated within a WHILE loop")
+
+                    elif flowsignal.ftype == FlowSignal.WHILE_SKIP:
+                        # WHILE condition is false, so skip
+                        # all statements within loop and move past the corresponding
+                        # WEND statement
+                        index = index + 1
+                        wend_count = 0
+                        while index < len(line_numbers):
+                            next_line_number = line_numbers[index]
+                            temp_tokenlist = self.__program[next_line_number]
+
+                            if temp_tokenlist[0].category == Token.WHILE:
+                                # Found nested WHILE, increment counter
+                                wend_count += 1
+                            elif temp_tokenlist[0].category == Token.WEND:
+                                if wend_count == 0:
+                                    # Found matching WEND statement
+                                    # Move to the statement after this WEND, if there is one
+                                    index = index + 1
+                                    if index < len(line_numbers):
+                                        next_line_number = line_numbers[index]  # Statement after the WEND
+                                        self.set_next_line_number(next_line_number)
+                                        break
+                                else:
+                                    # This WEND belongs to a nested WHILE
+                                    wend_count -= 1
+
+                            index = index + 1
+
+                        # Check we have not reached end of program
+                        if index >= len(line_numbers):
+                            # Terminate the program
+                            break
+
+                    elif flowsignal.ftype == FlowSignal.WHILE_REPEAT:
+                        # WHILE repeat encountered (WEND statement)
+                        # Pop the loop start address from the stack
+                        try:
+                            index = line_numbers.index(self.__return_stack.pop())
+
+                        except ValueError:
+                            raise RuntimeError("Invalid WHILE loop exit in line " +
+                                               str(self.get_next_line_number()))
+
+                        except IndexError:
+                            raise RuntimeError("WEND encountered without corresponding " +
+                                               "WHILE loop in line " + str(self.get_next_line_number()))
+
+                        self.set_next_line_number(line_numbers[index])
+
                 else:
                     index = index + 1
 

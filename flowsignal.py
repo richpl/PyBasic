@@ -76,6 +76,18 @@ class FlowSignal:
     # Indicates that a conditional result block should be executed
     EXECUTE            = 7
 
+    # Indicates the start of a WHILE loop where the condition
+    # is true and the loop body should be executed
+    WHILE_BEGIN        = 8
+
+    # Indicates the end of a WHILE loop and that execution should
+    # return to the beginning of the loop to re-evaluate the condition
+    WHILE_REPEAT       = 9
+
+    # Indicates that a WHILE loop should be skipped because
+    # the condition is false
+    WHILE_SKIP         = 10
+
     def __init__(self, ftarget=None, ftype=SIMPLE_JUMP, floop_var=None):
         """Creates a new FlowSignal for a branch. If the jump
         target is supplied, then the branch is assumed to be
@@ -93,7 +105,8 @@ class FlowSignal:
 
         if ftype not in [self.GOSUB, self.SIMPLE_JUMP, self.LOOP_BEGIN,
                          self.LOOP_REPEAT, self.RETURN,
-                         self.LOOP_SKIP, self.STOP, self.EXECUTE]:
+                         self.LOOP_SKIP, self.STOP, self.EXECUTE,
+                         self.WHILE_BEGIN, self.WHILE_REPEAT, self.WHILE_SKIP]:
             raise TypeError("Invalid flow signal type supplied: " + str(ftype))
 
         if ftarget == None and \
@@ -102,7 +115,8 @@ class FlowSignal:
 
         if ftarget != None and \
            ftype in [self.RETURN, self.LOOP_BEGIN, self.LOOP_REPEAT,
-                     self.STOP, self.EXECUTE]:
+                     self.STOP, self.EXECUTE, self.WHILE_BEGIN,
+                     self.WHILE_REPEAT]:
             raise TypeError("Target wrongly supplied for flow signal " + str(ftype))
 
         self.ftype = ftype
