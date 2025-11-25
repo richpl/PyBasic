@@ -239,7 +239,7 @@ class BASICParser:
 
         """
         if self.__token.category in [Token.FOR, Token.IF, Token.NEXT,
-                                     Token.ON]:
+                                     Token.ON, Token.WHILE, Token.WEND]:
             return self.__compoundstmt()
 
         else:
@@ -1108,6 +1108,12 @@ class BASICParser:
         elif self.__token.category == Token.ON:
             return self.__ongosubstmt()
 
+        elif self.__token.category == Token.WHILE:
+            return self.__whilestmt()
+
+        elif self.__token.category == Token.WEND:
+            return self.__wendstmt()
+
     def __ifstmt(self):
         """Parses if-then-else
         statements
@@ -1273,6 +1279,42 @@ class BASICParser:
                               ' in line ' + str(self.__line_number))
 
         return FlowSignal(ftype=FlowSignal.LOOP_REPEAT,floop_var=loop_variable)
+
+    def __whilestmt(self):
+        """Parses WHILE loops
+
+        :return: The FlowSignal to indicate that
+        a WHILE loop start has been processed
+
+        """
+
+        self.__advance()  # Advance past WHILE token
+        self.__logexpr()  # Evaluate the condition
+
+        # Save result of expression
+        condition_result = self.__operand_stack.pop()
+
+        # Check if the condition is true
+        if condition_result:
+            # Condition is true, execute the loop body
+            return FlowSignal(ftype=FlowSignal.WHILE_BEGIN)
+        else:
+            # Condition is false, skip the loop
+            return FlowSignal(ftype=FlowSignal.WHILE_SKIP)
+
+    def __wendstmt(self):
+        """Processes a WEND statement that terminates
+        a WHILE loop
+
+        :return: A FlowSignal indicating that the loop
+        should repeat (return to WHILE)
+
+        """
+
+        self.__advance()  # Advance past WEND token
+
+        # Return signal to repeat the WHILE loop
+        return FlowSignal(ftype=FlowSignal.WHILE_REPEAT)
 
     def __ongosubstmt(self):
         """Process the ON-GOSUB statement
