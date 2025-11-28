@@ -120,6 +120,8 @@ class BASICToken:
         LEFT            = 87  # LEFT$ function
         RIGHT           = 88  # RIGHT$ function
         RENUMBER        = 91  # RENUMBER command
+        WHILE           = 89  # WHILE keyword
+        WEND            = 90  # WEND keyword
 
         # Displayable names for each token category
         catnames = ['EOF', 'LET', 'LIST', 'PRINT', 'RUN',
@@ -138,7 +140,8 @@ class BASICToken:
         'MAX', 'MIN', 'INSTR', 'AND', 'OR', 'NOT', 'PI',
         'RNDINT', 'OPEN', 'HASH', 'CLOSE', 'FSEEK', 'APPEND',
         'OUTPUT', 'RESTORE', 'RNDINT', 'TAB', 'SEMICOLON',
-        'LEFT', 'RIGHT', 'RENUMBER']
+        'LEFT', 'RIGHT', 'RENUMBER',
+        'WHILE', 'WEND']
 
         smalltokens = {'=': ASSIGNOP, '(': LEFTPAREN, ')': RIGHTPAREN,
                        '+': PLUS, '-': MINUS, '*': TIMES, '/': DIVIDE,
@@ -175,7 +178,8 @@ class BASICToken:
                     'CLOSE': CLOSE, 'FSEEK': FSEEK,
                     'APPEND': APPEND, 'OUTPUT':OUTPUT,
                     'RESTORE': RESTORE, 'TAB': TAB,
-                    'LEFT$': LEFT, 'RIGHT$': RIGHT,'RENUMBER': RENUMBER}
+                    'LEFT$': LEFT, 'RIGHT$': RIGHT,'RENUMBER': RENUMBER,
+                    'WHILE': WHILE, 'WEND': WEND}
 
 
         # Functions

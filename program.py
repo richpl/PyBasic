@@ -151,6 +151,10 @@ class Program:
 
         # return dictionary for loop returns
         self.__return_loop = {}
+        
+        # WHILE loop tracking stack - separate from GOSUB return stack
+        # Each entry contains the line number of the WHILE statement
+        self.__while_stack = []
 
         # Setup DATA object
         self.__data = BASICData()
@@ -292,11 +296,39 @@ class Program:
         except RuntimeError as err:
             raise RuntimeError(str(err))
 
+    def __validate_while_wend(self):
+        """Validate that all WHILE statements have matching WEND statements"""
+        while_stack = []
+        line_numbers = self.line_numbers()
+        
+        for line_num in line_numbers:
+            statement = self.__program[line_num]
+            if statement and len(statement) > 0:
+                if statement[0].category == Token.WHILE:
+                    while_stack.append(line_num)
+                elif statement[0].category == Token.WEND:
+                    if not while_stack:
+                        raise RuntimeError(f"WEND without matching WHILE at line {line_num}")
+                    while_stack.pop()
+        
+        if while_stack:
+            raise RuntimeError(f"WHILE without matching WEND at line {while_stack[0]}")
+
+    def __clear_while_stack_on_goto(self, current_line, target_line):
+        """Clear WHILE loop stack when GOTO jumps out of loops"""
+        # Simple solution: GOTO clears the WHILE stack completely
+        # This prevents infinite loops caused by corrupted loop state
+        # Traditional BASIC behavior - GOTO breaks loop structures
+        self.__while_stack.clear()
+
     def execute(self):
         """Execute the program"""
 
         self.__parser = BASICParser(self.__data)
         self.__data.restore(0) # reset data pointer
+        
+        # Validate WHILE-WEND pairs before execution
+        self.__validate_while_wend()
 
         line_numbers = self.line_numbers()
 
@@ -318,6 +350,11 @@ class Program:
                 if flowsignal:
                     if flowsignal.ftype == FlowSignal.SIMPLE_JUMP:
                         # GOTO or conditional branch encountered
+                        # Clear WHILE loop stack if we're jumping out of loops
+                        target_line = flowsignal.ftarget
+                        current_line = self.get_next_line_number()
+                        self.__clear_while_stack_on_goto(current_line, target_line)
+                        
                         try:
                             index = line_numbers.index(flowsignal.ftarget)
 
@@ -426,6 +463,71 @@ class Program:
                         except KeyError:
                             raise RuntimeError("NEXT encountered without corresponding " +
                                                "FOR loop in line " + str(self.get_next_line_number()))
+
+                        self.set_next_line_number(line_numbers[index])
+
+                    elif flowsignal.ftype == FlowSignal.WHILE_BEGIN:
+                        # WHILE loop start encountered
+                        # Put loop line number on the WHILE stack so
+                        # that it can be returned to when the loop repeats
+                        self.__while_stack.append(line_numbers[index])
+
+                        # Continue to the next statement in the loop
+                        index = index + 1
+
+                        if index < len(line_numbers):
+                            self.set_next_line_number(line_numbers[index])
+
+                        else:
+                            # Reached end of program
+                            raise RuntimeError("Program terminated within a WHILE loop")
+
+                    elif flowsignal.ftype == FlowSignal.WHILE_SKIP:
+                        # WHILE condition is false, so skip
+                        # all statements within loop and move past the corresponding
+                        # WEND statement
+                        index = index + 1
+                        wend_count = 0
+                        while index < len(line_numbers):
+                            next_line_number = line_numbers[index]
+                            temp_tokenlist = self.__program[next_line_number]
+
+                            if temp_tokenlist[0].category == Token.WHILE:
+                                # Found nested WHILE, increment counter
+                                wend_count += 1
+                            elif temp_tokenlist[0].category == Token.WEND:
+                                if wend_count == 0:
+                                    # Found matching WEND statement
+                                    # Move to the statement after this WEND, if there is one
+                                    index = index + 1
+                                    if index < len(line_numbers):
+                                        next_line_number = line_numbers[index]  # Statement after the WEND
+                                        self.set_next_line_number(next_line_number)
+                                        break
+                                else:
+                                    # This WEND belongs to a nested WHILE
+                                    wend_count -= 1
+
+                            index = index + 1
+
+                        # Check we have not reached end of program
+                        if index >= len(line_numbers):
+                            # Terminate the program
+                            break
+
+                    elif flowsignal.ftype == FlowSignal.WHILE_REPEAT:
+                        # WHILE repeat encountered (WEND statement)
+                        # Pop the loop start address from the WHILE stack
+                        try:
+                            index = line_numbers.index(self.__while_stack.pop())
+
+                        except ValueError:
+                            raise RuntimeError("Invalid WHILE loop exit in line " +
+                                               str(self.get_next_line_number()))
+
+                        except IndexError:
+                            raise RuntimeError("WEND encountered without corresponding " +
+                                               "WHILE loop in line " + str(self.get_next_line_number()))
 
                         self.set_next_line_number(line_numbers[index])
 
