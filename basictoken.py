@@ -119,9 +119,9 @@ class BASICToken:
         SEMICOLON       = 86  # SEMICOLON
         LEFT            = 87  # LEFT$ function
         RIGHT           = 88  # RIGHT$ function
-        RENUMBER        = 91  # RENUMBER command
         WHILE           = 89  # WHILE keyword
         WEND            = 90  # WEND keyword
+        RENUMBER        = 91  # RENUMBER command
 
         # Displayable names for each token category
         catnames = ['EOF', 'LET', 'LIST', 'PRINT', 'RUN',
@@ -140,8 +140,8 @@ class BASICToken:
         'MAX', 'MIN', 'INSTR', 'AND', 'OR', 'NOT', 'PI',
         'RNDINT', 'OPEN', 'HASH', 'CLOSE', 'FSEEK', 'APPEND',
         'OUTPUT', 'RESTORE', 'RNDINT', 'TAB', 'SEMICOLON',
-        'LEFT', 'RIGHT', 'RENUMBER',
-        'WHILE', 'WEND']
+        'LEFT', 'RIGHT',
+        'WHILE', 'WEND', 'RENUMBER']
 
         smalltokens = {'=': ASSIGNOP, '(': LEFTPAREN, ')': RIGHTPAREN,
                        '+': PLUS, '-': MINUS, '*': TIMES, '/': DIVIDE,
@@ -203,3 +203,4 @@ class BASICToken:
 
         def print_lexeme(self):
             print(self.lexeme, end=' ')
+
