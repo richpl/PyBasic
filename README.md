@@ -549,6 +549,49 @@ be replaced by the start value, it will not be evaluated.
 After the completion of the loop, the loop variable value will be the end value + step value (unless
 the loop is exited using a **GOTO** statement).
 
+Conditional loops are achieved through the use of **WHILE-WEND** statements. The loop continues to execute
+as long as the specified condition remains true. The condition is evaluated before each iteration, so if
+the condition is false initially, the loop body will not execute at all.
+
+```
+> 10 LET I = 1
+> 20 WHILE I <= 3
+> 30 PRINT "Count: "; I
+> 40 LET I = I + 1
+> 50 WEND
+> RUN
+Count: 1
+Count: 2
+Count: 3
+>
+```
+
+WHILE loops may be nested within one another and can also be nested within FOR loops and vice versa.
+The loop will terminate when the condition becomes false or when exited using a **GOTO** statement.
+
+**Example of nested WHILE loops:**
+
+```
+> 10 LET I = 1
+> 20 WHILE I <= 2
+> 30 PRINT "Outer: "; I
+> 40 LET J = 1
+> 50 WHILE J <= 2
+> 60 PRINT "  Inner: "; J
+> 70 LET J = J + 1
+> 80 WEND
+> 90 LET I = I + 1
+> 100 WEND
+> RUN
+Outer: 1
+  Inner: 1
+  Inner: 2
+Outer: 2
+  Inner: 1
+  Inner: 2
+>
+```
+
 ### Conditionals
 
 Conditionals are implemented using the **IF-THEN-ELSE** statement. The expression is evaluated and the appropriate 
