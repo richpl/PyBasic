@@ -175,13 +175,31 @@ class Program:
         statement = self.__program[line_number]
         if statement[0].category == Token.DATA:
             statement = self.__data.getTokens(line_number)
-        for token in statement:
+        
+        # Track operators and contexts where minus might be unary
+        operators_and_contexts = {
+            Token.PLUS, Token.MINUS, Token.TIMES, Token.DIVIDE, Token.MODULO,
+            Token.ASSIGNOP, Token.EQUAL, Token.NOTEQUAL, Token.GREATER, 
+            Token.LESSER, Token.LESSEQUAL, Token.GREATEQUAL,
+            Token.LEFTPAREN, Token.COMMA, Token.AND, Token.OR
+        }
+        
+        for i, token in enumerate(statement):
             # Add in quotes for strings
             if token.category == Token.STRING:
                 line_text += '"' + token.lexeme + '" '
-
             else:
-                line_text += token.lexeme + " "
+                # Check if this is a minus sign that should be treated as unary
+                if (token.category == Token.MINUS and 
+                    i + 1 < len(statement) and 
+                    statement[i + 1].category in {Token.UNSIGNEDINT, Token.UNSIGNEDFLOAT} and
+                    (i == 0 or statement[i - 1].category in operators_and_contexts)):
+                    # This is a unary minus, don't add space after it
+                    line_text += token.lexeme
+                else:
+                    # Normal token, add space after
+                    line_text += token.lexeme + " "
+        
         line_text += "\n"
         return line_text
 
