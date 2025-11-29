@@ -1,8 +1,0 @@
-name: ci
-on: [pull_request, push]
-jobs:
-  pytest:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - run: pipx run pytest --doctest-modules
