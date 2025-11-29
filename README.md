@@ -213,7 +213,7 @@ Program terminated
 ### Statement structure
 
 As per usual in old school BASIC, all program statements must be prefixed with a line number which indicates the order in which the
-statements may be executed. A statement may be modified or
+statements may be executed. There is no renumber command to allow all line numbers to be modified. A statement may be modified or
 replaced by re-entering a statement with the same line number:
 
 ```
@@ -388,6 +388,40 @@ Proper error handling is provided:
 - **SUBSCRIPT ERROR**: When array indices are out of bounds or negative
 - **OUT OF DATA**: When there are no more DATA items to read
 - Index validation occurs BEFORE consuming DATA items
+
+#### Array Support in READ
+
+The **READ** statement now supports reading data directly into array elements, using expressions for array indices:
+
+```
+> 10 DIM A(5)
+> 20 DIM N$(3)
+> 30 DATA 10, 20, 30, "Hello", "World"
+> 40 READ A(1), A(2), A(3), N$(1), N$(2)
+> 50 PRINT A(1); A(2); A(3); N$(1); N$(2)
+> RUN
+102030HelloWorld
+>
+```
+
+Array indices can be complex expressions including variables and arithmetic:
+
+```
+> 10 DIM B(10)
+> 20 I = 2
+> 30 DATA 100, 200
+> 40 READ B(I*3), B(I+4)
+> 50 PRINT "B(6)="; B(6)  REM Shows 200 (second value overwrites first)
+> RUN
+B(6)=200
+>
+```
+
+Proper error handling is provided:
+- **SUBSCRIPT ERROR**: When array indices are out of bounds or negative
+- **OUT OF DATA**: When there are no more DATA items to read
+- Index validation occurs BEFORE consuming DATA items
+
 
 ### Comments
 
@@ -1230,11 +1264,8 @@ a subroutine call, or program termination. This paradigm of using the parser to 
 object to make control flow decisions and to track execution, and a signalling mechanism to allow the parser to signal
 control flow changes to the Program object, is used consistently throughout the implementation.
 
-## Open issues
+## Python Basic feature
 
-* It is not possible to renumber a program. This would require considerable extra functionality.
-* Negative values are printed with a space (e.g. '- 5') in program listings because of tokenization. This does not affect functionality.
-* User input values cannot be directly assigned to array variables in an **INPUT** or **READ** statement
 * Strings representing numbers (e.g. "10") can actually be assigned to numeric variables in **INPUT** and **READ** statements without an
 error, Python will silently convert them to integers.
 
