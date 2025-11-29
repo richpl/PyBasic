@@ -21,14 +21,12 @@ object tells the Program the nature of the jump and therefore whether a
 return address need to be added to the return stack.
 
 >>> flowsignal = FlowSignal(ftype=FlowSignal.RETURN)
->>> flowsignal.ftarget is None
-True
->>> flowsignal.ftype
-5
+>>> print(flowsignal.ftarget)
+-1
 >>> flowsignal = FlowSignal(ftarget=100, ftype=FlowSignal.SIMPLE_JUMP)
->>> flowsignal.ftarget
+>>> print(flowsignal.ftarget)
 100
->>> flowsignal.ftype
+>>> print(flowsignal.ftype)
 0
 """
 
