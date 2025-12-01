@@ -213,7 +213,7 @@ Program terminated
 ### Statement structure
 
 As per usual in old school BASIC, all program statements must be prefixed with a line number which indicates the order in which the
-statements may be executed. There is no renumber command to allow all line numbers to be modified. A statement may be modified or
+statements may be executed. A statement may be modified or
 replaced by re-entering a statement with the same line number:
 
 ```

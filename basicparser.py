@@ -25,16 +25,20 @@ except:
     from time import monotonic
 
 
+# Maximum number of array dimensions supported
+MAX_ARRAY_DIMENSIONS = 3
+
+
 """Implements a BASIC array, which may have up
 to three dimensions of fixed size.
-
+resizable with the  MAX_ARRAY_DIMENSIONS constant above
 """
 class BASICArray:
 
     def __init__(self, dimensions, elem_type):
         """Initialises the object with the specified
         number of dimensions. Maximum number of
-        dimensions is three
+        dimensions is set by  MAX_ARRAY_DIMENSIONS constant
 
         :param dimensions: List of array dimensions and their
         corresponding sizes
@@ -42,7 +46,7 @@ class BASICArray:
         or numbers ('num')
 
         """
-        self.dims = min(3, len(dimensions))
+        self.dims = min(MAX_ARRAY_DIMENSIONS, len(dimensions))
 
         if self.dims == 0:
             raise SyntaxError("Zero dimensional array specified")
@@ -62,37 +66,20 @@ class BASICArray:
         # MSBASIC: Initialize to Zero
         # MSBASIC: Overdim by one, as some dialects are 1 based and expect
         #          to use the last item at index = size
-        if self.dims == 1:
-            if elem_type == 'num':
-                self.data = [0 for x in range(dimensions[0] + 1)]
+        # Create a nested list structure dynamically based on dimensions
+        def create_nested_array(dims_remaining, current_dim_index):
+            if dims_remaining == 1:
+                # Base case: create the innermost list
+                if elem_type == 'num':
+                    return [0 for _ in range(dimensions[current_dim_index] + 1)]
+                else:
+                    return ['' for _ in range(dimensions[current_dim_index] + 1)]
             else:
-                self.data = ['' for x in range(dimensions[0] + 1)]
-        elif self.dims == 2:
-            if elem_type == 'num':
-                self.data = [
-                     [0 for x in range(dimensions[1] + 1)] for x in range(dimensions[0] + 1)
-                ]
-            else:
-                self.data = [
-                    ['' for x in range(dimensions[1] + 1)] for x in range(dimensions[0] + 1)
-                ]
-        else:
-            if elem_type == 'num':
-                self.data = [
-                    [
-                        [0 for x in range(dimensions[2] + 1)]
-                        for x in range(dimensions[1] + 1)
-                    ]
-                    for x in range(dimensions[0] + 1)
-                ]
-            else:
-                self.data = [
-                    [
-                        ['' for x in range(dimensions[2] + 1)]
-                        for x in range(dimensions[1] + 1)
-                    ]
-                    for x in range(dimensions[0] + 1)
-                ]
+                # Recursive case: create list of nested arrays
+                return [create_nested_array(dims_remaining - 1, current_dim_index + 1) 
+                       for _ in range(dimensions[current_dim_index] + 1)]
+        
+        self.data = create_nested_array(self.dims, 0)
 
     def pretty_print(self):
         print(str(self.data))
@@ -530,9 +517,9 @@ class BASICParser:
 
             self.__consume(Token.RIGHTPAREN)
 
-            if len(dimensions) > 3:
+            if len(dimensions) > MAX_ARRAY_DIMENSIONS:
                 raise SyntaxError(
-                    'Maximum number of array dimensions is three '
+                    f'Maximum number of array dimensions is {MAX_ARRAY_DIMENSIONS} '
                     + 'in line '
                     + str(self.__line_number)
                 )
@@ -642,7 +629,6 @@ class BASICParser:
         if self.__token.category == Token.ELSE:
             branchOnError = True
             self.__advance() # Advance past ELSE
-
             if self.__token.category == Token.GOTO:
                 self.__advance()    # Advance past optional GOTO
 
@@ -1082,14 +1068,11 @@ class BASICParser:
 
         # Fetch the value from the array
         try:
-            if len(indexvars) == 1:
-                arrayval = BASICarray.data[indexvars[0]]
-
-            elif len(indexvars) == 2:
-                arrayval = BASICarray.data[indexvars[0]][indexvars[1]]
-
-            elif len(indexvars) == 3:
-                arrayval = BASICarray.data[indexvars[0]][indexvars[1]][indexvars[2]]
+            # Navigate through the nested array structure dynamically
+            current_data = BASICarray.data
+            for index in indexvars:
+                current_data = current_data[index]
+            arrayval = current_data
 
         except IndexError:
             raise RuntimeError('SUBSCRIPT ERROR in line ' + str(self.__line_number))
@@ -1126,12 +1109,12 @@ class BASICParser:
         self.__validate_array_indices(BASICarray, indexvars)
         
         try:
-            if len(indexvars) == 1:
-                BASICarray.data[indexvars[0]] = value
-            elif len(indexvars) == 2:
-                BASICarray.data[indexvars[0]][indexvars[1]] = value
-            elif len(indexvars) == 3:
-                BASICarray.data[indexvars[0]][indexvars[1]][indexvars[2]] = value
+            # Navigate to the target location in the nested array structure
+            current_data = BASICarray.data
+            for index in indexvars[:-1]:
+                current_data = current_data[index]
+            # Assign the value to the final index
+            current_data[indexvars[-1]] = value
         except IndexError:
             raise RuntimeError('SUBSCRIPT ERROR in line ' + str(self.__line_number))
 
