@@ -666,22 +666,30 @@ class BASICParser:
         if accessMode == "r+":
             # By checking the 'newlines' attribute the appropriate adjustment for
             # the file being opened can be determined.
-            if hasattr(self.__file_handles[filenum],'newlines'):
-                try:
-                    # newline attribute is only set after a line is read
-                    self.__file_handles[filenum].readline()
-                except:
-                    pass
-                newlines = self.__file_handles[filenum].newlines
-            else:
+
+            try:
+                # newline attribute is only set after a line is read
+                # manually identify newlines in case newlines attribute isn't supported
+                fileline = self.__file_handles[filenum].readline()
+                newlines = ""
+                for ichar in range(len(fileline)-1,-1,-1):
+                    if fileline[ichar] not in ['\n','\r']:
+                        break
+                    newlines = fileline[ichar:]
+            except:
                 newlines = None
-            
+
+            if hasattr(self.__file_handles[filenum],'newlines'):
+                newlines = self.__file_handles[filenum].newlines
+
             self.__file_handles[filenum].seek(0)
             filelen = 0
-            if newlines != None:
+
+            if newlines is not None:
                 newlineAdj = len(newlines) - 1
             else:
-                # If using version of Python that doesn't have newlines attribute
+                # If we wern't able to determine an appropriate value and
+                # using version of Python that doesn't have newlines attribute
                 # use adjustment appropriate for Windows formatted files
                 newlineAdj = 1
 
