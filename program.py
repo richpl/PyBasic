@@ -151,7 +151,7 @@ class Program:
 
         # return dictionary for loop returns
         self.__return_loop = {}
-        
+
         # WHILE loop tracking stack - separate from GOSUB return stack
         # Each entry contains the line number of the WHILE statement
         self.__while_stack = []
@@ -175,23 +175,23 @@ class Program:
         statement = self.__program[line_number]
         if statement[0].category == Token.DATA:
             statement = self.__data.getTokens(line_number)
-        
+
         # Track operators and contexts where minus might be unary
         operators_and_contexts = {
             Token.PLUS, Token.MINUS, Token.TIMES, Token.DIVIDE, Token.MODULO,
-            Token.ASSIGNOP, Token.EQUAL, Token.NOTEQUAL, Token.GREATER, 
+            Token.ASSIGNOP, Token.EQUAL, Token.NOTEQUAL, Token.GREATER,
             Token.LESSER, Token.LESSEQUAL, Token.GREATEQUAL,
             Token.LEFTPAREN, Token.COMMA, Token.AND, Token.OR
         }
-        
+
         for i, token in enumerate(statement):
             # Add in quotes for strings
             if token.category == Token.STRING:
                 line_text += '"' + token.lexeme + '" '
             else:
                 # Check if this is a minus sign that should be treated as unary
-                if (token.category == Token.MINUS and 
-                    i + 1 < len(statement) and 
+                if (token.category == Token.MINUS and
+                    i + 1 < len(statement) and
                     statement[i + 1].category in {Token.UNSIGNEDINT, Token.UNSIGNEDFLOAT} and
                     (i == 0 or statement[i - 1].category in operators_and_contexts)):
                     # This is a unary minus, don't add space after it
@@ -199,7 +199,7 @@ class Program:
                 else:
                     # Normal token, add space after
                     line_text += token.lexeme + " "
-        
+
         line_text += "\n"
         return line_text
 
@@ -318,7 +318,7 @@ class Program:
         """Validate that all WHILE statements have matching WEND statements"""
         while_stack = []
         line_numbers = self.line_numbers()
-        
+
         for line_num in line_numbers:
             statement = self.__program[line_num]
             if statement and len(statement) > 0:
@@ -328,7 +328,7 @@ class Program:
                     if not while_stack:
                         raise RuntimeError(f"WEND without matching WHILE at line {line_num}")
                     while_stack.pop()
-        
+
         if while_stack:
             raise RuntimeError(f"WHILE without matching WEND at line {while_stack[0]}")
 
@@ -344,7 +344,7 @@ class Program:
 
         self.__parser = BASICParser(self.__data)
         self.__data.restore(0) # reset data pointer
-        
+
         # Validate WHILE-WEND pairs before execution
         self.__validate_while_wend()
 
@@ -372,7 +372,7 @@ class Program:
                         target_line = flowsignal.ftarget
                         current_line = self.get_next_line_number()
                         self.__clear_while_stack_on_goto(current_line, target_line)
-                        
+
                         try:
                             index = line_numbers.index(flowsignal.ftarget)
 
@@ -602,13 +602,13 @@ class Program:
 
     def renumber(self, new_start=10, increment=10, old_start=None, old_end=None):
         """Renumber the program according to BASIC RENUMBER command specification
-        
+
         :param new_start: First line number assigned during renumbering (default: 10)
-        :param increment: Amount added to each successive line number (default: 10) 
+        :param increment: Amount added to each successive line number (default: 10)
         :param old_start: Lowest line number to renumber (default: first line)
         :param old_end: Highest line number to renumber (default: last line)
         """
-        
+
         # Validate parameters
         if increment == 0:
             raise ValueError("Increment cannot be zero")
@@ -616,38 +616,38 @@ class Program:
             raise ValueError("New start line number must be >= 1")
         if increment < 0:
             raise ValueError("Increment must be positive")
-            
+
         line_numbers = self.line_numbers()
         if not line_numbers:
             return  # No program to renumber
-            
+
         # Set defaults for old_start and old_end
         if old_start is None:
             old_start = line_numbers[0]
         if old_end is None:
             old_end = line_numbers[-1]
-            
+
         # Find lines within the renumbering range
         lines_to_renumber = []
         for line_num in line_numbers:
             if old_start <= line_num <= old_end:
                 lines_to_renumber.append(line_num)
-                
+
         if not lines_to_renumber:
             return  # No lines in range to renumber
-            
+
         # Step 1: Create mapping of old line numbers to new line numbers
         line_mapping = {}
         new_line_num = new_start
-        
+
         for old_line_num in lines_to_renumber:
             line_mapping[old_line_num] = new_line_num
             new_line_num += increment
-            
+
         # Check for overflow (basic line numbers typically max at 65535)
         if new_line_num - increment > 65535:
             raise ValueError("Line numbers would exceed maximum value (65535)")
-            
+
         # Check for conflicts with existing line numbers outside the range
         for new_num in line_mapping.values():
             if new_num in line_numbers and new_num not in lines_to_renumber:
@@ -655,66 +655,66 @@ class Program:
                 for ln in line_numbers:
                     if ln == new_num and ln not in lines_to_renumber:
                         raise ValueError(f"New line number {new_num} conflicts with existing line {ln}")
-        
+
         # Step 2: Update line number references in all program statements
         updated_program = {}
         updated_data = {}
-        
+
         for line_num in line_numbers:
             statement = self.__program[line_num]
-            
+
             # Update line number references within the statement
             updated_statement = self._update_line_references(statement, line_mapping)
-            
+
             # Determine the new line number for this statement
             if line_num in line_mapping:
                 new_line_num = line_mapping[line_num]
             else:
                 new_line_num = line_num
-                
+
             updated_program[new_line_num] = updated_statement
-            
+
             # Handle DATA statements
             if statement and statement[0].category == Token.DATA:
                 data_tokens = self.__data.getTokens(line_num)
                 if data_tokens:
                     updated_data[new_line_num] = data_tokens
-        
+
         # Step 3: Replace the program with the updated version
         self.__program = updated_program
-        
+
         # Update DATA storage
         self.__data.delete()
         for line_num, data_tokens in updated_data.items():
             self.__data.addData(line_num, data_tokens)
-    
+
     def _update_line_references(self, statement, line_mapping):
         """Update line number references within a statement
-        
+
         :param statement: List of tokens representing the statement
         :param line_mapping: Dictionary mapping old line numbers to new ones
         :return: Updated statement with new line number references
         """
         if not statement:
             return statement
-            
+
         updated_statement = []
         i = 0
-        
+
         while i < len(statement):
             token = statement[i]
-            
+
             # Skip string literals and comments - they should not be modified
             if token.category == Token.STRING:
                 updated_statement.append(token)
                 i += 1
                 continue
-                
+
             if token.category == Token.REM:
                 # Everything after REM is a comment, copy rest as-is
                 updated_statement.extend(statement[i:])
                 break
-                
+
             # Check for line number references in specific contexts
             if self._is_line_number_reference(statement, i):
                 if token.category == Token.UNSIGNEDINT:
@@ -729,35 +729,35 @@ class Program:
                     updated_statement.append(token)
             else:
                 updated_statement.append(token)
-                
+
             i += 1
-            
+
         return updated_statement
-    
+
     def _is_line_number_reference(self, statement, token_index):
         """Determine if the token at the given index is a line number reference
-        
-        :param statement: List of tokens representing the statement  
+
+        :param statement: List of tokens representing the statement
         :param token_index: Index of the token to check
         :return: True if this token is a line number reference
         """
         if token_index >= len(statement):
             return False
-            
+
         token = statement[token_index]
         if token.category != Token.UNSIGNEDINT:
             return False
-            
+
         # Check what comes before this number to determine context
         if token_index == 0:
             return False  # First token is the line number itself, not a reference
-            
+
         prev_token = statement[token_index - 1]
-        
+
         # Direct line number references
         if prev_token.category in [Token.GOTO, Token.GOSUB, Token.THEN, Token.RESTORE]:
             return True
-            
+
         # ON...GOTO and ON...GOSUB constructs
         if prev_token.category == Token.COMMA:
             # Look backward to find ON...GOTO or ON...GOSUB
@@ -770,7 +770,7 @@ class Program:
                     break
                 elif statement[j].category not in [Token.UNSIGNEDINT, Token.COMMA, Token.NAME]:
                     break
-        
+
         # Check for ON...GOTO/GOSUB patterns
         if token_index >= 2:
             # Look for pattern: ON <expr> GOTO/GOSUB <number>
@@ -781,5 +781,5 @@ class Program:
                         if statement[k].category in [Token.GOTO, Token.GOSUB]:
                             return True
                     break
-                    
+
         return False

@@ -1052,7 +1052,7 @@ class BASICParser:
                 else:
                     #default int
                     self.__operand_stack.append(0)
-            
+
             self.__advance()
 
         elif self.__token.category == Token.LEFTPAREN:
@@ -1106,33 +1106,33 @@ class BASICParser:
 
     def __validate_array_indices(self, BASICarray, indexvars):
         """Validates array indices and raises SUBSCRIPT ERROR if invalid
-        
+
         :param BASICarray: The BASICArray to validate against
         :param indexvars: List of index values to validate
         :raises RuntimeError: If indices are out of bounds
         """
         if BASICarray.dims != len(indexvars):
             raise RuntimeError('SUBSCRIPT ERROR in line ' + str(self.__line_number))
-            
+
         for i, index in enumerate(indexvars):
             # Convert float to int (truncate toward zero)
             if isinstance(index, float):
                 index = int(index)
                 indexvars[i] = index
-                
+
             # Check bounds - negative or greater than declared dimension
             if index < 0 or index > BASICarray.original_dims[i]:
                 raise RuntimeError('SUBSCRIPT ERROR in line ' + str(self.__line_number))
-    
+
     def __assign_array_val(self, BASICarray, indexvars, value):
         """Assigns a value to an array element after validating indices
-        
+
         :param BASICarray: The BASICArray
         :param indexvars: List of indices
         :param value: Value to assign
         """
         self.__validate_array_indices(BASICarray, indexvars)
-        
+
         try:
             if len(indexvars) == 1:
                 BASICarray.data[indexvars[0]] = value
@@ -1145,40 +1145,40 @@ class BASICParser:
 
     def __parse_variable_target(self):
         """Parses a variable target which can be a simple variable or array element
-        
+
         :return: Dictionary with 'type' ('simple' or 'array'), 'name' (variable name),
                  'indices' (list of index values for arrays), 'is_string' (boolean)
         """
         if self.__token.category != Token.NAME:
             raise SyntaxError('Expecting variable name in line ' + str(self.__line_number))
-            
+
         var_name = self.__token.lexeme
         is_string = var_name.endswith('$')
         self.__advance()
-        
+
         # Check if this is an array element
         if self.__token.category == Token.LEFTPAREN:
             # Array element target
             array_name = var_name + '_array'
-            
+
             # Check if array exists
             if array_name not in self.__symbol_table:
                 raise RuntimeError('Array not dimensioned in line ' + str(self.__line_number))
-                
+
             self.__advance()  # Past LEFTPAREN
-            
+
             # Parse index expressions
             indexvars = []
             self.__expr()
             indexvars.append(self.__operand_stack.pop())
-            
+
             while self.__token.category == Token.COMMA:
                 self.__advance()  # Past comma
                 self.__expr()
                 indexvars.append(self.__operand_stack.pop())
-                
+
             self.__consume(Token.RIGHTPAREN)
-            
+
             return {
                 'type': 'array',
                 'name': var_name,
@@ -1193,21 +1193,21 @@ class BASICParser:
                 'name': var_name,
                 'is_string': is_string
             }
-            
+
     def __assign_to_target(self, target, value):
         """Assigns a value to a target (simple variable or array element)
-        
+
         :param target: Target dictionary from __parse_variable_target
         :param value: Value to assign
         """
         # Type checking
         if target['is_string'] and not isinstance(value, str):
-            raise ValueError('Non-string input provided to a string variable in line ' + 
+            raise ValueError('Non-string input provided to a string variable in line ' +
                            str(self.__line_number))
         elif not target['is_string'] and isinstance(value, str):
-            raise ValueError('Non-numeric input provided to a numeric variable in line ' + 
+            raise ValueError('Non-numeric input provided to a numeric variable in line ' +
                            str(self.__line_number))
-                           
+
         if target['type'] == 'simple':
             self.__symbol_table[target['name']] = value
         else:  # array
