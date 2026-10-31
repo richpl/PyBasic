@@ -356,6 +356,7 @@ class Program:
     def execute(self):
         """Execute the program"""
 
+        self.__while_stack.clear()
         self.__parser = BASICParser(self.__data)
         self.__data.restore(0) # reset data pointer
 

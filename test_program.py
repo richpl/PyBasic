@@ -75,6 +75,25 @@ class ProgramRegressionTests(unittest.TestCase):
             program.execute()
         self.assertEqual(output.getvalue().strip(), "2")
 
+    def test_run_after_editing_stopped_while_discards_previous_frames(self):
+        lexer = Lexer()
+        program = Program()
+        for statement in ("10 WHILE 1=1", "20 STOP", "30 WEND"):
+            program.add_stmt(lexer.tokenize(statement))
+        program.execute()
+
+        for statement in (
+            "10 GOTO 40",
+            "20 PRINT 2",
+            "30 PRINT 3",
+            "40 PRINT 4",
+        ):
+            program.add_stmt(lexer.tokenize(statement))
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            program.execute()
+        self.assertEqual(output.getvalue().strip(), "4")
+
     def test_jump_to_same_while_header_replaces_active_frame(self):
         lexer = Lexer()
         program = Program()
