@@ -273,6 +273,9 @@ class Program:
                     self.__data.addData(line_number,tokenlist[1:])
                     self.__program[line_number] = [tokenlist[1],]
                 else:
+                    previous = self.__program.get(line_number)
+                    if previous is not None and previous[0].category == Token.DATA:
+                        self.__data.delData(line_number)
                     self.__program[line_number] = tokenlist[1:]
 
             except TypeError as err:
@@ -332,16 +335,28 @@ class Program:
         if while_stack:
             raise RuntimeError(f"WHILE without matching WEND at line {while_stack[0]}")
 
-    def __clear_while_stack_on_goto(self, current_line, target_line):
-        """Clear WHILE loop stack when GOTO jumps out of loops"""
-        # Simple solution: GOTO clears the WHILE stack completely
-        # This prevents infinite loops caused by corrupted loop state
-        # Traditional BASIC behavior - GOTO breaks loop structures
-        self.__while_stack.clear()
+    def __clear_while_stack_on_goto(self, target_line):
+        """Discard active WHILE frames that the jump target leaves."""
+        starts = []
+        matching_wends = {}
+        for line in self.line_numbers():
+            statement = self.__program[line]
+            if statement[0].category == Token.WHILE:
+                starts.append(line)
+            elif statement[0].category == Token.WEND:
+                matching_wends[starts.pop()] = line
+
+        while self.__while_stack:
+            while_line = self.__while_stack[-1]
+            end_line = matching_wends[while_line]
+            if while_line < target_line <= end_line:
+                break
+            self.__while_stack.pop()
 
     def execute(self):
         """Execute the program"""
 
+        self.__while_stack.clear()
         self.__parser = BASICParser(self.__data)
         self.__data.restore(0) # reset data pointer
 
@@ -370,8 +385,7 @@ class Program:
                         # GOTO or conditional branch encountered
                         # Clear WHILE loop stack if we're jumping out of loops
                         target_line = flowsignal.ftarget
-                        current_line = self.get_next_line_number()
-                        self.__clear_while_stack_on_goto(current_line, target_line)
+                        self.__clear_while_stack_on_goto(target_line)
 
                         try:
                             index = line_numbers.index(flowsignal.ftarget)
